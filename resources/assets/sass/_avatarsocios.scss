@@ -1,0 +1,25 @@
+/* Avatar */
+.avatar {
+    float: left;
+    border-radius: 50%;
+    margin-right: 25px;
+    @include sizes(100px);
+}
+
+.logoavatar {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    border-radius: 50%;
+    @include sizes(32px);
+}
+
+.itemavatar {
+    margin-top: -8px;
+    @include sizes(32px);
+}
+
+.avatarbtnmenu {
+  	position: relative;
+  	padding-left: 30px;
+}

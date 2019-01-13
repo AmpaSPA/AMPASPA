@@ -1,0 +1,37 @@
+/* -----------
+ * Formularios
+ * -----------*/
+
+.oculto {
+    display: none;
+}
+
+/* .form-group: Reducimos el margin-bottom de 15px (defecto) a 5px. */
+div.form-group {
+    margin-bottom: 5px;
+}
+
+/* .form-control: Reducimos el tamaño de letra de 14px a 12px para unificar el contenido. */
+input.form-control, 
+textarea.form-control, 
+select.form-control {
+    font-size: 12px;
+}
+
+/* sub-header: Dejamos un espacio inferior de 10px y pintamos su borde inferior. */
+.sub-header {
+    padding-bottom: 10px;
+    border-bottom: 1px solid #eee;
+}
+
+/* tituloinfo: Damos formato al título de cada item informativo del socio */
+.tituloinfo {
+    text-align: center;
+    background-color: #4da6ff;
+    margin-bottom: 5px;
+}
+
+/* label: Dejamos un espacio por su izquierda para separarlos del texto que lleven incorporado. */
+.label {
+    margin-left: 5px;
+}

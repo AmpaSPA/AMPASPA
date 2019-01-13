@@ -1,0 +1,3 @@
+@section('breadcrumb')
+    {{ $li ?? '' }}
+@endsection

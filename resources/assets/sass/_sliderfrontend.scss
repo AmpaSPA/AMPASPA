@@ -1,0 +1,23 @@
+/* ----------------------------------
+ * Carrusel fotográfico de la portada
+ * ----------------------------------*/
+/* carousel-iner: Hacemos que la imagen ocupe el ancho completamente */
+.carousel-inner img {
+  width: 100%;
+  margin: auto;
+  min-height:200px;
+}
+
+.carousel-caption a {
+  	color: #dbffcb;
+  	h3{
+  		color: #dbffcb;
+	}
+}
+
+/* Cuando la pantalla es menor de 600 pixeles de ancho, se oculta el texto del carrusel fotográfico */
+@media (max-width: 600px) {
+  .carousel-caption {
+    display: none;
+  }
+}

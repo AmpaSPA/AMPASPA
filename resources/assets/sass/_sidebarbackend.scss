@@ -1,0 +1,19 @@
+#acordeon {
+  	margin-top: 52px;
+}
+
+#celda_bloque_icono {
+	width: 1%;
+	font-size: $font-size-menu - 2px;
+	padding-right: 1px;
+	text-align: right;
+}
+
+#celda_bloque_texto {
+	font-size: $font-size-menu - 6px;
+	vertical-align: middle;
+}
+
+.icono_bloque {
+	font-size: $font-size-menu;
+}

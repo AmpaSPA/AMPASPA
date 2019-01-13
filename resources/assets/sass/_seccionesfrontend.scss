@@ -1,0 +1,60 @@
+/* ------------------------------------------------------------------
+ * Estilos para las secciones de la página principal de la aplicación
+ * ------------------------------------------------------------------*/
+#accede {
+    margin-top: 15px;
+}
+
+#saludo {
+    padding-top: 1px;
+    .registrate {
+        padding-top: 3px;
+    }
+}
+
+#cajasaludo {
+    .panel-body,
+    .row {
+        background-color: #d7d9ff;
+    }
+    .panel {
+        border: none;
+    }
+}
+
+#ourampa, #miembros, #proyectos {
+    padding-top: 60px;
+    padding-bottom: 365px;
+    h3 {
+        color: #255782;
+    }
+}
+
+#footerwrap {
+    padding-top: 60px;
+    padding-bottom: 365px;
+    background-color: #2f2f2f;
+    color: white;
+    text-align: left;
+    h3 {
+        font-size: 28px;
+        color: white;
+    }
+    p {
+        color: white;
+        font-size: 14px;
+    }
+}
+
+#c {
+    background: #222222;
+    padding-top: 15px;
+    text-align: center;
+    p {
+        color: white;
+    }
+}
+
+#ventajassocio, #nuevosocio {
+    height: 480px;
+}

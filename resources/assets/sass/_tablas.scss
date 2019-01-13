@@ -1,0 +1,13 @@
+/* ------------------------------------------------
+ * Fondo de las filas pares e impares de las tablas
+ * ------------------------------------------------*/
+
+/* table-striped: Fondo de las filas impares. */
+.table-striped > tbody > tr:nth-of-type(2n+1) {
+  background-color: #d0f0ff;
+}
+
+/* table-striped: Fondo de las filas impares. */
+.table-striped > tbody > tr:nth-of-type(2n) {
+  background-color: #c3e5f2;
+}

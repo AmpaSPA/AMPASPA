@@ -1,0 +1,17 @@
+/* Común a todos los paneles */
+#panel_notificaciones, #panel_avisos, #panel_recibos, #panel_autorizaciones {
+
+    .panel-heading {
+        height: 79px;
+        background-color: #c4c7cb;
+    }
+    .panel-footer {
+        font-size: 11px;
+        border-top: #bebec1 1px solid;
+        background-color: #c4c7cb;
+        height: 29px;
+    }
+    margin-top: 15px;
+    border: #337AB7 1px solid;
+    @include sizes(160px, 110px);
+  }

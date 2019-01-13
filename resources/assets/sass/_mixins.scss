@@ -1,0 +1,11 @@
+/* Se fija el anchp y el alto del componente pasando por ese orden los parámetros. En caso de no informar el alto, se colocará para este parámetro el valor que se informe para el ancho */
+@mixin sizes($width, $height: $width) {
+  	height: $height;
+  	width: $width;
+}
+
+/* Se fija el margen arriba y abajo del componente pasando por ese orden los parámetros. En caso de no informar el bottom, se colocará para este parámetro el valor que se informe para el top */
+@mixin margen_arriba_abajo($margintop, $marginbottom: $margintop) {
+  	margin-top: $margintop;
+  	margin-bottom: $marginbottom;
+}

@@ -1,0 +1,27 @@
+/* -----------------
+ * Botones de acción
+ * -----------------*/
+
+/* btn.btn-info.btn-sm: Ponemos un margen inferior de 20px para separarlo del elemento siguiente */
+a.btn.btn-info.btn-sm {
+  	margin-bottom: 20px;
+}
+
+/* Dejar margen de separación para botones de la aplicación */
+#btsendlink, #btalumnos, #btchangepass, #btactividades, #btborraact, #btnuevo, #btvolver, #btimportcsv, #btverprofile, #btverrecibo, #btverfirma, #bteditar, #btchangeavatar, #btchangeinfo, #bthijos, #btactualizafirma, #btactualizajpago , #btchangedata {
+  	margin-top: 15px;
+}
+
+#btver, #btchangeavatar, #btchangeinfo, #bthijos{
+  	margin-right: 3px;
+}
+
+.btn-sm {
+  	margin-bottom: 15px;
+  	margin-right: 3px;
+}
+
+#btverfirmaprofile, #btverultimorecibo, #btconfirmarfirma, #btrechazarfirma {
+	font-size: 14px;
+	@include margen_arriba_abajo(15px);
+}

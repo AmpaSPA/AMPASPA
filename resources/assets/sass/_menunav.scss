@@ -1,0 +1,37 @@
+/* ----------------------------
+ * Barra de navegación superior
+ * ----------------------------*/
+
+/* navbar: La fijamos arriba en la página y escondemos el borde por defecto que es de 1px. */
+.navbar-fixed-top {
+    border: 0;
+}
+
+/* navbar: Usamos la de defecto pero le cambiamos el color. */
+.navbar-default {
+    background-color: #c9c9c9;
+}
+
+/* navbar: Posicionamos el icono de la aplicación subiéndolo un poco. */
+.navbar-brand > img{
+    margin-top: -17px;
+}
+
+/* dropdown-menu: Cambiamos el resalte y el color de la fuente del menu desplegale cuando se pasa el ratón. */
+.dropdown-menu > li > a:hover {
+    color: #ffffff;
+    background-color: #eff8ff;
+}
+
+/* dropdown-menu: Cambiamos el margen derecho de su ul (lista desordenada). Así coincide con el ancho del botón superior. */
+ul .dropdown-menu {
+    margin-right: 14px;
+}
+
+.nav.navbar-nav li a:hover {
+    color: #021073;
+}
+
+a.dropdown-item {
+    margin-left: 10px;
+}

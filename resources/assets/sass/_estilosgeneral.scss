@@ -1,0 +1,131 @@
+/* --------------------------------
+ * hoja de estilos de la aplicación
+ * --------------------------------*/
+html {
+    overflow-y: scroll;
+    @include sizes(100%);
+}
+
+/* main: No dejamos ningún margen pero fijamos una separación por todos los lados de 20px para el contenido. */
+.main {
+    padding: 20px;
+    margin: 0;
+}
+@media (min-width: 768px) {
+    .main {
+        padding-right: 40px;
+        padding-left: 40px;
+    }
+}
+
+/* body: Bajamos el contenido del cuerpo de la página 52px. El menú superior tiene un ancho de 50px */
+body {
+    @include sizes(100%);
+    background-color: $color-fondo;
+    font-family: "Arial";
+}
+
+a:focus {
+    outline: none;
+}
+
+/* container: Subimos 10px el margen superior de la clase contenedor */
+.container h2 {
+    margin-top: 52px;
+    color: #5A67C7;
+}
+
+/* Eliminamos el subrayado por defecto en todos los enlaces */
+a:hover {
+    text-decoration: none;
+}
+
+/* page-header: No dejamos margen por ningún lado. */
+.page-header {
+    margin: 0;
+}
+
+/* Fijamos como tamaño de texto pequeño 12px */
+.textopequeño {
+    font-size: 10px;
+}
+
+/* ------------------------
+ * Fuentes y otros símbolos
+ * ------------------------*/
+
+/* fa: Dejamos un espacio por su derecha para separarlos del texto que lleven incorporado. */
+/*     Ponemos en negrita la fuente */
+.fa {
+    margin-right: 4px;
+    font-weight: bold;
+}
+
+/* badge: Dejamos un espacio por su izquierda para separarlos del texto que lleven incorporado. */
+.badge {
+    margin-left: 5px;
+    background-color: dimgray;
+    padding-bottom: 2px;
+    margin-bottom: 3px;
+}
+
+.texto-badge {
+    font-size: 10px;
+}
+
+/* separador de dropdown */
+li hr {
+    margin-top: 5px;
+    margin-bottom: 5px;
+    border-top: 1px solid #aee4ff;
+}
+
+/* -----------------------------
+ * Panel del cuerpo de la página
+ * -----------------------------*/
+
+/* well: Fijamos el tamaño de letra a 12px para que el ancho de las filas de la tabla sea el mismo. */
+.well {
+    font-size: 12px;
+}
+
+/* -------------
+ * Pie de página
+ * -------------*/
+/* footer: Se añade un casi negro como color de fondo, un padding de 25px y letras de color blanco */
+footer {
+    background-color: #515151;
+    color: #fff;
+    padding: 25px;
+    a {
+        color: #4da6ff;
+        &:hover {
+            color: #2f7cb5;
+        }
+    }
+}
+
+/* texto de color azul para algunas páginas del backend */
+.textoazul {
+    color: mediumblue;
+}
+
+#texto_verificar_firma {
+    margin-bottom: 20px;
+}
+
+/* Color de fondo del menú breadcrumbs */
+.breadcrumb {
+    background-color: #e2e3f9;
+    font-size: 12px;
+}
+
+.bg-danger {
+    padding: 1px;
+    @include margen_arriba_abajo(3px);
+}
+
+/* En negrita los textos de las acciones de los datatables */
+.texto-accion {
+    font-weight: bold;
+}

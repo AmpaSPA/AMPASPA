@@ -1,0 +1,59 @@
+/* ---------------
+ * Pagina de login
+ * ---------------*/
+.login-box {
+    background-image: url("../images/fondologin.png");
+    width: 360px;
+    margin: 3% auto;
+}
+
+.login-logo {
+    text-align: center;
+    margin-bottom: 5px;
+    a {
+        color: #444;
+    }
+    .img-responsive {
+        margin-left: 135px;
+    }
+}
+
+.login-welcome {
+    font-size: 14px;
+    padding-top: 15px;
+    color: #255782;
+    text-align: center;
+    font-style: italic;
+}
+
+.login-page {
+    background: $color-fondo;
+    padding-top: 100px;
+}
+
+.login-box-body {
+    padding: 20px;
+    color: #666;
+    .form-control-feedback {
+        color: #777;
+    }
+}
+
+.login-box-msg {
+    margin: 0;
+    text-align: center;
+    padding: 0 20px 20px 20px;
+}
+
+@media (max-width: 768px) {
+    .login-logo .img-responsive {
+        display: none;
+    }
+}
+
+@media (max-width: 768px) {
+    .login-box {
+        width: 90%;
+        margin-top: 20px;
+    }
+}
