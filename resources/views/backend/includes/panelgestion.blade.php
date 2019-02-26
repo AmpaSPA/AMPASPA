@@ -12,17 +12,27 @@
         <table class="table">
           @include('backend.includes.opciones_gestion_administrador')
           @include('backend.includes.opciones_gestion_administrar_socios')
+          @include('backend.includes.opciones_gestion_administrar_reuniones')
         </table>
       </div>
     @else
-      @can('Administrar socios')
+      @hasrole('Presidente')
         <div class="panel-body">
           <table class="table">
             @include('backend.includes.opciones_gestion_administrar_socios')
+            @include('backend.includes.opciones_gestion_administrar_reuniones')
           </table>
         </div>
-      @endcan
+      @else
+        @hasrole('Secretario')
+          <div class="panel-body">
+            <table class="table">
+              @include('backend.includes.opciones_gestion_administrar_socios')
+              @include('backend.includes.opciones_gestion_administrar_reuniones')
+            </table>
+          </div>
+        @endhasrole
+      @endhasrole
     @endhasrole
   </div>
 </div>
-

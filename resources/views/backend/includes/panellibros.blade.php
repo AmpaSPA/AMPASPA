@@ -15,7 +15,7 @@
           </tr>
           <tr>
             <td id="celda_bloque_icono"><span class="fa fa-list-alt text-primary"></span></td>
-            <td id="celda_bloque_texto"><a href="#">{{ trans('message.actsbook') }}</a></td>
+            <td id="celda_bloque_texto"><a href="{{ route('actas.list') }}">{{ trans('message.proceedingsbook') }}</a></td>
           </tr>
           <tr>
             <td id="celda_bloque_icono"><span class="fa fa-users text-primary"></span></td>

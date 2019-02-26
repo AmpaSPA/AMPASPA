@@ -10864,7 +10864,7 @@ a:hover {
   margin: 0;
 }
 
-/* Fijamos como tamaño de texto pequeño 12px */
+/* Fijamos como tamaño de texto pequeño 10px */
 .textopequeño {
   font-size: 10px;
 }
@@ -10896,6 +10896,11 @@ li hr {
   margin-top: 5px;
   margin-bottom: 5px;
   border-top: 1px solid #aee4ff;
+}
+
+/* separador de color azul */
+.hrazul {
+  border-top: 1px solid #63a1fc;
 }
 
 /* -----------------------------
@@ -11142,6 +11147,10 @@ a.dropdown-item {
   padding-top: 3px;
 }
 
+#cajasaludo h2 {
+  margin-top: 12px;
+}
+
 #cajasaludo .panel-body,
 #cajasaludo .row {
   background-color: #d7d9ff;
@@ -11162,7 +11171,7 @@ a.dropdown-item {
 
 #footerwrap {
   padding-top: 60px;
-  padding-bottom: 365px;
+  padding-bottom: 338px;
   background-color: #2f2f2f;
   color: white;
   text-align: left;

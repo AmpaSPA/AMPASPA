@@ -10,7 +10,7 @@
     <script type="text/javascript">
 
         $(document).ready(function () {
-            // DataTable 
+            // DataTable
             oTable = $('#{{ $table_id }}').DataTable({
                 "procesing": true,
                 "serverSide": true,
@@ -41,11 +41,22 @@
                     "columnDefs": [
                         {
                             "targets": 1,
-                            "render": function ( data, type, row, meta ) 
+                            "render": function ( data, type, row, meta )
                             {
                                 return '<img src="'+data+'" class="itemavatar">';
                             }
-                        } 
+                        }
+                    ],
+                @endif
+                @if ($table_id == 'notificaciones')
+                    "columnDefs": [
+                        {
+                            "targets": 0,
+                            "render": function ( data, type, row, meta )
+                            {
+                                return '<i class="fa '+data+'"></i>'+' '+row['tipo'];
+                            }
+                        }
                     ],
                 @endif
                 "language": {

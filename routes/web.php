@@ -50,8 +50,8 @@ Route::view('contacto', 'frontend.principal.contacto');
 Route::post('contacto', 'Frontend\ContactoController@send');
 
 /**
- * RUTAS DEL HOME DEL SOCIO
- * ------------------------
+ * RUTAS DEL HOME DEL SOCIO (BACKEND)
+ * ----------------------------------
  */
 /* Home */
 Route::get('home', 'Backend\HomeController@index')->name('home');
@@ -63,6 +63,17 @@ Route::get('home/autorizaciones/{alumno}/{actividad}', 'Backend\HomeController@a
     ->name('home.autorizaractividad');
 Route::get('home/avisos', 'Backend\HomeController@panelAvisos')->name('home.avisos');
 Route::get('home/avisos/cerrar/{aviso}/{codigo}', 'Backend\HomeController@cerrarAviso')->name('home.cerraraviso');
+Route::view('home/notificaciones', 'backend.home.notificaciones')->name('home.notificaciones');
+Route::get('home/notificaciones/tiponotificacionesdata', 'Backend\HomeController@tipoNotificacionesData')
+    ->name('home.tiponotificacionesdata');
+Route::get('home/notificaciones/tipo/{notificacion}', 'Backend\HomeController@notificacionesTipo')
+    ->name('home.notificacionestipo');
+Route::get('home/notificaciones/tipo/leer/{notificacion}', 'Backend\HomeController@notificacionesTipoLeer')
+    ->name('home.notificacionestipoleer');
+Route::get('home/notificaciones/tipo/marcar/{notificacion}', 'Backend\HomeController@notificacionesTipoMarcarLeida')
+    ->name('home.notificacionesmarcar');
+Route::get('home/notificaciones/vencida/{notificacion}', 'Backend\HomeController@notificacionesVencida')
+    ->name('home.notificacionesvencida');
 
 /**
  *  RUTAS DEL BACKEND: PARTE ADMINISTRATIVA DE LA APLICACIÓN
@@ -226,6 +237,53 @@ Route::get(
     'Backend\ActividadesController@desautorizarActividad'
 )->name('actividades.desautorizaractividad');
 
+/* Actas */
+Route::get('backend/actas', 'Backend\ActasController@index')->name('actas.list');
+Route::get('backend/actas/actasdata', 'Backend\ActasController@actasdata')->name('actas.actasdata');
+
+/* Reuniones */
+Route::get('backend/reuniones/gestion', 'Backend\ReunionesController@index')->name('reuniones.gestion');
+Route::get('backend/reuniones/reunionesdata', 'Backend\ReunionesController@reunionesData')
+    ->name('reuniones.reunionesdata');
+Route::get('backend/reuniones/create', 'Backend\ReunionesController@create')->name('reuniones.create');
+Route::post('backend/reuniones/nuevareunion', 'Backend\ReunionesController@store')->name('reuniones.nueva');
+Route::get('backend/reuniones/ver/{reunion}', 'Backend\ReunionesController@view')->name('reuniones.ver');
+Route::view('backend/reuniones/cancelmeeting', 'backend.reuniones.cancelmeeting')
+    ->name('reuniones.cancelmeeting');
+Route::get('backend/reuniones/edit/{reunion}', 'Backend\ReunionesController@edit')->name('reuniones.edit');
+Route::patch('backend/reuniones/{reunion}', 'Backend\ReunionesController@update');
+Route::get('backend/reuniones/borrar/{reunion}', 'Backend\ReunionesController@forcedelete')
+    ->name('reuniones.borrar');
+Route::view('backend/reuniones/arrangemeeting', 'backend.reuniones.arrangemeeting')
+    ->name('reuniones.arrangemeeting');
+Route::get('backend/reuniones/noconvocadasdata', 'Backend\ReunionesController@noConvocadasData')
+    ->name('reuniones.noconvocadasdata');
+Route::get('backend/reuniones/convocadasdata', 'Backend\ReunionesController@convocadasData')
+    ->name('reuniones.convocadasdata');
+Route::get('backend/reuniones/convocar/{reunion}', 'Backend\ReunionesController@convocarReunion')
+    ->name('reuniones.convocar');
+Route::get('backend/reuniones/cancelar/{reunion}', 'Backend\ReunionesController@cancelarReunion')
+    ->name('reuniones.cancelar');
+
+/* Temas */
+Route::get('backend/temas/create/reunion/{reunion}', 'Backend\TemasController@create')->name('temas.reunion');
+Route::post('backend/temas/nuevo', 'Backend\TemasController@store')->name('temas.nuevo');
+Route::get('backend/temas/ver/{tema}', 'Backend\TemasController@ver')->name('temas.ver');
+Route::get('backend/temas/editar/{tema}', 'Backend\TemasController@editar')->name('temas.editar');
+Route::patch('backend/temas/{tema}', 'Backend\TemasController@update');
+Route::get('backend/temas/borrar/{tema}', 'Backend\TemasController@delete')->name('temas.borrar');
+Route::get('backend/temas/ver/reunion/{reunion}', 'Backend\TemasController@verTemasReunion')->name('temas.reunionver');
+
+/* Asistentes */
+Route::get('backend/asistentes/create/reunion/{reunion}', 'Backend\AsistentesController@create')
+    ->name('asistentes.reunion');
+Route::post('backend/asitentes/nuevo', 'Backend\AsistentesController@store')->name('asistentes.nuevo');
+Route::get('backend/asistentes/asistentesdata/{reunion}', 'Backend\AsistentesController@asistentesData')
+    ->name('asistentes.asistentesdata');
+Route::get('backend/asistentes/borrar/{asistente}/reunion/{reunion}', 'Backend\AsistentesController@delete')
+    ->name('asistentes.borrar');
+Route::get('backend/asistentes/ver/reunion/{reunion}', 'Backend\AsistentesController@verAsistentesReunion')
+    ->name('asistentes.reunionver');
 
 /**
  *  RUTA DE LA SELECCIÓN DE IDIOMA

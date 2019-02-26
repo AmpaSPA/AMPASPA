@@ -5,8 +5,10 @@
     "/assets/js/backend/ampaspa.js": "/assets/js/backend/ampaspa.js",
     "/assets/js/backend/datatable.js": "/assets/js/backend/datatable.js",
     "/assets/js/backend/bootstrap-datepicker.js": "/assets/js/backend/bootstrap-datepicker.js",
+    "/assets/js/backend/bootstrap-timepicker.js": "/assets/js/backend/bootstrap-timepicker.js",
     "/assets/css/datatables/datatable.css": "/assets/css/datatables/datatable.css",
     "/assets/css/datepicker/bootstrap-datepicker3.css": "/assets/css/datepicker/bootstrap-datepicker3.css",
     "/assets/css/datepicker/bootstrap-datepicker3.standalone.css": "/assets/css/datepicker/bootstrap-datepicker3.standalone.css",
+    "/assets/css/timepicker/bootstrap-timepicker.css": "/assets/css/timepicker/bootstrap-timepicker.css",
     "/assets/css/app.css": "/assets/css/app.css"
 }

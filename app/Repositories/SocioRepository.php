@@ -51,7 +51,6 @@ class SocioRepository
     public function socioAutenticado()
     {
         return Auth::user();
-        ;
     }
 
     /**
@@ -433,6 +432,14 @@ class SocioRepository
         return $this->buscarsocioporid($id)->membertype->tiposocio;
     }
 
+        /**
+    * @return \Illuminate\Support\Collection
+    */
+    public function listaNombreSocio()
+    {
+        return User::all()->pluck('fullname', 'id');
+    }
+
     /**
     * @return \Illuminate\Support\Collection
     */
@@ -577,7 +584,7 @@ class SocioRepository
     public function marcasDocumentoEstadoInicial($id, $documento)
     {
         $socio = $this->buscarsocioporid($id);
-        
+
         if ($documento == 'Recibo') {
             $socio->reciboimportado = false;
             $socio->corrientepago = false;

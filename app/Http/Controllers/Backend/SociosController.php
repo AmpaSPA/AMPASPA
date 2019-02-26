@@ -134,7 +134,7 @@ class SociosController extends Controller
             )
         )->success();
 
-        return redirect('backend/socios');
+        return redirect('home');
     }
 
     /**
@@ -492,7 +492,7 @@ class SociosController extends Controller
                         . '<a id="btver" href="'
                         . route('socios.importarrecibo', $inactivo->id)
                         . '">'
-                        . '<span class="text-warning texto-accion">'
+                        . '<span class="text-success texto-accion">'
                         . trans('message.importreceipt')
                         . '</span>'
                         . '</a>';

@@ -5,8 +5,6 @@
  * @category PHP
  * @package  Ampaspa
  * @author   Luis Ponce Melero <lpmelero@gmail.com>
- * @license  http://ampaspa.local FREE
- * @link     http://ampaspa.local
  */
 namespace App\Notifications;
 
@@ -16,13 +14,7 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
 
 /**
- * Clase del controlador para la administración de las actividades
- *
- * @category PHP
- * @package  Ampaspa
- * @author   Luis Ponce Melero <lpmelero@gmail.com>
- * @license  http://ampaspa.local FREE
- * @link     http://ampaspa.local
+ * Clase del controlador para la notificación Actividad publicada
  */
 class ActividadPublicada extends Notification
 {
@@ -86,7 +78,7 @@ class ActividadPublicada extends Notification
     public function toDatabase($notifiable)
     {
         return [
-            //
+            'actividad' => $this->actividad
         ];
     }
 

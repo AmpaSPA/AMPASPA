@@ -45,7 +45,7 @@ a:hover {
     margin: 0;
 }
 
-/* Fijamos como tamaño de texto pequeño 12px */
+/* Fijamos como tamaño de texto pequeño 10px */
 .textopequeño {
     font-size: 10px;
 }
@@ -80,6 +80,10 @@ li hr {
     border-top: 1px solid #aee4ff;
 }
 
+/* separador de color azul */
+.hrazul {
+    border-top: 1px solid #63a1fc;
+}
 /* -----------------------------
  * Panel del cuerpo de la página
  * -----------------------------*/

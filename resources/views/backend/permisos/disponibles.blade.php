@@ -33,7 +33,7 @@
             <h6><strong>{{ trans('message.permissions') }}</strong> {{ trans('message.availablepermissionstexttres') }} <strong>{{ $account->nombre }} {{ $account->apellidos }}</strong></h6>
         @endif
     @endif
-    <hr>
+    <hr class="hrazul">
     <div class="table-responsive">
         <table class="table table-striped">
             <thead>

@@ -15,7 +15,7 @@
 @section('content')
     <h3>{{ $socio->nombre }} {{ $socio->apellidos }}</h3>
     <h6>{{ trans('message.unscribedstudentstext') }}</h6>
-    <hr>
+    <hr class="hrazul">
     @if (count($alumnosbajas) > 0)
         <div class="table-responsive">
             <table class="table table-striped">

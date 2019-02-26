@@ -17,10 +17,17 @@
         <!-- PANEL NOTIFICACIONES -->
         <div class="col-md-2">
             <div id="panel_notificaciones" class="panel panel-default">
-                <div class="panel-heading"><img id="imgpanelcorreo" class="img-responsive center-block" src="assets/images/imgpanelcorreo.png" alt="NOTIFICACIONES">
-                </div>
-                <div class="panel-footer text-center">{{ trans('message.notificationspanel') }}
-                </div>
+                @if($notificaciones > 0)
+                    <div class="panel-heading"><a href="{{ route('home.notificaciones') }}"><img id="imgpanelcorreo" class="img-responsive center-block" src="assets/images/imgpanelcorreo.png" alt="NOTIFICACIONES"></a>
+                    </div>
+                    <div class="panel-footer text-center"><a href="{{ route('home.notificaciones') }}">{{ trans('message.notificationspanel') }}</a><span class="texto-badge badge">{{ $notificaciones }}</span>
+                    </div>
+                @else
+                    <div class="panel-heading"><img id="imgpanelcorreo" class="img-responsive center-block" src="assets/images/imgpanelcorreo.png" alt="NOTIFICACIONES">
+                    </div>
+                    <div class="panel-footer text-center">{{ trans('message.notificationspanel') }}
+                    </div>
+                @endif
             </div>
         </div>
 

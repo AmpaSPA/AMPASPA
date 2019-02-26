@@ -16,7 +16,7 @@
     @if ($usuarios->count() > 0)
         <h3><strong>{{ trans('message.attention') }}:</strong></h3>
         <h6>{{ trans('message.rolassignedfollowingusers', ['role' => $role->name]) }}:</h6>
-        <hr>
+        <hr class="hrazul">
         <div class="table-responsive">
             <table class="table table-striped">
                 <thead>

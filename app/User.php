@@ -2,11 +2,11 @@
 
 namespace App;
 
+use Spatie\Permission\Traits\HasRoles;
 use App\Notifications\ResetearPassword;
 use Illuminate\Notifications\Notifiable;
-use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Database\Eloquent\SoftDeletes;
-use Spatie\Permission\Traits\HasRoles;
+use Illuminate\Foundation\Auth\User as Authenticatable;
 
 /**
  * @property \Carbon\Carbon $created_at
@@ -76,6 +76,16 @@ class User extends Authenticatable
     public function setNumdocAttribute($value)
     {
         $this->attributes['numdoc'] = strtoupper($value);
+    }
+
+    /**
+     * Obtener el nombre y tipo de curso.
+     *
+     * @return string
+     */
+    public function getFullnameAttribute()
+    {
+        return $this->nombre . ' ' . $this->apellidos;
     }
 
   /**

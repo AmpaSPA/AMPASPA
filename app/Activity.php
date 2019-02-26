@@ -15,7 +15,7 @@ use Illuminate\Database\Eloquent\Model;
 
 /**
  * Modelo Actividades
- * 
+ *
  * @category PHP
  * @package  Ampaspa
  * @author   Luis Ponce Melero <lpmelero@gmail.com>
@@ -50,7 +50,9 @@ class Activity extends Model
      */
     public function students()
     {
-        return $this->belongsToMany('App\Student', 'activity_student')->withPivot('activity_id', 'authorized')->withTimestamps();
+        return $this->belongsToMany('App\Student', 'activity_student')
+                    ->withPivot('activity_id', 'authorized')
+                    ->withTimestamps();
     }
 
     /**

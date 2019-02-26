@@ -76,5 +76,21 @@ return [
     'publish'                 => 'Publish',
     'cancel'                  => 'Cancel',
     'seeassignments'          => 'See assignments',
-
+    'addedmeeting'            => 'Meeting of :fecha has been successfully added.',
+    'noeditactivity'          => 'Edit action not allowed. The meeting of :fecha has attendees.',
+    'updatemeeting'           => 'Meeting of :fecha has been successfully updated.',
+    'deletemeeting'           => 'Meeting of :fecha has been successfully deleted and your topics too.',
+    'topics'                  => 'Topics',
+    'updatetopics'            => 'Update topics',
+    'updatedtopic'            => 'Topic :titulo has been successfully updated.',
+    'deletetopic'             => 'Topic :titulo has been successfully deleted',
+    'attendees'               => 'Attendees',
+    'attendeedeleted'         => 'Attendee :asistente has been successfully deleted of the meeting.',
+    'arrange'                 => 'Arrange',
+    'seetopics'               => 'See topics',
+    'seeattendees'            => 'See attendees',
+    'backtoschedule'          => 'Back to schedule',
+    'read'                    => 'Read',
+    'markasread'              => 'Mark as read',
+    'confirmassistance'       => 'Confirm assistance'
 ];

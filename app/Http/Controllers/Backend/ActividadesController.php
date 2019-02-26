@@ -11,6 +11,7 @@ use App\Repositories\CursoRepository;
 use Carbon\Carbon;
 use DataTables;
 use Illuminate\View\View;
+use App\Repositories\TiposnotificacionRepository;
 
 /**
  * Clase del controlador para la administración de las actividades
@@ -20,15 +21,22 @@ class ActividadesController extends Controller
     protected $actividades;
     protected $alumnos;
     protected $cursos;
+    protected $tiposnotificacion;
+
 
     /**
      * __construct: Constructor de la clase. Usa los modelos: Activity, Student y Course
      */
-    public function __construct(ActivityRepository $actividades, AlumnoRepository $alumnos, CursoRepository $cursos)
-    {
+    public function __construct(
+        ActivityRepository $actividades,
+        AlumnoRepository $alumnos,
+        CursoRepository $cursos,
+        TiposnotificacionRepository $tiposnotificacion
+    ) {
         $this->actividades = $actividades;
         $this->alumnos = $alumnos;
         $this->cursos = $cursos;
+        $this->tiposnotificacion = $tiposnotificacion;
     }
 
     /**
@@ -240,6 +248,8 @@ class ActividadesController extends Controller
 
         $publicada = true;
 
+        $this->actividades->marcarActividad($actividad, $publicada);
+
         if ($actividad->activitytarget->destinoactividad === 'ALU') {
             $alumnos = $this->alumnos->alumnos();
             foreach ($alumnos as $alumno) {
@@ -260,15 +270,17 @@ class ActividadesController extends Controller
             }
         }
 
-        if ($this->actividades->marcarActividad($actividad, $publicada)) {
-            $count_activities = $this->actividades->obtenerActividadesNoPublicadas()->count();
-            if ($count_activities > 0) {
-                flash(trans('message.activitypublished', ['actividad' => $actividad->nombre]))->success();
-                return redirect(route('actividades.publishactivity'));
-            } else {
-                flash(trans('message.activitypublished', ['actividad' => $actividad->nombre]))->success();
-                return redirect(route('actividades.gestion'));
-            }
+        $icononotificacion = 'fa-universal-access';
+        $tiponotificacion = 'App\Notifications\ActividadPublicada';
+        $textonotificacion = 'Actividad publicada';
+        $this->tiposnotificacion->crearTipoNotificacion($icononotificacion, $tiponotificacion, $textonotificacion);
+
+        if ($this->actividades->obtenerActividadesNoPublicadas()->count() > 0) {
+            flash(trans('message.activitypublished', ['actividad' => $actividad->nombre]))->success();
+            return redirect(route('actividades.publishactivity'));
+        } else {
+            flash(trans('message.activitypublished', ['actividad' => $actividad->nombre]))->success();
+            return redirect(route('actividades.gestion'));
         }
     }
 
@@ -299,15 +311,13 @@ class ActividadesController extends Controller
     }
 
     /**
-     * cancelarActivida: Se procede a cancelar la actividad publicada para lo que primeramente
+     * cancelarActividad: Se procede a cancelar la actividad publicada para lo que primeramente
      * se desasigna dicha actividad de todos los alumnos a los que se les asignó cuando la
      * actividad fue publicada
      */
     public function cancelarActividad($id)
     {
         $actividad = $this->actividades->buscaractividadporid($id);
-
-        // PENDIENTE: añadir validación entre la fecha de la actividad y la fecha de hoy
 
         $alumnos = $actividad->students;
 

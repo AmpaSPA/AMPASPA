@@ -6,9 +6,14 @@ use App\Http\Controllers\Controller;
 use App\Repositories\ActivityRepository;
 use App\Repositories\AlumnoRepository;
 use App\Repositories\AvisosRepository;
+use App\Repositories\MeetingRepository;
+use App\Repositories\NotificationRepository;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use Yajra\DataTables\DataTables;
+use App\Repositories\TiposnotificacionRepository;
+use App\Repositories\AttendeeRepository;
 
 /**
  * Clase del controlador para la administración del home del backend
@@ -17,18 +22,33 @@ class HomeController extends Controller
 {
     protected $alumnos;
     protected $actividades;
+    protected $reuniones;
+    protected $asistentes;
     protected $avisos;
+    protected $notificaciones;
+    protected $tiposnotificacion;
 
     /**
      * __construct: Constructor de la clase. Usa los modelos: Student, Activity y Warning
      */
-    public function __construct(AlumnoRepository $alumnos, ActivityRepository $actividades, AvisosRepository $avisos)
-    {
+    public function __construct(
+        AlumnoRepository $alumnos,
+        ActivityRepository $actividades,
+        AvisosRepository $avisos,
+        MeetingRepository $reuniones,
+        AttendeeRepository $asistentes,
+        NotificationRepository $notificaciones,
+        TiposnotificacionRepository $tiposnotificacion
+    ) {
         $this->middleware('auth');
 
         $this->alumnos = $alumnos;
         $this->actividades = $actividades;
+        $this->reuniones = $reuniones;
+        $this->asistentes = $asistentes;
         $this->avisos = $avisos;
+        $this->notificaciones = $notificaciones;
+        $this->tiposnotificacion = $tiposnotificacion;
     }
 
     /**
@@ -39,12 +59,15 @@ class HomeController extends Controller
     public function index()
     {
         $cerrarActividades = $this->actividades->cerrarActividades();
+        $cerrarReuniones = $this->reuniones->cerrarReuniones();
         $avisos = $this->cargarAvisos();
         $autorizaciones = $this->cargarAutorizaciones();
+        $notificaciones = $this->cargarNotificaciones();
 
         $anio = Carbon::now()->year;
         $mes = Carbon::now()->month;
-        return view('backend.home', compact('anio', 'mes', 'autorizaciones', 'avisos'));
+
+        return view('backend.home', compact('anio', 'mes', 'autorizaciones', 'avisos', 'notificaciones'));
     }
 
     /**
@@ -72,6 +95,124 @@ class HomeController extends Controller
         $this->avisoSubirAcuerdoDeAdhesion();
 
         return $this->avisos->avisosAbiertos()->count();
+    }
+
+    /**
+     *  cargarNotificaciones: Se deben colocar en este método todas las validaciones que deban
+     * ser objeto de creación de un aviso a mostrar al usuario tras su login.
+     * Como resultado se obtiene el total de avisos pendientes de cierre por parte del socio.
+     */
+
+    public function cargarNotificaciones()
+    {
+        return Auth::user()->unreadNotifications()->count();
+    }
+
+    /**
+     * notificacionesData: Se visualiza la vista de notificaciones emitidas al usuario logueado
+     *
+     * @return Vista Página que muestra las notificaciones producidas para el usuario logged in
+     */
+    public function tipoNotificacionesData()
+    {
+        $notifications = $this->notificaciones->tipoNotificacionesPendientesPorUserid(Auth::user()->id);
+
+        return DataTables::of($notifications)
+            ->addColumn(
+                'icono',
+                function ($notification) {
+                    return $this->tiposnotificacion->textoNotificacionPorTipo($notification->type)->icono;
+                }
+            )
+            ->addColumn(
+                'tipo',
+                function ($notification) {
+                    return $this->tiposnotificacion->textoNotificacionPorTipo($notification->type)->notificacion;
+                }
+            )
+            ->addColumn(
+                'action',
+                function ($notification) {
+                    $btnSeleccionar = '<i class="text-success fa fa-check"></i>'
+                    . '<a href="'
+                    . route('home.notificacionestipo', $notification->type)
+                    . '">'
+                    . '<span class="text-success texto-accion">'
+                    . trans('acciones_crud.select')
+                        . '</span>'
+                        . '</a>';
+                    return $btnSeleccionar;
+                }
+            )
+            ->make(true);
+    }
+
+    /**
+     * notificacionesTipo
+     */
+    public function notificacionesTipo($tiponotificacion)
+    {
+        $tipo = $this->tiposnotificacion->textoNotificacionPorTipo($tiponotificacion)->notificacion;
+        $notificaciones = $this->notificaciones->notificacionesPorTipoyUserid($tiponotificacion, Auth::user()->id);
+
+        return view('backend.home.notificacionestipo', compact('tipo', 'notificaciones'));
+    }
+
+    /**
+     * notificacionesTipoLeer
+     */
+    public function notificacionesTipoLeer($id)
+    {
+        $notificacion = $this->notificaciones->notificacionesPorIdyUserid($id, Auth::user()->id);
+        $tipo = $this->tiposnotificacion->textoNotificacionPorTipo($notificacion->type)->notificacion;
+
+
+        return view('backend.home.notificacionestipoleer', compact('notificacion', 'tipo'));
+    }
+
+    /**
+     * notificacionesTipoMarcarLeida
+     */
+    public function notificacionesTipoMarcarLeida($id)
+    {
+        $notificacion = $this->notificaciones->notificacionesPorIdyUserid($id, Auth::user()->id);
+
+        $tipo = $notificacion->type;
+
+        $notificacion->markAsRead();
+
+        $this->reuniones->confirmarReunionPivot($notificacion->data['reunion']['id'], Auth::user()->id);
+
+        if ($this->notificaciones->notificacionesPorTipoyUserid($tipo, Auth::user()->id)->count() > 0) {
+            return redirect(route('home.notificacionestipo', $tipo));
+        } else {
+            if (Auth::user()->unreadNotifications()->count() > 0) {
+                return redirect(route('home.notificaciones'));
+            } else {
+                return redirect(route('home'));
+            }
+        }
+    }
+
+    /**
+     * notificacionesVencida
+     */
+    public function notificacionesVencida($id)
+    {
+        $notificacion = $this->notificaciones->notificacionesPorIdyUserid($id, Auth::user()->id);
+        $tipo = $notificacion->type;
+
+        $notificacion->markAsRead();
+
+        if ($this->notificaciones->notificacionesPorTipoyUserid($tipo, Auth::user()->id)->count() > 0) {
+            return redirect(route('home.notificacionestipo', $tipo));
+        } else {
+            if (Auth::user()->unreadNotifications()->count() > 0) {
+                return redirect(route('home.notificaciones'));
+            } else {
+                return redirect(route('home'));
+            }
+        }
     }
 
     /**
@@ -304,8 +445,7 @@ class HomeController extends Controller
     }
 
     /**
-     * obtenerUr: Se obtiene la url de origen para decidir la vuelta a la página anterior
-     * entre otros datos de las vistas
+     * obtenerUrl: Se obtiene la url de origen para decidir la vuelta a la página anterior
      */
     public function obtenerUrl()
     {

@@ -24,7 +24,7 @@ return [
     'restorestudent' => 'El estudiante :alumno ha sido restaurado/a correctamente.',
     'removemember' => 'El/la socio/a :socio ha sido borrado/a correctamente de nuestra BBDD.',
     'removestudent' => 'El estudiante :alumno ha sido borrado/a correctamente de nuestra BBDD.',
-    'addedmember' => 'El/la socio/a :socio se ha registrado correctamente. A continuación deben indicarse los hijos 
+    'addedmember' => 'El/la socio/a :socio se ha registrado correctamente. A continuación deben indicarse los hijos
     que son estudiantes del centro.',
     'updatemember' => 'El/la socio/a :socio se ha actualizado correctamente.',
     'deletemember' => 'El/la socio/a :socio ha sido dado/a de baja correctamente.',
@@ -77,4 +77,21 @@ return [
     'publish' => 'Publicar',
     'cancel' => 'Cancelar',
     'seeassignments' => 'Ver asignaciones',
+    'addedmeeting'           => 'La reunión de fecha :fecha ha sido registrada correctamente.',
+    'noeditmeeting' => 'Acción de edición no permitida. La reunión de :fecha tiene asistentes inscritos.',
+    'updatemeeting'           => 'La reunión de :fecha ha sido actualizada correctamente.',
+    'deletemeeting' => 'La reunión de :fecha ha sido eliminada correctamente y sus temas también',
+    'topics'               => 'Temas',
+    'updatetopics'            => 'Actualizar temas',
+    'updatedtopic'          => 'El tema :titulo ha sido actualizado correctamente.',
+    'deletetopic'             => 'El tema :titulo ha sido borrado correctamente.',
+    'attendees'               => 'Asistentes',
+    'attendeedeleted'         => 'El asistente :asistente ha sido eliminado correctamente de la reunión.',
+    'arrange'                 => 'Convocar',
+    'seetopics'               => 'Ver temas',
+    'seeattendees'            => 'Ver asistentes',
+    'backtoschedule'          => 'Volver a agendar',
+    'read'                    => 'Leer',
+    'markasread'              => 'Marcar como leída',
+    'confirmassistance'       => 'Confirmar asistencia'
 ];

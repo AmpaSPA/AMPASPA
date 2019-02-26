@@ -13,7 +13,7 @@
 
 @section('content')
     <h3>{{ trans('message.membersunscribedtext') }}</h3>
-    <hr>
+    <hr class="hrazul">
     @if (count($bajas) > 0)
         <div class="table-responsive">
             <table class="table table-striped">

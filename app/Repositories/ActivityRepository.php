@@ -286,12 +286,16 @@ class ActivityRepository
      */
     public function cerrarActividades()
     {
-        foreach ($this->actividades() as $actividad) {
-            if ($actividad->fechaactividad < Carbon::now()->format('Y-m-d')) {
-                $actividad->cerrada = true;
+        if ($this->actividades()->count() > 0) {
+            foreach ($this->actividades() as $actividad) {
+                if ($actividad->fechaactividad < Carbon::now()->format('Y-m-d')) {
+                    $actividad->cerrada = true;
+                }
             }
-        }
 
-        return $actividad->save();
+            return $actividad->save();
+        } else {
+            return;
+        }
     }
 }

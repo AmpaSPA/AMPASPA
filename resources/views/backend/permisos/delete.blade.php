@@ -16,7 +16,7 @@
     <h3><strong>{{ trans('message.attention') }}:</strong></h3>
     @if ($permiso->roles->count() > 0)
         <h6>{{ trans('message.permissionsbodytitleuno') }} {{ $permiso->id }},<span class="textoazul"> <strong>{{ $permiso->name }}</strong></span>, {{ trans('message.permissionsbodytitledos') }}:</h6>
-        <hr>
+        <hr class="hrazul">
         <div class="table-responsive">
             <table class="table table-striped">
                 <thead>

@@ -14,7 +14,7 @@
 @section('content')
     <h3>{{ $account->email }} <span class="textopequeño">@if(count($account->roles) > 0)({{ ($account->roles()->pluck( 'name' )->implode( ', ' )) }})@endif</span></h3>
     <h6>{{ trans('message.permissionsassignedto') }} {{ $account->nombre }} {{ $account->apellidos }}</h6>
-    <hr>
+    <hr class="hrazul">
     <div class="table-responsive">
         <table class="table table-striped">
             <thead>

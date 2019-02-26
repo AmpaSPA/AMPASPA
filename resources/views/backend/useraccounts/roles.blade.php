@@ -31,7 +31,7 @@
     @else
         <p>{{ trans('message.rolesthatuserhas', ['cuenta' => $account->nombre . ' '. $account->apellidos ]) }}</p>
     @endif
-    <hr>
+    <hr class="hrazul">
     <div class="table-responsive">
         <table class="table table-striped">
             <thead>

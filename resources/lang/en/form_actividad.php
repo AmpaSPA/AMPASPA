@@ -38,4 +38,7 @@ return [
     'cabactions' => 'Actions',
     'activity' => 'Activity:',
     'group' => 'Group:',
+    'cabstatus' => 'Status',
+    'celebrated' => 'Celebrated',
+    'pending' => 'Pending'
 ];

@@ -15,11 +15,13 @@ mix.js('resources/assets/js/app.js', 'public/assets/js/backend/app.js')
     .scripts('resources/assets/js/ampaspa.js', 'public/assets/js/backend/ampaspa.js')
     .scripts('node_modules/datatables.net/js/jquery.dataTables.js', 'public/assets/js/backend/datatable.js')
     .scripts('node_modules/bootstrap-datepicker/dist/js/bootstrap-datepicker.js', 'public/assets/js/backend/bootstrap-datepicker.js')
+    .scripts('node_modules/bootstrap-timepicker/js/bootstrap-timepicker.js', 'public/assets/js/backend/bootstrap-timepicker.js')
     .sass('node_modules/bootstrap-sass/assets/stylesheets/_bootstrap.scss', 'public/assets/css/bootstrap/bootstrap.css')
     .sass('resources/assets/sass/app.scss', 'public/assets/css/principal/ampaspa.css')
     .styles('node_modules/datatables.net-dt/css/jquery.dataTables.css', 'public/assets/css/datatables/datatable.css')
     .styles('node_modules/bootstrap-datepicker/dist/css/bootstrap-datepicker3.css', 'public/assets/css/datepicker/bootstrap-datepicker3.css')
     .styles('node_modules/bootstrap-datepicker/dist/css/bootstrap-datepicker3.standalone.css', 'public/assets/css/datepicker/bootstrap-datepicker3.standalone.css')
+    .styles('node_modules/bootstrap-timepicker/css/bootstrap-timepicker.css', 'public/assets/css/timepicker/bootstrap-timepicker.css')
     .styles([
         'public/assets/css/bootstrap/bootstrap.css',
         'public/assets/css/principal/ampaspa.css'

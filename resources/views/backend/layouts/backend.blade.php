@@ -16,16 +16,18 @@
 						</div>
 						<!-- Contenido de la página -->
 						<div class="col-md-9">
-							<!-- Cabecera de página -->
-							@include('backend.includes.pageheader')
-							<!-- Cuerpo de página -->
-							<div class="well">
-								@include('includes.errores')
-	  							@yield('content')
+							<div id="app">
+								<!-- Cabecera de página -->
+								@include('backend.includes.pageheader')
+								<!-- Cuerpo de página -->
+								<div class="well">
+									@include('includes.errores')
+									@yield('content')
+								</div>
+								<!-- Pie de página -->
+								@include('includes.footerwrap')
 							</div>
-							<!-- Pie de página -->
-							@include('includes.footerwrap')
-						</div>	
+						</div>
 					<!-- Página en blanco sin estructura para la pantalla de login -->
 					@else
 						@yield('content')
@@ -35,6 +37,7 @@
 			<script src="{{ asset('assets/js/backend/app.js') }}"></script>
 			<script src="{{ asset('assets/js/backend/ampaspa.js') }}"></script>
 			@stack('datepicker')
+			@stack('timepicker')
 			@stack('scripts')
 		</body>
 	</html>

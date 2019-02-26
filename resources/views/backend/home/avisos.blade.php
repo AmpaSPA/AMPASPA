@@ -17,7 +17,7 @@
             @if(count($avisos_abiertos) > 0)
                 @foreach($avisos_abiertos as $aviso_abierto)
                     @if($loop->iteration > 1)
-                        <hr>
+                        <hr class="hrazul">
                     @endif
                     <h5 class="text-info"><i class="fa fa-bullhorn"></i> {{ $aviso_abierto['codigo'] }}</h5>
                     <ul>
@@ -30,4 +30,3 @@
         </div>
     </div>
 @endsection
-

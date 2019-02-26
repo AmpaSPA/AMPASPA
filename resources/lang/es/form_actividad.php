@@ -38,4 +38,7 @@ return [
     'cabactions' => 'Acciones',
     'activity' => 'Actividad:',
     'group' => 'Colectivo:',
+    'cabstatus' => 'Estado',
+    'celebrated' => 'Celebrada',
+    'pending' => 'Pendiente'
 ];

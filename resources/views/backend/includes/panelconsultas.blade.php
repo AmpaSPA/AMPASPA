@@ -17,7 +17,7 @@
             </tr>
             <tr>
               <td id="celda_bloque_icono"><span class="fa fa-list-alt text-primary"></span></td>
-              <td id="celda_bloque_texto"><a href="#">{{ trans('message.acts') }}</a></td>
+              <td id="celda_bloque_texto"><a href="#">{{ trans('message.proceedings') }}</a></td>
             </tr>
             <tr>
               <td id="celda_bloque_icono"><span class="fa fa-users text-primary"></span></td>
@@ -43,7 +43,7 @@
                 @include('backend.includes.panelconsultasopcomunes')
                 <tr>
                   <td><span class="fa fa-list-alt text-primary"></span></td>
-                  <td><a href="#">{{ trans('message.acts') }}</a></td>
+                  <td><a href="#">{{ trans('message.proceedings') }}</a></td>
                 </tr>
                 <tr>
                   <td><span class="fa fa-users text-primary"></span></td>

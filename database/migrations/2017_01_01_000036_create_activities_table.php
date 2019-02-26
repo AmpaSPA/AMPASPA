@@ -38,7 +38,7 @@ class CreateActivitiesTable extends Migration
                 $table->string('periodo', 9);
                 $table->date('fechaactividad');
                 $table->string('nombre');
-                $table->string('descripcion');
+                $table->longText('descripcion');
                 $table->integer('activitytype_id')->unsigned();
                 $table->integer('activitytarget_id')->unsigned();
                 $table->integer('subvencion');

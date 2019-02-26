@@ -30,7 +30,7 @@
 @section('content')
     <h3>{{ $socio->nombre }} {{ $socio->apellidos }}</h3>
     <h6>{{ trans('message.childrenstudents') }}</h6>
-    <hr>
+    <hr class="hrazul">
     @if(count($hijos) > 0)
         @foreach ($hijos as $hijo)
             @php
@@ -55,7 +55,7 @@
                         <a href="#"><i class="fa fa-graduation-cap"></i> {{ $hijo->nombre }}</a>
                     </div>
                 </div>
-                <div id="{{ $hijo->id }}"" class="panel-body collapse">
+                <div id="{{ $hijo->id }}" class="panel-body collapse">
                     <ul>
                         <li>{{ trans('form_alumnos.lbbirthyear') }} {{ $hijo->anionacim }}.</li>
                         <li>{{ trans('form_alumnos.lbcourse') }} {{ $hijo->course->curso }}.</li>
@@ -121,7 +121,7 @@
                                         <th>{{ trans('form_alumnos.activitytarget') }}</th>
                                     </tr>
                                 </thead>
-                                @foreach ($hijo->activities as $actividad) 
+                                @foreach ($hijo->activities as $actividad)
                                     @if (!$actividad->pivot->authorized && $actividad->cerrada)
                                         <tbody>
                                             <tr>
@@ -133,7 +133,7 @@
                                                 <td>{{ $actividad->activitytarget->colectivo }}</td>
                                             </tr>
                                         </tbody>
-                                    @endif 
+                                    @endif
                                 @endforeach
                                 <tfoot>
                                     <tr>
