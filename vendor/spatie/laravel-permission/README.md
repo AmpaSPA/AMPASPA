@@ -71,7 +71,7 @@ You can install the package via composer:
 composer require spatie/laravel-permission
 ```
 
-In Laravel 5.5 the service provider will automatically get registered. In older versions of the framework just add the service provider in `config/app.php` file:
+The service provider will automatically get registered. Or you may manually add the service provider in your `config/app.php` file:
 
 ```php
 'providers' => [
@@ -205,7 +205,7 @@ return [
         'expiration_time' => \DateInterval::createFromDateString('24 hours'),
 
         /*
-         * The key to use when tagging and prefixing entries in the cache.
+         * The cache key used to store all permissions.
          */
 
         'key' => 'spatie.permission.cache',
@@ -349,7 +349,8 @@ The `HasRoles` trait adds Eloquent relationships to your models, which can be ac
 
 ```php
 // get a list of all permissions directly assigned to the user
-$permissions = $user->permissions;
+$permissionNames = $user->getPermissionNames(); // collection of name strings
+$permissions = $user->permissions; // collection of permission objects
 
 // get all permissions for the user, either directly, or from roles, or from both
 $permissions = $user->getDirectPermissions();
@@ -672,7 +673,7 @@ $user->hasPermissionTo('publish articles', 'admin');
 
 > **Note**: When using other than the default `web` guard, you will need to declare which `guard_name` you wish each model to use by setting the `$guard_name` property in your model. One per model is simplest. 
 
-> **Note**: If your app uses only a single guard, but is not `web` then change the order of your listed guards in your `config/app.php` to list your primary guard as the default and as the first in the list of defined guards.
+> **Note**: If your app uses only a single guard, but is not `web` then change the order of your listed guards in your `config/auth.php` to list your primary guard as the default and as the first in the list of defined guards.
 
 ### Assigning permissions and roles to guard users
 

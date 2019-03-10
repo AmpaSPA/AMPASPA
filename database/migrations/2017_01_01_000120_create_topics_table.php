@@ -22,6 +22,7 @@ class CreateTopicsTable extends Migration
                 $table->string('propietario');
                 $table->string('responsable');
                 $table->integer('meeting_id')->unsigned();
+                $table->boolean('acordado')->nullable()->default(false);
                 $table->timestamps();
 
                 $table->foreign('meeting_id')

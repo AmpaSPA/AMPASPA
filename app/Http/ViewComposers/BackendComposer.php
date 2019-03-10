@@ -6,21 +6,27 @@
 
 namespace App\Http\ViewComposers;
 
-use App\Repositories\SocioRepository;
 use Carbon\Carbon;
 use Illuminate\View\View;
+use App\Repositories\SocioRepository;
+use App\Repositories\ProceedingRepository;
+use App\Repositories\PeriodoRepository;
 
 class BackendComposer
 {
     protected $socios;
+    protected $actas;
+    protected $periodos;
 
     /**
      * BackendComposer constructor.
      * @param SocioRepository $socios
      */
-    public function __construct(SocioRepository $socios)
+    public function __construct(SocioRepository $socios, ProceedingRepository $actas, PeriodoRepository $periodos)
     {
         $this->socios = $socios;
+        $this->actas = $actas;
+        $this->periodos = $periodos;
     }
 
     /**
@@ -31,7 +37,6 @@ class BackendComposer
         $anioant = 0;
         $anio = 0;
         $idioma = '';
-        $perfilasignado = '';
 
         switch (config('app.locale')) {
             case 'es':
@@ -42,14 +47,24 @@ class BackendComposer
                 break;
         }
 
+        $periodo = $this->periodos->buscarPeriodoActivo();
+
         if (Carbon::now()->month <=6) {
-            $anioant = Carbon::now()->year - 1;
-            $anio = Carbon::now()->year;
+            $anioant = $periodo->aniodesde - 1;
+            $anio = $periodo->aniohasta - 1;
         } else {
-            $anioant = Carbon::now()->year;
-            $anio = Carbon::now()->year + 1;
+            $anioant = $periodo->aniodesde;
+            $anio = $periodo->aniohasta;
         }
 
-        $view->with('idioma', $idioma)->with('numsocios', $this->socios->totalsocios())->with('anioant', $anioant)->with('anio', $anio)->with('mes', Carbon::now()->month)->with('docs_pendientes_importar', $this->socios->obtenerDocsPendientesImportar()->count())->with('verificar_documentos', $this->socios->verificarDocumentos()->count());
+        $view->with('idioma', $idioma)
+            ->with('periodo', $periodo)
+            ->with('numsocios', $this->socios->totalsocios())
+            ->with('numActas', $this->actas->totalActas())
+            ->with('anioant', $anioant)
+            ->with('anio', $anio)
+            ->with('mes', Carbon::now()->month)
+            ->with('docs_pendientes_importar', $this->socios->obtenerDocsPendientesImportar()->count())
+            ->with('verificar_documentos', $this->socios->verificarDocumentos()->count());
     }
 }

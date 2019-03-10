@@ -21,6 +21,7 @@
 								@include('backend.includes.pageheader')
 								<!-- Cuerpo de página -->
 								<div class="well">
+									<p><h4 class="text-center textoazul">{{ trans('message.academicyear') }} {{ $periodo->periodo }}</h4></p>
 									@include('includes.errores')
 									@yield('content')
 								</div>

@@ -481,5 +481,9 @@ return [
     'price'                           => 'Price:',
     'grant'                           => 'Grant:',
     'target'                          => 'Target:',
-    'students'                        => 'Students:'
+    'students'                        => 'Students:',
+    'importproceeding'                => 'Import proceeding',
+    'discussiontopics'                => 'Discussion topics',
+    'whitoutdealmeetingtopics'        => 'Topics whitout deal of the :tipo meeting of :fecha',
+    'agreementupdated'                => 'The agreement of the theme :tema has been successfully updated.'
 ];

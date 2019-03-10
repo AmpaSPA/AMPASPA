@@ -2,19 +2,15 @@
 
 @component('backend.components.headerpage', [
     'icono_title' => 'fa fa-list-alt',
-    'trans_msg_title'=> trans('message.proceedings'),
+    'trans_msg_title'=> trans('message.proceedingsbook'),
     'items' => [
         ['href' => route('home'), 'icono' => 'fa fa-home', 'texto' => trans('message.home')],
-        ['href' => '', 'icono' => 'fa fa-list-alt', 'texto' => trans('message.proceedings')],
+        ['href' => '', 'icono' => 'fa fa-list-alt', 'texto' => trans('message.proceedingsbook')],
         ],
     ])
 @endcomponent
 
 @section('content')
-    <div class="btn-group" role="group">
-        <a type="button" role="button" class="btn btn-info btn-sm" href="{{ url('backend/socios/create') }}"><i class="fa fa-plus"></i>{{ trans('message.addproceeding') }}</a>
-    </div>
-
     @component('backend.components.datatable', [
         'table_id' => 'actas',
         'table_name' => 'actas',
@@ -22,17 +18,16 @@
         'route_param' => '',
         'columndefs' => [
             ['width' => '3%', 'targets' => 0],
-            ['width' => '44%', 'targets' => 3],
+            ['width' => '44%', 'targets' => 4],
             ],
         'columns'=> [
-            ['data' => 'id', 'name' => 'id', 'header' => trans('cabecera_socios.id')],
-            ['data' => 'nombre', 'name' => 'nombre', 'header' => trans('cabecera_actas.date')],
-            ['data' => 'numdoc', 'name' => 'numdoc', 'header' => trans('cabecera_actas.authorship')],
-            ['data' => 'action', 'name' => 'action', 'header' => trans('cabecera_actas.proceedingtype')],
+            ['data' => 'fecha_acta', 'name' => 'fecha_acta', 'header' => trans('cabecera_actas.date')],
+            ['data' => 'autoria', 'name' => 'autoria', 'header' => trans('cabecera_actas.authorship')],
+            ['data' => 'reunion', 'name' => 'reunion', 'header' => trans('form_reunion.cabmeeting')],
+            ['data' => 'tipo', 'name' => 'tipo', 'header' => trans('form_reunion.cabtype')],
             ['data' => 'action', 'name' => 'action', 'header' => trans('cabecera_socios.actions')],
             ],
         'filter' => 'Filtrados'
         ])
     @endcomponent
-
 @endsection

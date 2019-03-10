@@ -93,5 +93,12 @@ return [
     'backtoschedule'          => 'Volver a agendar',
     'read'                    => 'Leer',
     'markasread'              => 'Marcar como leída',
-    'confirmassistance'       => 'Confirmar asistencia'
+    'confirmassistance'       => 'Confirmar asistencia',
+    'addagreements'           => 'Añadir acuerdos',
+    'agreement'               => 'Acuerdo',
+    'agreements'              => 'Acuerdos',
+    'makeproceeding'          => 'Elaborar acta',
+    'viewproceeding'          => 'Ver acta',
+    'updateagreement'         => 'Modificar acuerdo',
+    'proceedinggenerated'     => 'El acta se ha grabado correctamente'
 ];

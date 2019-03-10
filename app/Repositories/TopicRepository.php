@@ -18,7 +18,7 @@ class TopicRepository
         $this->reuniones = $reuniones;
     }
     /**
-     * buscaractaporid
+     * buscarTopicPorId
      */
     public function buscarTopicPorId($id)
     {
@@ -96,5 +96,24 @@ class TopicRepository
     public function borraTema($id)
     {
         Topic::where('id', '=', $id)->forceDelete();
+    }
+
+    /**
+     * buscarTemasNoAcordadosPorReunion
+     */
+    public function buscarTemasNoAcordadosPorReunion($id_reunion)
+    {
+        return Topic::whereMeeting_idAndAcordado($id_reunion, false)->get();
+    }
+
+    /**
+     * marcarTemaAcordado
+     */
+    public function marcarTemaAcordado($id_tema, $marca)
+    {
+        $tema = $this->buscarTopicPorId($id_tema);
+        $tema->acordado = $marca;
+
+        return $tema->save();
     }
 }

@@ -2,36 +2,41 @@
 
 namespace App\Http\Controllers\Backend;
 
-use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Repositories\MeetingRepository;
+use App\Repositories\PeriodoRepository;
 use App\Repositories\ProceedingRepository;
+use App\Repositories\TopicRepository;
+use Barryvdh\Snappy\Facades\SnappyPdf as PDF;
+use Carbon\Carbon;
+use Yajra\DataTables\DataTables;
 
 class ActasController extends Controller
 {
     protected $reuniones;
     protected $actas;
+    protected $temas;
+    protected $periodos;
 
     /**
      * __construct: Constructor de la clase. Usa los modelos: Meeting y Proceeding
      */
-    public function __construct(MeetingRepository $reuniones, ProceedingRepository $actas)
-    {
+    public function __construct(
+        MeetingRepository $reuniones,
+        ProceedingRepository $actas,
+        TopicRepository $temas,
+        PeriodoRepository $periodos
+    ) {
         $this->reuniones = $reuniones;
         $this->actas = $actas;
-    }
-    /**
-     * index
-     */
-    public function index()
-    {
-        return view('backend.actas.index');
+        $this->temas = $temas;
+        $this->periodos = $periodos;
     }
 
     /**
      * actasdata
      */
-    public function actasdata()
+    public function actasData()
     {
         $proceedings = $this->actas->actas();
 
@@ -39,48 +44,165 @@ class ActasController extends Controller
             ->addColumn(
                 'reunion',
                 function ($proceeding) {
-                    return $this->reuniones->buscarreunionporid($proceeding->id);
+                    return $proceeding->meeting->fechareunion;
+                }
+            )
+            ->addColumn(
+                'tipo',
+                function ($proceeding) {
+                    return $proceeding->meeting->meetingtype()->pluck('tiporeunion')->implode('');
                 }
             )
             ->addColumn(
                 'action',
                 function ($proceeding) {
-                    $btnVer = '<i class="text-success fa fa-eye"></i>'
-                    . '<a href = "'
-                    . url('backend/socios/ver/'.$proceeding->id)
-                    . '">'
-                    . '<span class="text-success texto-accion">'
-                    . trans('acciones_crud.view')
-                    . '</span>'
-                    . '</a>';
-                    $btnEditar = '<i class="text-warning fa fa-pencil"></i>'
-                    . '<a href="'
-                    . url('backend/socios/edit/'.$proceeding->id)
-                    . '">'
-                    . '<span class="text-warning texto-accion">'
-                    . trans('acciones_crud.edit')
-                    . '</span>'
-                    . '</a>';
-                    $btnEliminar = '<i class="text-danger fa fa-trash"></i>'
-                    . '<a href="'
-                    . url('backend/socios/borrar/'.$proceeding->id)
-                    . '">'
-                    . '<span class="text-danger texto-accion">'
-                    . trans('acciones_crud.delete')
-                    . '</span>'
-                    . '</a>';
-                    $btnAlumnos = '<i class="text-info fa fa-graduation-cap"></i>'
-                    . '<a href="'
-                    . url('/backend/alumnos/create/socio/'.$proceeding->id)
-                    . '">'
-                    . '<span class="text-info texto-accion">'
-                    . trans('acciones_crud.students')
-                    . '</span>'
-                    . '</a>';
+                    $btnAddAcuerdos = null;
+                    $btnUpdateAcuerdos = null;
+                    $btnElaborarActa = null;
+                    $btnVerActa = null;
 
-                    return $btnVer . ' ' . $btnEditar . ' ' . $btnEliminar . ' ' . $btnAlumnos;
+                    if ($this->temas->buscarTemasNoAcordadosPorReunion($proceeding->meeting_id)->count() > 0) {
+                        $btnAddAcuerdos = '<i class="text-primary fa fa-handshake-o"></i>'
+                        . '<a href = "'
+                        . route('acuerdos.acuerdostemas', $proceeding->meeting_id)
+                        . '">'
+                        . '<span class="text-primary texto-accion">'
+                        . trans('acciones_crud.addagreements')
+                            . '</span>'
+                            . '</a>';
+                    } else {
+                        if (!$proceeding->documento) {
+                            $btnUpdateAcuerdos = '<i class="text-warning fa fa-handshake-o"></i>'
+                            . '<a href = "'
+                            . route('acuerdos.list', $proceeding->meeting_id)
+                            . '">'
+                            . '<span class="text-warning texto-accion">'
+                            . trans('acciones_crud.agreements')
+                                . '</span>'
+                                . '</a>';
+                            $btnElaborarActa = '<i class="text-primary fa fa-clone"></i>'
+                            . '<a href = "'
+                            . route('actas.elaborar', $proceeding->meeting_id)
+                            . '">'
+                            . '<span class="text-primary texto-accion">'
+                            . trans('acciones_crud.makeproceeding')
+                                . '</span>'
+                                . '</a>';
+                        } else {
+                            $btnVerActa = '<i class="text-success fa fa-eye"></i>'
+                            . '<a target="_blank" href = "'
+                            . route('actas.ver', $proceeding->meeting_id)
+                            . '">'
+                            . '<span class="text-success texto-accion">'
+                            . trans('acciones_crud.viewproceeding')
+                                . '</span>'
+                                . '</a>';
+                        }
+                    }
+
+                    return $btnAddAcuerdos . ' ' . $btnUpdateAcuerdos . ' ' . $btnElaborarActa . ' ' . $btnVerActa;
                 }
             )
-        ->make(true);
+            ->make(true);
+    }
+
+    /**
+     * elaborarActa
+     */
+    public function elaborarActa($id_reunion)
+    {
+        $reunion = $this->reuniones->buscarReunionPorId($id_reunion);
+        $temas = $reunion->topics;
+
+        $periodo = $this->periodos->buscarPeriodoActivo()->periodo;
+
+        $hoy = Carbon::parse(now())->format('d/m/Y');
+        $hoy = $this->obtenerFechaLiteral($hoy);
+
+        $fechaReunion = Carbon::parse($reunion->fechareunion);
+        $fecha = $fechaReunion->format('d/m/Y');
+
+        $fechaLiteral = $this->obtenerFechaLiteral($fecha);
+
+        $tipo = $reunion->meetingtype->tiporeunion;
+        $asistentes = $reunion->attendees;
+
+        $acta = public_path('assets/docs/actas/')
+        . 'Acta '
+        . Carbon::parse($reunion->fechareunion)->format('Y_m_d') . '.pdf';
+
+        if (file_exists($acta)) {
+            unlink($acta);
+        }
+
+        $actaHeader = view()->make('backend.includes.acta_cabecera')->render();
+        $actaFooter = view()->make('backend.includes.acta_pie')->render();
+
+        $options = [
+            'orientation' => 'portrait',
+            'encoding' => 'UTF-8',
+            'header-html' => $actaHeader,
+            'footer-html' => $actaFooter,
+            'margin-top' => '40mm',
+            'margin-bottom' => '20mm',
+            'footer-right' => '[page] de [toPage]'
+        ];
+
+        $this->actas->registrarActaPdf($id_reunion, $acta);
+
+        PDF::loadView(
+            'backend.actas.acta',
+            compact(
+                'reunion',
+                'temas',
+                'acuerdos',
+                'hoy',
+                'periodo',
+                'fecha',
+                'tipo',
+                'fechaLiteral',
+                'asistentes'
+            )
+        )->setOptions($options)->save($acta);
+
+        flash(trans('acciones_crud.proceedinggenerated'))->success();
+        return redirect(route('actas.list'));
+    }
+
+    /**
+     * obtenerFechaLiteral
+     */
+    public function obtenerFechaLiteral($fecha)
+    {
+        $dia = substr($fecha, 0, 2);
+        $mes = (int) substr($fecha, 3, 2) - 1;
+        $anio = substr($fecha, 6, 4);
+        $meses = [
+            'enero',
+            'febrero',
+            'marzo',
+            'abril',
+            'mayo',
+            'junio',
+            'julio',
+            'agosto',
+            'septiembre',
+            'octubre',
+            'noviembre',
+            'diciembre',
+        ];
+        return $dia . ' de ' . $meses[$mes] . ' de ' . $anio;
+    }
+
+    /**
+     * verActa
+     */
+    public function verActa($reunion_id)
+    {
+        $acta = $this->actas->buscarActaPorReunion($reunion_id);
+        $pdf = $acta->documento;
+
+        header('Content-type: application/pdf');
+        readfile($pdf);
     }
 }

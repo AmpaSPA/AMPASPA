@@ -18,7 +18,8 @@ class Topic extends Model
         'meeting_id',
         'tema',
         'propietario',
-        'responsable'
+        'responsable',
+        'acordado'
     ];
 
     /**

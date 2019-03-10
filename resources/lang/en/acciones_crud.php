@@ -92,5 +92,12 @@ return [
     'backtoschedule'          => 'Back to schedule',
     'read'                    => 'Read',
     'markasread'              => 'Mark as read',
-    'confirmassistance'       => 'Confirm assistance'
+    'confirmassistance'       => 'Confirm assistance',
+    'addagreements'           => 'Add agreements',
+    'agreement'               => 'Agreement',
+    'agreements'              => 'Agreements',
+    'makeproceeding'          => 'Make proceeding',
+    'viewproceeding'          => 'View proceeding',
+    'updateagreement'         => 'Update agreement',
+    'proceedinggenerated'     => 'The proceeding has been successfully generated.'
 ];

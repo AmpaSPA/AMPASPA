@@ -22,5 +22,6 @@ return [
     'enterowner'    => 'Enter fullname of the owner',
     'enterleader'   => 'Enter fullname of the leader',
     'topicdata'     => 'Data of topic',
-    'updatetopic'   => 'Update topic'
+    'updatetopic'   => 'Update topic',
+    'cabtopic'      => 'Topic'
 ];

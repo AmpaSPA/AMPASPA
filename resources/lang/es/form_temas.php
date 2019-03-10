@@ -22,5 +22,6 @@ return [
     'enterowner'    => 'Nombre completo del propietario',
     'enterleader'   => 'Nombre completo del responsable',
     'topicdata'     => 'Datos del tema',
-    'updatetopic'   => 'Actualizar tema'
+    'updatetopic'   => 'Actualizar tema',
+    'cabtopic'      => 'Tema'
 ];

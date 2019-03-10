@@ -16,6 +16,7 @@ class Meeting extends Model
     protected $fillable = [
         'fechareunion',
         'horareunion',
+        'horafinreunion',
         'meetingtype_id',
         'nota'
     ];

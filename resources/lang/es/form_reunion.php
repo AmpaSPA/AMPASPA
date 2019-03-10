@@ -29,5 +29,6 @@ return [
     'meeting' => 'Reunión:',
     'cabstatus' => 'Estado',
     'celebrated' => 'Celebrada',
-    'pending' => 'Pendiente'
+    'pending' => 'Pendiente',
+    'cabmeeting' => 'Reunión'
 ];

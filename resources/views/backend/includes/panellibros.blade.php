@@ -15,7 +15,7 @@
           </tr>
           <tr>
             <td id="celda_bloque_icono"><span class="fa fa-list-alt text-primary"></span></td>
-            <td id="celda_bloque_texto"><a href="{{ route('actas.list') }}">{{ trans('message.proceedingsbook') }}</a></td>
+            <td id="celda_bloque_texto"><a href="{{ route('actas.list') }}">{{ trans('message.proceedingsbook') }}</a><span class="texto-badge badge">@if($numActas > 0){{ $numActas }}@endif</span></td>
           </tr>
           <tr>
             <td id="celda_bloque_icono"><span class="fa fa-users text-primary"></span></td>

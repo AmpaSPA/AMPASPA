@@ -490,5 +490,9 @@ return [
     'price'                             => 'Precio:',
     'grant'                             => 'Subvención:',
     'target'                            => 'Colectivo:',
-    'students'                          => 'Estudiantes:'
+    'students'                          => 'Estudiantes:',
+    'importproceeding'                  => 'Importar acta',
+    'discussiontopics'                  => 'Temas de debate',
+    'whitoutdealmeetingtopics'          => 'Temas sin acuerdo de la reunión :tipo de fecha :fecha',
+    'agreementupdated'                  => 'El acuerdo del tema :tema ha sido actualizado correctamente.'
 ];

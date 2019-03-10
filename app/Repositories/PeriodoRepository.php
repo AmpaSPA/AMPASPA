@@ -17,6 +17,6 @@ class PeriodoRepository
    */
     public function buscarPeriodoActivo()
     {
-        return Period::where('activo', true)->first();
+        return Period::whereActivo(true)->first();
     }
 }

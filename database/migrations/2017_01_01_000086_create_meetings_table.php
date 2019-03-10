@@ -20,6 +20,7 @@ class CreateMeetingsTable extends Migration
                 $table->string('periodo', 9);
                 $table->date('fechareunion');
                 $table->time('horareunion');
+                $table->time('horafinreunion');
                 $table->integer('meetingtype_id')->default(1)->unsigned();
                 $table->mediumText('nota')->nullable();
                 $table->boolean('convocada')->default(false);

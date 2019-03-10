@@ -15,6 +15,7 @@ class MeetingRepository
     protected $periodos;
     protected $notificaciones;
     protected $socios;
+    protected $actas;
 
     /**
      * MeetingRepository constructor.
@@ -23,11 +24,13 @@ class MeetingRepository
     public function __construct(
         PeriodoRepository $periodos,
         NotificationRepository $notificaciones,
-        SocioRepository $socios
+        SocioRepository $socios,
+        ProceedingRepository $actas
     ) {
         $this->periodos = $periodos;
         $this->notificaciones = $notificaciones;
         $this->socios = $socios;
+        $this->actas = $actas;
     }
 
     /**
@@ -143,6 +146,8 @@ class MeetingRepository
                 if ($reunion->fechareunion < Carbon::now()->format('Y-m-d') && !$reunion->celebrada) {
                     $reunion->celebrada = true;
                     $reunion->save();
+
+                    $this->actas->crearRegistroActa($reunion->id);
 
                     $fecha = Carbon::parse($reunion->fechareunion)->format('d-m-Y');
                     $correo = false;

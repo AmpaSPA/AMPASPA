@@ -238,8 +238,21 @@ Route::get(
 )->name('actividades.desautorizaractividad');
 
 /* Actas */
-Route::get('backend/actas', 'Backend\ActasController@index')->name('actas.list');
-Route::get('backend/actas/actasdata', 'Backend\ActasController@actasdata')->name('actas.actasdata');
+Route::view('backend/actas', 'backend.actas.index')->name('actas.list');
+Route::get('backend/actas/actasdata', 'Backend\ActasController@actasData')->name('actas.actasdata');
+Route::get('backend/actas/elaborar/{reunion}', 'Backend\ActasController@elaborarActa')->name('actas.elaborar');
+Route::get('backend/actas/ver/{reunion}', 'Backend\ActasController@verActa')->name('actas.ver');
+
+/* Acuerdos */
+Route::get('backend/acuerdos/temas/{reunion}', 'Backend\AcuerdosController@nuevoAcuerdoTema')
+    ->name('acuerdos.acuerdostemas');
+Route::post('backend/acuerdos/nuevo/{tema}', 'Backend\AcuerdosController@nuevoAcuerdo')->name('acuerdos.nuevo');
+Route::get('backend/acuerdos/{reunion}', 'Backend\AcuerdosController@index')->name('acuerdos.list');
+Route::get('backend/acuerdos/acuerdosdata/{reunion}', 'Backend\AcuerdosController@acuerdosData')
+    ->name('acuerdos.acuerdosdata');
+Route::get('backend/acuerdos/acuerdo/tema/{tema}', 'Backend\AcuerdosController@acuerdo')
+    ->name('acuerdos.acuerdo');
+Route::patch('backend/acuerdos/update/{acuerdo}', 'Backend\AcuerdosController@updateAcuerdo')->name('acuerdos.update');
 
 /* Reuniones */
 Route::get('backend/reuniones/gestion', 'Backend\ReunionesController@index')->name('reuniones.gestion');

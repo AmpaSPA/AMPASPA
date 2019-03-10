@@ -23,7 +23,7 @@ class MeetingtypesTableSeeder extends Seeder
         'updated_at' => Carbon::now()->format('Y-m-d H:i:s'),
         ));
         DB::table('meetingtypes')->insert(array(
-            'tiporeunion' => 'GENERAL',
+            'tiporeunion' => 'GENERAL ORDINARIA',
             'created_at' => Carbon::now()->format('Y-m-d H:i:s'),
             'updated_at' => Carbon::now()->format('Y-m-d H:i:s'),
         ));
