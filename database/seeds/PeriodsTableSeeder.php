@@ -13,7 +13,10 @@ class PeriodsTableSeeder extends Seeder
     public function run()
     {
         DB::table('periods')->insert(array(
-        'periodo' => '2017-2018',
+        'periodo' => Carbon::now()->year . '-' . Carbon::now()->addYear()->year,
+        'aniodesde' => Carbon::now()->year,
+        'aniohasta' => Carbon::now()->addYear()->year,
+        'activo' => true,
         'created_at' => Carbon::now()->format('Y-m-d H:i:s'),
         'updated_at' => Carbon::now()->format('Y-m-d H:i:s'),
         ));

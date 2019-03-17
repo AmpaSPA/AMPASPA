@@ -23,40 +23,36 @@ class CreateRoleRequest extends FormRequest
      */
     public function rules()
     {
-      switch($this->method())
-      {
-        case 'GET':
-        case 'DELETE':
-        case 'POST':
-          {
-            return [
-              'name'=>'required|unique:roles|max:15',
-              'permissions' =>'required',
-            ];
-          }
-        case 'PUT':
-        case 'PATCH':
-          {
-            return [
-              'name' => 'required|max:15',
-            ];
-          }
-        default:break;
-      }
+        switch ($this->method()) {
+            case 'GET':
+            case 'DELETE':
+            case 'POST':
+                return [
+                    'name' => 'required|unique:roles|max:15',
+                    'permissions' => 'required',
+                ];
+            case 'PUT':
+            case 'PATCH':
+                return [
+                    'name' => 'required|max:15',
+                ];
+            default:
+                break;
+        }
 
-      return [ ];
+        return [];
     }
 
-  /**
-   * @return array
-   */
-  public function messages()
-  {
-    return [
-      'name.required' => 'El nombre es obligatorio.',
-      'name.max' => 'El nombre no debe superar los 15 caracteres.',
-      'name.unique' => 'El rol debe ser único. Este rol ya existe en nuestra  BBDD.',
-      'permissions.required' => 'Debe seleccionar al menos un permiso para el rol.',
-    ];
-  }
+    /**
+     * @return array
+     */
+    public function messages()
+    {
+        return [
+            'name.required' => 'El nombre es obligatorio.',
+            'name.max' => 'El nombre no debe superar los 15 caracteres.',
+            'name.unique' => 'El rol debe ser único. Este rol ya existe en nuestra  BBDD.',
+            'permissions.required' => 'Debe seleccionar al menos un permiso para el rol.',
+        ];
+    }
 }

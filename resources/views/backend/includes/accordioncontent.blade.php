@@ -8,7 +8,6 @@
 
   <!-- Opción: Año académico -->
   @hasanyrole('Administrador|Secretario|Tesorero')
-    @include('backend.includes.panelanioacademico')
     @include('backend.includes.panellibros')
   @endhasrole
   <!-- Opción: Consultas -->
@@ -16,7 +15,7 @@
     <!-- Opción: Foro -->
   @include('backend.includes.panelforo')
   <!-- Opción: Gestión -->
-  @hasrole('Administrador')
+  @hasanyrole('Administrador|Secretario|Tesorero')
     @include('backend.includes.panelgestion')
   @else
     @can('Administrar socios')

@@ -23,31 +23,29 @@ class UpdateJpagoRequest extends FormRequest
      */
     public function rules()
     {
-      switch($this->method())
-      {
-        case 'GET':
-        case 'DELETE':
-        case 'POST':
-        {
-          return [
-            'jpago' => 'required|mimetypes:application/pdf',
-          ];
+        switch ($this->method()) {
+            case 'GET':
+            case 'DELETE':
+            case 'POST':
+                return [
+                    'jpago' => 'required|mimetypes:application/pdf',
+                ];
+            case 'PUT':
+            case 'PATCH':
+            default:
+                break;
         }
-        case 'PUT':
-        case 'PATCH':
-        default:break;
-      }
-      return [];
+        return [];
     }
 
-  /**
-   * @return array
-   */
-  public function messages()
-  {
-    return [
-      'jpago.required' => 'No has seleccionado ningún fichero que contenga el justificante de pago.',
-      'jpago.mimetypes' => 'El fichero seleccionado debe ser un documento pdf.'
-    ];
-  }
+    /**
+     * @return array
+     */
+    public function messages()
+    {
+        return [
+            'jpago.required' => 'No has seleccionado ningún fichero que contenga el justificante de pago.',
+            'jpago.mimetypes' => 'El fichero seleccionado debe ser un documento pdf.',
+        ];
+    }
 }

@@ -30,7 +30,7 @@
                   <li><a class="textopequeño" href="{{ URL::route('profile.home',Auth::user()->id) }}"><i class="fa fa-id-card textoazul" aria-hidden="true"></i>{{ trans('message.profile') }}: <span class="textoazul">{{ trans('message.withoutprofile') }}</span></a></li>
                 @endif
 
-                <li><a class="textopequeño" href="http://www.madrid.org/cs/Satellite?cid=1167899197736&pagename=PortalEducacion%2FPage%2FEDUC_contenidoFinal" target="_blank"><i class="fa fa-calendar textoazul" aria-hidden="true"></i>{{ trans('message.schoolcalendar') }} {{ $anioant }}-{{ $anio }}</a></li>
+                <li><a class="textopequeño" href="http://www.madrid.org/cs/Satellite?cid=1167899197736&pagename=PortalEducacion%2FPage%2FEDUC_contenidoFinal" target="_blank"><i class="fa fa-calendar textoazul" aria-hidden="true"></i>{{ trans('message.schoolcalendar') }} {{ $periodo->periodo }}</a></li>
                 <li><hr></li>
                 <li><a class="disabled textopequeño"><i class="fa fa-language textoazul" aria-hidden="true"></i>{{ trans('message.litlanguage') }} @if ($idioma == 'Castellano')<img src="/assets/images/flags/es.png">@else<img src="/assets/images/flags/gb.png">@endif {{ $idioma }}</a></li>
                 <li><hr></li>

@@ -23,31 +23,29 @@ class ImportCsvFileRequest extends FormRequest
      */
     public function rules()
     {
-      switch($this->method())
-      {
-        case 'GET':
-        case 'DELETE':
-        case 'POST':
-        {
-          return [
-            'csvfile' => 'required|mimes:csv,txt',
-          ];
+        switch ($this->method()) {
+            case 'GET':
+            case 'DELETE':
+            case 'POST':
+                return [
+                    'csvfile' => 'required|mimes:csv,txt',
+                ];
+            case 'PUT':
+            case 'PATCH':
+            default:
+                break;
         }
-        case 'PUT':
-        case 'PATCH':
-        default:break;
-      }
-      return [];
+        return [];
     }
 
-  /**
-   * @return array
-   */
-  public function messages()
-  {
-    return [
-      'csvfile.required' => 'No has seleccionado ningún fichero que contenga la lista de socios a importar.',
-      'csvfile.mimetypes' => 'El fichero seleccionado debe ser un fichero con extensión CSV.'
-    ];
-  }
+    /**
+     * @return array
+     */
+    public function messages()
+    {
+        return [
+            'csvfile.required' => 'No has seleccionado ningún fichero que contenga la lista de socios a importar.',
+            'csvfile.mimetypes' => 'El fichero seleccionado debe ser un fichero con extensión CSV.',
+        ];
+    }
 }

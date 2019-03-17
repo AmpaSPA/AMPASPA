@@ -113,6 +113,40 @@
                     </table>
                     <p>{{ trans('message.totalnotifications') }}: {{ $notificaciones->count() }}</p>
                 @break
+                @case('Acta disponible')
+                    <table class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th>{{ trans('cabecera_actas.date') }}</th>
+                                <th>{{ trans('cabecera_actas.authorship') }}</th>
+                                <th>{{ trans('form_reunion.cabmeeting') }}</th>
+                                <th>{{ trans('form_reunion.cabtype') }}</th>
+                                <th>{{ trans('form_reunion.cabactions') }}</th>
+                            </tr>
+                        </thead>
+                        @foreach ($notificaciones as $notificacion)
+                            <tbody>
+                                <td>{{ $notificacion->data['acta']['fecha_acta'] }}</td>
+                                <td>{{ $notificacion->data['acta']['autoria'] }}</td>
+                                <td>{{ $notificacion->data['reunion']['fechareunion'] }}</td>
+                                <td>{{ $notificacion->data['reunion']['meetingtype']['tiporeunion'] }}</td>
+                                <td>
+                                    <i class="text-success fa fa-check"></i><a href="{{ route('home.notificacionesvencida', $notificacion->id) }}"><span class="text-success texto-accion">{{  trans('acciones_crud.markasread') }}</span></a>
+                                </td>
+                            </tbody>
+                        @endforeach
+                        <tfoot>
+                            <tr>
+                                <th>{{ trans('cabecera_actas.date') }}</th>
+                                <th>{{ trans('cabecera_actas.authorship') }}</th>
+                                <th>{{ trans('form_reunion.cabmeeting') }}</th>
+                                <th>{{ trans('form_reunion.cabtype') }}</th>
+                                <th>{{ trans('form_reunion.cabactions') }}</th>
+                            </tr>
+                        </tfoot>
+                    </table>
+                    <p>{{ trans('message.totalnotifications') }}: {{ $notificaciones->count() }}</p>
+                @break
             @endswitch
         </div>
     @endif

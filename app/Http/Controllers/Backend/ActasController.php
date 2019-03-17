@@ -2,14 +2,17 @@
 
 namespace App\Http\Controllers\Backend;
 
+use Carbon\Carbon;
+use Yajra\DataTables\DataTables;
 use App\Http\Controllers\Controller;
+use App\Notifications\ActaDisponible;
+use App\Repositories\SocioRepository;
+use App\Repositories\TopicRepository;
 use App\Repositories\MeetingRepository;
 use App\Repositories\PeriodoRepository;
 use App\Repositories\ProceedingRepository;
-use App\Repositories\TopicRepository;
 use Barryvdh\Snappy\Facades\SnappyPdf as PDF;
-use Carbon\Carbon;
-use Yajra\DataTables\DataTables;
+use App\Repositories\TiposnotificacionRepository;
 
 class ActasController extends Controller
 {
@@ -17,6 +20,8 @@ class ActasController extends Controller
     protected $actas;
     protected $temas;
     protected $periodos;
+    protected $socios;
+    protected $tiposnotificacion;
 
     /**
      * __construct: Constructor de la clase. Usa los modelos: Meeting y Proceeding
@@ -25,12 +30,16 @@ class ActasController extends Controller
         MeetingRepository $reuniones,
         ProceedingRepository $actas,
         TopicRepository $temas,
-        PeriodoRepository $periodos
+        PeriodoRepository $periodos,
+        SocioRepository $socios,
+        TiposnotificacionRepository $tiposnotificacion
     ) {
         $this->reuniones = $reuniones;
         $this->actas = $actas;
         $this->temas = $temas;
         $this->periodos = $periodos;
+        $this->socios = $socios;
+        $this->tiposnotificacion = $tiposnotificacion;
     }
 
     /**
@@ -164,6 +173,18 @@ class ActasController extends Controller
                 'asistentes'
             )
         )->setOptions($options)->save($acta);
+
+        $mail = true;
+
+        foreach ($asistentes as $asistente) {
+            $this->socios->buscarsocioporid($asistente->user_id)
+                ->notify(new ActaDisponible($reunion, $fecha, $mail));
+        }
+
+        $icononotificacion = 'fa-list-alt';
+        $tiponotificacion = 'App\Notifications\ActaDisponible';
+        $textonotificacion = 'Acta disponible';
+        $this->tiposnotificacion->crearTipoNotificacion($icononotificacion, $tiponotificacion, $textonotificacion);
 
         flash(trans('acciones_crud.proceedinggenerated'))->success();
         return redirect(route('actas.list'));

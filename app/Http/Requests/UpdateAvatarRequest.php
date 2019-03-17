@@ -23,31 +23,29 @@ class UpdateAvatarRequest extends FormRequest
      */
     public function rules()
     {
-        switch($this->method())
-        {
+        switch ($this->method()) {
             case 'GET':
             case 'DELETE':
             case 'POST':
-            {
                 return [
                     'avatar' => 'required|image',
                 ];
-            }
             case 'PUT':
             case 'PATCH':
-            default:break;
+            default:
+                break;
         }
-        return [ ];
+        return [];
     }
 
-  /**
-   * @return array
-   */
-  public function messages()
-  {
-    return [
-      'avatar.required' => 'No has seleccionado ningun fichero.',
-      'avatar.image' => 'El fichero seleccionado no se corresponde con un formato válido de imagen.'
-    ];
-  }
+    /**
+     * @return array
+     */
+    public function messages()
+    {
+        return [
+            'avatar.required' => 'No has seleccionado ningun fichero.',
+            'avatar.image' => 'El fichero seleccionado no se corresponde con un formato válido de imagen.',
+        ];
+    }
 }

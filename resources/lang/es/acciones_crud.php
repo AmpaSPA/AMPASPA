@@ -100,5 +100,7 @@ return [
     'makeproceeding'          => 'Elaborar acta',
     'viewproceeding'          => 'Ver acta',
     'updateagreement'         => 'Modificar acuerdo',
-    'proceedinggenerated'     => 'El acta se ha grabado correctamente'
+    'proceedinggenerated'     => 'El acta se ha grabado correctamente',
+    'close'                   => 'Cerrar',
+    'addedperiod'             => 'Se comienza a procesar el curso :periodo'
 ];

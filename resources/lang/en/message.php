@@ -199,7 +199,6 @@ return [
     the comunity life. We are some fathers who freely get a little bit of our time to meet this item but we help you
     too.',
     'web'                             => 'Web content',
-    'academicyear'                    => 'Academic year',
     'enteryourtext'                   => 'Enter your text',
     'entersubject'                    => 'Enter your subject',
     'googlemaps'                      => 'See you us on Google Maps',
@@ -485,5 +484,11 @@ return [
     'importproceeding'                => 'Import proceeding',
     'discussiontopics'                => 'Discussion topics',
     'whitoutdealmeetingtopics'        => 'Topics whitout deal of the :tipo meeting of :fecha',
-    'agreementupdated'                => 'The agreement of the theme :tema has been successfully updated.'
+    'agreementupdated'                => 'The agreement of the theme :tema has been successfully updated.',
+    'opencourse'                      => 'Open course',
+    'courses'                         => 'Courses',
+    'newcoursetitle'                  => 'Before closing the selected course you must enter the subscription for the
+    next course.',
+    'perioddata'                      => 'Data of Course',
+    'datatodate'                        => '(*) Data to date.'
 ];

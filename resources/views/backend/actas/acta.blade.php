@@ -16,7 +16,7 @@
     </div>
 
     <div>
-        <p style="text-align: center; font-family: Arial, sans-serif; font-size: 14pt; margin-bottom: 10px"><strong>CURSO ESCOLAR {{ $periodo }}</strong></p>
+        <p style="text-align: center; font-family: Arial, sans-serif; font-size: 14pt; margin-bottom: 10px"><strong>CURSO ESCOLAR {{ $periodo->periodo }}</strong></p>
         <p style="text-align: center; font-family: Arial, sans-serif; font-size: 14pt; margin-bottom: 10px"><strong>REUNION {{ $tipo }}</strong></p>
         <p style="text-align: justify; font-family: Arial, sans-serif; font-size: 11pt">Reunidos en Madrid el día {{ $fechaLiteral }} a las {{ $reunion->horareunion }} horas los siguientes miembros de
             la Junta Directiva de la AMPA:</p>

@@ -99,5 +99,7 @@ return [
     'makeproceeding'          => 'Make proceeding',
     'viewproceeding'          => 'View proceeding',
     'updateagreement'         => 'Update agreement',
-    'proceedinggenerated'     => 'The proceeding has been successfully generated.'
+    'proceedinggenerated'     => 'The proceeding has been successfully generated.',
+    'close'                   => 'Close',
+    'addedperiod'             => 'Proccesing now the course :periodo'
 ];

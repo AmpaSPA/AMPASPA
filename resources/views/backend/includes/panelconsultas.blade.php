@@ -2,11 +2,11 @@
   <div class="panel panel-primary">
     <div class="panel-heading">
       <h4 class="panel-title">
-        <a data-toggle="collapse" data-parent="#acordeon" href="#bloque3">
+        <a data-toggle="collapse" data-parent="#acordeon" href="#bloque2">
           <span class="icono_bloque fa fa-question-circle"></span>{{ trans('message.queries') }}</a>
       </h4>
     </div>
-    <div id="bloque3" class="panel-collapse collapse">
+    <div id="bloque2" class="panel-collapse collapse">
       <div class="panel-body">
         @hasanyrole('Administrador|Presidente')
           <table class="table">

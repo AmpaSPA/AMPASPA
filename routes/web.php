@@ -298,6 +298,14 @@ Route::get('backend/asistentes/borrar/{asistente}/reunion/{reunion}', 'Backend\A
 Route::get('backend/asistentes/ver/reunion/{reunion}', 'Backend\AsistentesController@verAsistentesReunion')
     ->name('asistentes.reunionver');
 
+/* Periodos */
+Route::view('backend/periodos/gestion', 'backend.periodos.index')->name('periodos.gestion');
+Route::get('backend/periodos/periodosdata', 'Backend\PeriodosController@periodosData')
+->name('periodos.periodosdata');
+Route::get('backend/periodos/cerrar/{periodo}', 'Backend\PeriodosController@cerrar')->name('periodos.cerrar');
+Route::post('backend/periodos/nuevo', 'Backend\PeriodosController@store')->name('periodos.nuevo');
+Route::get('backend/periodos/ver/{periodo}', 'Backend\PeriodosController@ver')->name('periodos.ver');
+
 /**
  *  RUTA DE LA SELECCIÓN DE IDIOMA
  *  ------------------------------

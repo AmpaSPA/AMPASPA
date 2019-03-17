@@ -200,7 +200,6 @@ return [
     educativa de nuestro colegio. Somos un grupo de padres que voluntariamente y de forma altruista dedicamos un
     poquito de nuestro tiempo a conseguir esta meta pero para ello necesitamos también tu ayuda.',
     'web'                               => 'Contenido web',
-    'academicyear'                      => 'Año acedémico',
     'enteryourtext'                     => 'Introduce tu texto',
     'entersubject'                      => 'Introduce tu asunto',
     'googlemaps'                        => 'Ver en Google Maps',
@@ -494,5 +493,11 @@ return [
     'importproceeding'                  => 'Importar acta',
     'discussiontopics'                  => 'Temas de debate',
     'whitoutdealmeetingtopics'          => 'Temas sin acuerdo de la reunión :tipo de fecha :fecha',
-    'agreementupdated'                  => 'El acuerdo del tema :tema ha sido actualizado correctamente.'
+    'agreementupdated'                  => 'El acuerdo del tema :tema ha sido actualizado correctamente.',
+    'opencourse'                        => 'Abrir curso',
+    'courses'                           => 'Cursos',
+    'newcoursetitle'                    => 'Antes de cerrar el curso seleccionado debes introducir la cuota del próximo
+    curso.',
+    'perioddata'                        => 'Datos del curso',
+    'datatodate'                        => '(*) Datos a día de hoy.'
 ];

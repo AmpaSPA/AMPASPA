@@ -2,11 +2,11 @@
   <div class="panel panel-primary">
     <div class="panel-heading">
       <h4 class="panel-title">
-        <a data-toggle="collapse" data-parent="#acordeon" href="#bloque4">
+        <a data-toggle="collapse" data-parent="#acordeon" href="#bloque3">
           <span class="icono_bloque fa fa-thumbs-up"></span>{{ trans('message.takepart') }}</a>
       </h4>
     </div>
-    <div id="bloque4" class="panel-collapse collapse">
+    <div id="bloque3" class="panel-collapse collapse">
       <div class="panel-body">
         <table class="table">
           <tr>

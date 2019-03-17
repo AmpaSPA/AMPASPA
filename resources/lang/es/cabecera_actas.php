@@ -12,7 +12,6 @@ return [
     | these language lines according to your application's requirements.
     |
     */
-
     'date'                      => 'Fecha',
     'authorship'                => 'Autoría',
     'proceedingtype'            => 'Reunión',

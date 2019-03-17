@@ -34,8 +34,6 @@ class BackendComposer
      */
     public function compose(View $view)
     {
-        $anioant = 0;
-        $anio = 0;
         $idioma = '';
 
         switch (config('app.locale')) {
@@ -49,20 +47,10 @@ class BackendComposer
 
         $periodo = $this->periodos->buscarPeriodoActivo();
 
-        if (Carbon::now()->month <=6) {
-            $anioant = $periodo->aniodesde - 1;
-            $anio = $periodo->aniohasta - 1;
-        } else {
-            $anioant = $periodo->aniodesde;
-            $anio = $periodo->aniohasta;
-        }
-
         $view->with('idioma', $idioma)
             ->with('periodo', $periodo)
             ->with('numsocios', $this->socios->totalsocios())
             ->with('numActas', $this->actas->totalActas())
-            ->with('anioant', $anioant)
-            ->with('anio', $anio)
             ->with('mes', Carbon::now()->month)
             ->with('docs_pendientes_importar', $this->socios->obtenerDocsPendientesImportar()->count())
             ->with('verificar_documentos', $this->socios->verificarDocumentos()->count());

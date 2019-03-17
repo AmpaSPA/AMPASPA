@@ -17,14 +17,14 @@ class CreatePeriodsTable extends Migration
         Schema::create('periods', function (Blueprint $table) {
             $table->increments('id');
             $table->string('periodo', 9);
-            $table->integer('aniodesde')->default(Carbon::now()->year - 1);
-            $table->integer('aniohasta')->default(Carbon::now()->year);
+            $table->integer('aniodesde');
+            $table->integer('aniohasta');
             $table->decimal('cuota')->default(25);
             $table->decimal('ingresos')->default(0);
             $table->decimal('gastos')->default(0);
             $table->decimal('saldo')->default(0);
             $table->integer('totalsocios')->default(0);
-            $table->boolean('activo')->default(true);
+            $table->boolean('activo')->default(false);
             $table->timestamps();
         });
     }

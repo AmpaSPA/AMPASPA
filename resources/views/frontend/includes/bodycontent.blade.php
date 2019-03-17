@@ -42,7 +42,7 @@
 <!-- Sección de bienvenida -->
 <section id="saludo">
   <div id="cajasaludo" class="container text-center">
-    <h2>Bienvenid@ al AMPA del colegio diocesano San Pedro Apóstol</h2>
+    <h2>Bienvenid@ a la AMPA del colegio diocesano San Pedro Apóstol</h2>
     <div class="row">
       <div class="col-sm-12">
         <div class="panel panel-default">

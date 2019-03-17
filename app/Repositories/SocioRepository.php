@@ -11,13 +11,12 @@ use App\Doctype;
 use App\Membertype;
 use App\Paymenttype;
 use App\Profile;
+use App\Repositories\CursoRepository;
 use App\Student;
 use App\User;
 use Auth;
 use Carbon\Carbon;
-use App\Repositories\CursoRepository;
 use function GuzzleHttp\Psr7\str;
-use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
 use Spatie\Permission\Models\Role;
 
@@ -25,16 +24,18 @@ class SocioRepository
 {
     protected $cursos;
     protected $profile;
+    protected $periodos;
 
     /**
      * SocioRepository constructor.
      * @param \App\Repositories\CursoRepository $cursos
      * @param ProfileRepository $profile
      */
-    public function __construct(CursoRepository $cursos, ProfileRepository $profile)
+    public function __construct(CursoRepository $cursos, ProfileRepository $profile, PeriodoRepository $periodos)
     {
         $this->cursos = $cursos;
         $this->profile = $profile;
+        $this->periodos = $periodos;
     }
 
     /**
@@ -137,13 +138,16 @@ class SocioRepository
     }
 
     /**
-    * @param $request
-    * @return User
-    */
+     * @param $request
+     * @return User
+     */
     public function crearsocio($request): \App\User
     {
+        $periodo = $this->periodos->buscarPeriodoActivo()->periodo;
+
         // Se crea el usuario
         $data = new User();
+        $data->periodo = $periodo;
         $data->nombre = $request->nombre;
         $data->apellidos = $request->apellidos;
         $data->email = $request->email;
@@ -158,9 +162,9 @@ class SocioRepository
         $this->profile->crearprofile($data->id);
 
         $avatar = public_path('assets/images/avatar_default.png');
-        $ruta = public_path('assets/images/uploads/').$data->id.'/avatars/';
+        $ruta = public_path('assets/images/uploads/') . $data->id . '/avatars/';
         @mkdir($ruta, 0777, true);
-        @copy($avatar, $ruta.'avatar_default.png');
+        @copy($avatar, $ruta . 'avatar_default.png');
 
         // Se asigna el rol "Socio" al nuevo usuario
 
@@ -170,35 +174,68 @@ class SocioRepository
     }
 
     /**
-    * @param $item
-    * @return mixed
-    */
+     * @param $item
+     * @return mixed
+     */
     public function altamasivasocio($item)
     {
         $hijo = [];
         $anionacim = [];
-        $numhijos = (int)$item->numhijos;
+        $numhijos = (int) $item->numhijos;
 
         switch ($numhijos) {
             case 1:
-                list($hijo[1], $anionacim[1]) = explode(':', $item->hijos);
+                list($hijo[1],
+                    $anionacim[1]
+                ) = explode(':', $item->hijos);
                 break;
             case 2:
-                list($hijo[1], $anionacim[1], $hijo[2], $anionacim[2]) = explode(':', $item->hijos);
+                list($hijo[1],
+                    $anionacim[1],
+                    $hijo[2],
+                    $anionacim[2]
+                ) = explode(':', $item->hijos);
                 break;
             case 3:
-                list($hijo[1], $anionacim[1], $hijo[2], $anionacim[2], $hijo[3], $anionacim[3]) = explode(':', $item->hijos);
+                list(
+                    $hijo[1],
+                    $anionacim[1],
+                    $hijo[2],
+                    $anionacim[2],
+                    $hijo[3],
+                    $anionacim[3]
+                ) = explode(':', $item->hijos);
                 break;
             case 4:
-                list($hijo[1], $anionacim[1], $hijo[2], $anionacim[2], $hijo[3], $anionacim[3], $hijo[4], $anionacim[4]) = explode(':', $item->hijos);
+                list($hijo[1],
+                    $anionacim[1],
+                    $hijo[2],
+                    $anionacim[2],
+                    $hijo[3],
+                    $anionacim[3],
+                    $hijo[4],
+                    $anionacim[4]
+                ) = explode(':', $item->hijos);
                 break;
             case 5:
-                list($hijo[1], $anionacim[1], $hijo[2], $anionacim[2], $hijo[3], $anionacim[3], $hijo[4], $anionacim[4], $hijo[5], $anionacim[5]) = explode(':', $item->hijos);
+                list($hijo[1],
+                    $anionacim[1],
+                    $hijo[2],
+                    $anionacim[2],
+                    $hijo[3],
+                    $anionacim[3],
+                    $hijo[4],
+                    $anionacim[4],
+                    $hijo[5],
+                    $anionacim[5]
+                ) = explode(':', $item->hijos);
                 break;
         }
 
         // Alta del socio
+        $periodo = $this->periodos->buscarPeriodoActivo()->periodo;
         $data = new User();
+        $data->periodo = $periodo;
         $data->nombre = $item->nombre;
         $data->apellidos = $item->apellidos;
         $data->email = $item->email;
@@ -245,10 +282,10 @@ class SocioRepository
     }
 
     /**
-    * @param $id
-    * @return \Illuminate\Database\Eloquent\Collection|\Illuminate\Database\Eloquent\Model|null|static|static[]
-    * @throws \Exception
-    */
+     * @param $id
+     * @return \Illuminate\Database\Eloquent\Collection|\Illuminate\Database\Eloquent\Model|null|static|static[]
+     * @throws \Exception
+     */
     public function borrarsocio($id)
     {
         Student::where('user_id', '=', $id)->delete();
@@ -259,9 +296,9 @@ class SocioRepository
     }
 
     /**
-    * @param $id
-    * @return \Illuminate\Database\Eloquent\Collection|\Illuminate\Database\Eloquent\Model|null|static|static[]
-    */
+     * @param $id
+     * @return \Illuminate\Database\Eloquent\Collection|\Illuminate\Database\Eloquent\Model|null|static|static[]
+     */
     public function restaurarsocio($id)
     {
         Student::where('user_id', '=', $id)->restore();
@@ -272,9 +309,9 @@ class SocioRepository
     }
 
     /**
-    * @param $id
-    * @return string
-    */
+     * @param $id
+     * @return string
+     */
     public function removesocio($id)
     {
         // Se toman todos los datos del socio a borrar
@@ -282,20 +319,20 @@ class SocioRepository
 
         // Se borra el documento de adhesión
         $ruta_docadhesion = public_path('assets/docs/');
-        unlink($ruta_docadhesion.$socio->numdoc.'.pdf');
+        unlink($ruta_docadhesion . $socio->numdoc . '.pdf');
 
         // Se borra el avatar
-        $ruta_avatar = public_path('assets/images/uploads/').$id.'/avatars/';
+        $ruta_avatar = public_path('assets/images/uploads/') . $id . '/avatars/';
         $files = scandir($ruta_avatar, SCANDIR_SORT_ASCENDING);
         foreach ($files as $file) {
             if (!is_dir($file)) {
-                unlink($ruta_avatar.$file);
+                unlink($ruta_avatar . $file);
             }
         }
         rmdir($ruta_avatar);
-        rmdir(public_path('assets/images/uploads/').$id);
+        rmdir(public_path('assets/images/uploads/') . $id);
 
-        $nombre_socio = $socio->nombre.' '.$socio->apellidos;
+        $nombre_socio = $socio->nombre . ' ' . $socio->apellidos;
 
         // Se borran hijos, perfil y por último el propio socio
         Student::where('user_id', '=', $id)->forceDelete();
@@ -306,27 +343,27 @@ class SocioRepository
     }
 
     /**
-    * @param $id
-    * @return mixed
-    */
+     * @param $id
+     * @return mixed
+     */
     public function alumnosporsocio($id)
     {
         return $this->buscarsocioporid($id)->students()->orderBy('anionacim')->get();
     }
 
     /**
-    * @param $id
-    * @return int
-    */
+     * @param $id
+     * @return int
+     */
     public function numhijossocio($id)
     {
         return $this->buscarsocioporid($id)->students->count();
     }
 
     /**
-    * @param $request
-    * @return Student
-    */
+     * @param $request
+     * @return Student
+     */
     public function crearalumnoporsocio($request)
     {
         $edad = Carbon::now()->year - $request->anionacim;
@@ -352,18 +389,18 @@ class SocioRepository
     }
 
     /**
-    * @param $id
-    * @return \App\Profile|mixed
-    */
+     * @param $id
+     * @return \App\Profile|mixed
+     */
     public function profilesocio($id)
     {
         return $this->buscarsocioporid($id)->profile;
     }
 
     /**
-    * @param $filename
-    * @param $request
-    */
+     * @param $filename
+     * @param $request
+     */
     public function changeavatar($filename, $request)
     {
         $profile = $this->profilesocio($request->user_id);
@@ -372,9 +409,9 @@ class SocioRepository
     }
 
     /**
-    * @param $filename
-    * @param $id
-    */
+     * @param $filename
+     * @param $id
+     */
     public function changefirma($filename, $id)
     {
         $profile = $this->profilesocio($id);
@@ -383,9 +420,9 @@ class SocioRepository
     }
 
     /**
-    * @param $filename
-    * @param $id
-    */
+     * @param $filename
+     * @param $id
+     */
     public function changerecibo($filename, $id)
     {
         $profile = $this->profilesocio($id);
@@ -394,8 +431,8 @@ class SocioRepository
     }
 
     /**
-    * @param $request
-    */
+     * @param $request
+     */
     public function changeprofileinfo($request)
     {
         $profile = $this->profilesocio($request->user_id);
@@ -406,76 +443,76 @@ class SocioRepository
     }
 
     /**
-    * @param $id
-    * @return mixed
-    */
+     * @param $id
+     * @return mixed
+     */
     public function buscartipodocumento($id)
     {
         return $this->buscarsocioporid($id)->doctype->tipodoc;
     }
 
     /**
-    * @param $id
-    * @return mixed|string
-    */
+     * @param $id
+     * @return mixed|string
+     */
     public function buscartipopago($id)
     {
         return $this->buscarsocioporid($id)->paymenttype->tipopago;
     }
 
     /**
-    * @param $id
-    * @return mixed
-    */
+     * @param $id
+     * @return mixed
+     */
     public function buscartiposocio($id)
     {
         return $this->buscarsocioporid($id)->membertype->tiposocio;
     }
 
-        /**
-    * @return \Illuminate\Support\Collection
-    */
+    /**
+     * @return \Illuminate\Support\Collection
+     */
     public function listaNombreSocio()
     {
         return User::all()->pluck('fullname', 'id');
     }
 
     /**
-    * @return \Illuminate\Support\Collection
-    */
+     * @return \Illuminate\Support\Collection
+     */
     public function tiposdoc()
     {
         return Doctype::all()->pluck('tipodoc', 'id');
     }
 
     /**
-    * @return \Illuminate\Support\Collection
-    */
+     * @return \Illuminate\Support\Collection
+     */
     public function tipospago()
     {
         return Paymenttype::all()->pluck('tipopago', 'id');
     }
 
     /**
-    * @return \Illuminate\Support\Collection
-    */
+     * @return \Illuminate\Support\Collection
+     */
     public function tipossocio()
     {
         return Membertype::all()->pluck('tiposocio', 'id');
     }
 
     /**
-    * @return mixed
-    */
+     * @return mixed
+     */
     public function obtenersociosenbaja()
     {
         return User::onlyTrashed()->get();
     }
 
     /**
-    * @param $id
-    * @return bool|mixed
-    */
+     * @param $id
+     * @return bool|mixed
+     */
     public function firmaCorrecta($id)
     {
         $socio = $this->buscarsocioporid($id);
@@ -485,9 +522,9 @@ class SocioRepository
     }
 
     /**
-    * @param $id
-    * @return bool|mixed
-    */
+     * @param $id
+     * @return bool|mixed
+     */
     public function corrientePago($id)
     {
         $socio = $this->buscarsocioporid($id);
@@ -528,9 +565,9 @@ class SocioRepository
 
     /**
      * Se marca al socio como activo si tiene todos sus documetos subidos a la aplicación y validados por la AMPA
-    * @param $id
-    * @return \Illuminate\Database\Eloquent\Collection|\Illuminate\Database\Eloquent\Model|null|static|static[]
-    */
+     * @param $id
+     * @return \Illuminate\Database\Eloquent\Collection|\Illuminate\Database\Eloquent\Model|null|static|static[]
+     */
     public function activarSocio($id)
     {
         $socio = $this->buscarsocioporid($id);
@@ -546,9 +583,9 @@ class SocioRepository
     }
 
     /**
-    * @param $rol
-    * @return \Illuminate\Database\Eloquent\Collection|static[]
-    */
+     * @param $rol
+     * @return \Illuminate\Database\Eloquent\Collection|static[]
+     */
     public function buscarsociosporrol($rol)
     {
         return User::role($rol)->get();
@@ -569,7 +606,15 @@ class SocioRepository
      */
     public function verificarDocumentos()
     {
-        return User::where([['reciboimportado', true], ['corrientepago', false]])->orWhere([['firmaimportada', true], ['firmacorrecta', false]])->get();
+        return User::where(
+            [
+                [
+                    'reciboimportado', true,
+                ], [
+                    'corrientepago', false,
+                ],
+            ]
+        )->orWhere([['firmaimportada', true], ['firmacorrecta', false]])->get();
     }
 
     /**
@@ -599,11 +644,16 @@ class SocioRepository
     }
 
     /**
-    * @param $id
-    * @return \Illuminate\Database\Eloquent\Collection|static[]
-    */
+     * @param $id
+     * @return \Illuminate\Database\Eloquent\Collection|static[]
+     */
     public function noseleccionarunid($id)
     {
         return User::where('id', '<>', $id)->where('reciboimportado', '=', true)->get();
+    }
+
+    public function totalSociosPeriodo($periodo)
+    {
+        return User::wherePeriodo($periodo)->count();
     }
 }
