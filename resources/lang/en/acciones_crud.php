@@ -101,5 +101,12 @@ return [
     'updateagreement'         => 'Update agreement',
     'proceedinggenerated'     => 'The proceeding has been successfully generated.',
     'close'                   => 'Close',
-    'addedperiod'             => 'Proccesing now the course :periodo'
+    'addedperiod'             => 'Proccesing now the course :periodo',
+    'addedentry'              => 'The Entry :entrada has been successfully added.',
+    'updateentry'             => 'The entry of value date :fecha has been successfully updated.',
+    'addedinvoice'            => 'The invoice of :factura has been successfully added.',
+    'importedinvoice'         => 'The invoice :factura has been successfully imported.',
+    'deletedinvoiceentry'     => 'The invoice :factura and its corresponding entry have been successfully deleted.',
+    'deletedinvoice'          => 'The invoice :factura has been successfully deleted',
+    'updateinvoice'           => 'The invoice of :factura has been successfully updated.'
 ];

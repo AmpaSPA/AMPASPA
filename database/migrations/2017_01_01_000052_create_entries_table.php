@@ -16,16 +16,16 @@ class CreateEntriesTable extends Migration
     {
         Schema::create('entries', function (Blueprint $table) {
             $table->increments('id');
+            $table->integer('invoice_id')->unsigned();
             $table->string('periodo', 9);
             $table->date('fecha')->default(Carbon::now()->format('Y-m-d'));
-            $table->string('emisor');
-            $table->string('destinatario');
             $table->enum('tipo', ['Gasto', 'Ingreso'])->default('Ingreso');
-            $table->string('concepto');
             $table->text('descripcion');
-            $table->string('codigofactura');
             $table->decimal('importe');
             $table->timestamps();
+
+            $table->foreign('invoice_id')
+            ->references('id')->on('invoices');
         });
     }
 

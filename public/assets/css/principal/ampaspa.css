@@ -3175,6 +3175,14 @@ a:hover {
   margin-bottom: 3px;
 }
 
+.badgerojo {
+  background-color: #f50909;
+}
+
+.badgeverde {
+  background-color: #08d112;
+}
+
 .texto-badge {
   font-size: 10px;
 }

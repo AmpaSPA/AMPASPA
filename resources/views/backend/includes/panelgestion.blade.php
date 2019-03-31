@@ -14,6 +14,7 @@
                     @include('backend.includes.opciones_gestion_administrar_socios')
                     @include('backend.includes.opciones_gestion_administrar_reuniones')
                     @include('backend.includes.opciones_gestion_administrar_cursos')
+                    @include('backend.includes.opciones_gestion_administrar_facturas')
                 </table>
             </div>
         @else
@@ -29,6 +30,7 @@
                     <div class="panel-body">
                         <table class="table">
                             @include('backend.includes.opciones_gestion_administrar_cursos')
+                            @include('backend.includes.opciones_gestion_administrar_facturas')
                         </table>
                     </div>
                 @else

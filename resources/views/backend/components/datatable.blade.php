@@ -32,7 +32,7 @@
                         @if($column['data'] == 'action')
                             { data: 'action', name: 'action', orderable: false, searchable: false },
                         @else
-                            { data: '{{ $column['data'] }}', name: '{{ $column['name'] }}' },
+                            { data: '{{ $column['data'] }}', name: '{{ $column['name'] }}', orderable: false, searchable: true },
                         @endif
                     @endforeach
 
@@ -55,6 +55,65 @@
                             "render": function ( data, type, row, meta )
                             {
                                 return '<i class="fa '+data+'"></i>'+' '+row['tipo'];
+                            }
+                        }
+                    ],
+                @endif
+                @if ($table_id == 'movimientos')
+                    "columnDefs": [
+                        {
+                            "targets": 1,
+                            "render": function ( data, type, row, meta )
+                            {
+                                if (row['tipo'] === 'Gasto') {
+                                    return '<span class="text-danger">'+row['tipo']+'</span>';
+                                } else {
+                                    return '<span class="text-success">'+row['tipo']+'</span>';
+                                }
+                            }
+                        },
+                        {
+                            "targets": 2,
+                            "render": function ( data, type, row, meta )
+                            {
+                                return '<a target="_blank" href="'+data+'">'+row['codigo']+'</a>';
+                            }
+                        },
+                        {
+                            "targets": 3,
+                            "visible": false,
+                        },
+                        {
+                            "targets": 5,
+                            "render": function ( data, type, row, meta )
+                            {
+                                if (row['saldo'] < 0) {
+                                    return '<span class="text-danger"><strong>'+row['saldo']+'€</strong></span>';
+                                } else {
+                                    return '<span class="text-success"><strong>'+row['saldo']+'€</strong></span>';
+                                }
+                            }
+                        },
+                    ],
+                @endif
+                @if ($table_id == 'facturas')
+                    "columnDefs": [
+                        {
+                            "targets": 0,
+                            "render": function ( data, type, row, meta )
+                            {
+                                if (row['importada'] === 'No') {
+                                    return '<i class="fa fa-download"></i><a href="'+data+'"><strong>'+row['codigo']+'</strong></a>';
+                                } else {
+                                    return '<i class="fa fa-check"></i>'+row['codigo'];
+                                }
+                            }
+                        },
+                        {
+                            "targets": 4,
+                            "render": function ( data, type, row, meta )
+                            {
+                                return row['importe']+'€';
                             }
                         }
                     ],

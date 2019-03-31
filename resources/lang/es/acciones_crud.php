@@ -102,5 +102,12 @@ return [
     'updateagreement'         => 'Modificar acuerdo',
     'proceedinggenerated'     => 'El acta se ha grabado correctamente',
     'close'                   => 'Cerrar',
-    'addedperiod'             => 'Se comienza a procesar el curso :periodo'
+    'addedperiod'             => 'Se comienza a procesar el curso :periodo',
+    'addedentry'              => 'La entrada :entrada ha sido registrada correctamente.',
+    'updateentry'             => 'La entrada de fecha valor :fecha se ha actualizado correctamente.',
+    'addedinvoice'            => 'La factura de :factura ha sido registrada correctamente.',
+    'importedinvoice'         => 'La factura :factura ha sido importada correctamente.',
+    'deletedinvoiceentry'     => 'La factura :factura y su entrada correspondiente han sido borradas correctamente.',
+    'deletedinvoice'          => 'La factura :factura ha sido borrada correctamente',
+    'updateinvoice'           => 'La factura de :factura se ha actualizado correctamente.'
 ];

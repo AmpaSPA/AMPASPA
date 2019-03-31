@@ -499,5 +499,17 @@ return [
     'newcoursetitle'                    => 'Antes de cerrar el curso seleccionado debes introducir la cuota del próximo
     curso.',
     'perioddata'                        => 'Datos del curso',
-    'datatodate'                        => '(*) Datos a día de hoy.'
+    'datatodate'                        => '(*) Datos a día de hoy.',
+    'currentbalance'                    => 'Saldo actual:',
+    'additem'                           => 'Nuevo movimiento',
+    'entrydata'                         => 'Datos de la entrada',
+    'updateentry'                       => 'Actualizar entrada',
+    'invoices'                          => 'Facturas',
+    'addinvoice'                        => 'Nueva factura',
+    'importinvoicetext'                 => 'Es necesario importar la factura escaneada. Para ello haz clic sobre el código
+    que corresponda.',
+    'importinvoice'                     => 'Importar factura',
+    'invoicedata'                       => 'Datos de la factura',
+    'noimportinvoices'                  => 'Existen facturas (:numero) sin subir a la aplicación.',
+    'updateinvoice'                     => 'Actualizar factura'
 ];

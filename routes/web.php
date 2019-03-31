@@ -23,16 +23,16 @@
  *  RUTAS DE LA AUTENTICACION DE USUARIOS
  *  -------------------------------------
  */
-/* Authentication Routes */
+/** Authentication Routes */
 Route::get('login', 'Auth\LoginController@showLoginForm')->name('login');
 Route::post('login', 'Auth\LoginController@login');
 Route::post('logout', 'Auth\LoginController@logout')->name('logout');
 
-/* Registration Routes */
+/** Registration Routes */
 Route::get('register', 'Auth\RegisterController@showRegistrationForm')->name('register');
 Route::post('register', 'Auth\RegisterController@register');
 
-/* Password Reset Routes */
+/** Password Reset Routes */
 Route::get('password/reset', 'Auth\ForgotPasswordController@showLinkRequestForm')->name('password.request');
 Route::post('password/email', 'Auth\ForgotPasswordController@sendResetLinkEmail')->name('password.email');
 Route::get('password/reset/{token}', 'Auth\ResetPasswordController@showResetForm')->name('password.reset');
@@ -42,10 +42,10 @@ Route::post('password/reset', 'Auth\ResetPasswordController@reset');
  *  RUTAS DEL FRONTEND
  *  ------------------
  */
-/* Home */
+/** Home */
 Route::get('/', 'Frontend\HomeController@index');
 
-/* Contacto */
+/** Contacto */
 Route::view('contacto', 'frontend.principal.contacto');
 Route::post('contacto', 'Frontend\ContactoController@send');
 
@@ -53,7 +53,7 @@ Route::post('contacto', 'Frontend\ContactoController@send');
  * RUTAS DEL HOME DEL SOCIO (BACKEND)
  * ----------------------------------
  */
-/* Home */
+/** Home */
 Route::get('home', 'Backend\HomeController@index')->name('home');
 Route::get('home/autorizaciones', 'Backend\HomeController@panelAutorizaciones')->name('home.autorizaciones');
 Route::get('home/autorizaciones/{alumno}', 'Backend\HomeController@autorizarSeleccion')->name('home.autorizaralumno');
@@ -79,7 +79,7 @@ Route::get('home/notificaciones/vencida/{notificacion}', 'Backend\HomeController
  *  RUTAS DEL BACKEND: PARTE ADMINISTRATIVA DE LA APLICACIÓN
  *  --------------------------------------------------------
  */
-/* Useraccounts */
+/** Useraccounts */
 Route::view('backend/useraccounts', 'backend.useraccounts.index')->name('accounts.index');
 Route::get('backend/useraccounts/usersdata', 'Backend\UserAccountsController@usersdata')->name('accounts.accountsdata');
 Route::get('backend/useraccounts/asignarrol/usuario/{usuario}', 'Backend\UserAccountsController@asignarrolausuario')
@@ -92,7 +92,7 @@ Route::get(
 )->name('accounts.desasignarroles');
 Route::get('backend/useraccounts/{usuario}/detach/{rol}', 'Backend\UserAccountsController@detach');
 
-/* Roles */
+/** Roles */
 Route::view('backend/roles', 'backend.roles.index')->name('roles.list');
 Route::get('backend/roles/rolesdata', 'Backend\RolesController@rolesdata')->name('roles.rolesdata');
 Route::get('backend/roles/create', 'Backend\RolesController@create')->name('roles.create');
@@ -103,7 +103,7 @@ Route::get('backend/roles/destroy/{rol}', 'Backend\RolesController@destroy')->na
 Route::get('backend/roles/borrar/{rol}', 'Backend\RolesController@delete')->name('roles.borrar');
 Route::get('backend/roles/{usuario}/detach/{rol}', 'Backend\RolesController@detach');
 
-/* Permisos */
+/** Permisos */
 Route::view('backend/permisos', 'backend.permisos.index')->name('permisos.list');
 Route::get('backend/permisos/permisosdata', 'Backend\PermisosController@permisosdata')->name('permisos.permisosdata');
 Route::get('backend/permisos/userspermissionsdata', 'Backend\PermisosController@userspermissionsdata')
@@ -126,7 +126,7 @@ Route::get('backend/permisos/usuario/{account}/revoque/{permiso}', 'Backend\Perm
     ->name('permisos.revoque');
 Route::view('backend/permisos/accounts', 'backend.permisos.accounts')->name('permisos.accounts');
 
-/* Profile */
+/** Profile */
 Route::view('backend/profile/validardocs', 'backend.profiles.listainactivos')->name('profile.validardocs');
 Route::get('backend/profile/inactivosdata', 'Backend\ProfilesController@inactivosdata')->name('profile.inactivosdata');
 Route::get('backend/profile/{socio}', 'Backend\ProfilesController@profile')->name('profile.home');
@@ -136,7 +136,7 @@ Route::get('backend/profile/tushijos/{socio}', 'Backend\ProfilesController@tusHi
 Route::get('backend/profile/leer/info/{socio}', 'Backend\ProfilesController@leerInfo')->name('profile.info');
 Route::post('backend/profile/update/info/{socio}', 'Backend\ProfilesController@updateInfo');
 
-/* Socios */
+/** Socios */
 Route::get('backend/socios', 'Backend\SociosController@index')->name('socios.list');
 Route::view('backend/socios/importcsv', 'backend.socios.importcsvfile');
 Route::post('backend/socios/altamasiva', 'Backend\SociosController@altamasiva');
@@ -184,7 +184,7 @@ Route::post('backend/socios/changepassword', 'Backend\SociosController@changepas
 Route::get('backend/socios/verdata/{socio}', 'Backend\SociosController@verdata')->name('socios.verdata');
 Route::patch('backend/socios/changedata/{socio}', 'Backend\SociosController@changedata')->name('socios.changedata');
 
-/* Alumnos */
+/** Alumnos */
 Route::get('backend/alumnos/create/socio/{socio}', 'Backend\AlumnosController@create')->name('alumnos.socio');
 Route::post('backend/alumnos/nuevoalumno', 'Backend\AlumnosController@store');
 Route::get('backend/alumnos/ver/{alumno}', 'Backend\AlumnosController@view')->name('alumnos.ver');
@@ -195,7 +195,7 @@ Route::get('backend/alumnos/bajas/{socio}', 'Backend\AlumnosController@gestionba
 Route::get('backend/alumnos/bajas/restore/{alumno}', 'Backend\AlumnosController@restaurar');
 Route::get('backend/alumnos/bajas/forcedelete/{alumno}', 'Backend\AlumnosController@bajadefinitiva');
 
-/* Actividades */
+/** Actividades */
 Route::get('backend/actividades/gestion', 'Backend\ActividadesController@index')->name('actividades.gestion');
 Route::view('backend/actividades/publishactivity', 'backend.actividades.publishactivity')
     ->name('actividades.publishactivity');
@@ -237,13 +237,13 @@ Route::get(
     'Backend\ActividadesController@desautorizarActividad'
 )->name('actividades.desautorizaractividad');
 
-/* Actas */
+/** Actas */
 Route::view('backend/actas', 'backend.actas.index')->name('actas.list');
 Route::get('backend/actas/actasdata', 'Backend\ActasController@actasData')->name('actas.actasdata');
 Route::get('backend/actas/elaborar/{reunion}', 'Backend\ActasController@elaborarActa')->name('actas.elaborar');
 Route::get('backend/actas/ver/{reunion}', 'Backend\ActasController@verActa')->name('actas.ver');
 
-/* Acuerdos */
+/** Acuerdos */
 Route::get('backend/acuerdos/temas/{reunion}', 'Backend\AcuerdosController@nuevoAcuerdoTema')
     ->name('acuerdos.acuerdostemas');
 Route::post('backend/acuerdos/nuevo/{tema}', 'Backend\AcuerdosController@nuevoAcuerdo')->name('acuerdos.nuevo');
@@ -254,7 +254,7 @@ Route::get('backend/acuerdos/acuerdo/tema/{tema}', 'Backend\AcuerdosController@a
     ->name('acuerdos.acuerdo');
 Route::patch('backend/acuerdos/update/{acuerdo}', 'Backend\AcuerdosController@updateAcuerdo')->name('acuerdos.update');
 
-/* Reuniones */
+/** Reuniones */
 Route::get('backend/reuniones/gestion', 'Backend\ReunionesController@index')->name('reuniones.gestion');
 Route::get('backend/reuniones/reunionesdata', 'Backend\ReunionesController@reunionesData')
     ->name('reuniones.reunionesdata');
@@ -278,7 +278,7 @@ Route::get('backend/reuniones/convocar/{reunion}', 'Backend\ReunionesController@
 Route::get('backend/reuniones/cancelar/{reunion}', 'Backend\ReunionesController@cancelarReunion')
     ->name('reuniones.cancelar');
 
-/* Temas */
+/** Temas */
 Route::get('backend/temas/create/reunion/{reunion}', 'Backend\TemasController@create')->name('temas.reunion');
 Route::post('backend/temas/nuevo', 'Backend\TemasController@store')->name('temas.nuevo');
 Route::get('backend/temas/ver/{tema}', 'Backend\TemasController@ver')->name('temas.ver');
@@ -287,7 +287,7 @@ Route::patch('backend/temas/{tema}', 'Backend\TemasController@update');
 Route::get('backend/temas/borrar/{tema}', 'Backend\TemasController@delete')->name('temas.borrar');
 Route::get('backend/temas/ver/reunion/{reunion}', 'Backend\TemasController@verTemasReunion')->name('temas.reunionver');
 
-/* Asistentes */
+/** Asistentes */
 Route::get('backend/asistentes/create/reunion/{reunion}', 'Backend\AsistentesController@create')
     ->name('asistentes.reunion');
 Route::post('backend/asitentes/nuevo', 'Backend\AsistentesController@store')->name('asistentes.nuevo');
@@ -298,13 +298,40 @@ Route::get('backend/asistentes/borrar/{asistente}/reunion/{reunion}', 'Backend\A
 Route::get('backend/asistentes/ver/reunion/{reunion}', 'Backend\AsistentesController@verAsistentesReunion')
     ->name('asistentes.reunionver');
 
-/* Periodos */
+/** Periodos */
 Route::view('backend/periodos/gestion', 'backend.periodos.index')->name('periodos.gestion');
 Route::get('backend/periodos/periodosdata', 'Backend\PeriodosController@periodosData')
 ->name('periodos.periodosdata');
 Route::get('backend/periodos/cerrar/{periodo}', 'Backend\PeriodosController@cerrar')->name('periodos.cerrar');
 Route::post('backend/periodos/nuevo', 'Backend\PeriodosController@store')->name('periodos.nuevo');
 Route::get('backend/periodos/ver/{periodo}', 'Backend\PeriodosController@ver')->name('periodos.ver');
+
+/** Cuentas */
+Route::view('backend/cuentas', 'backend.cuentas.index')->name('cuentas.list');
+Route::get('backend/cuentas/cuentasdata', 'Backend\CuentasController@cuentasData')->name('cuentas.cuentasdata');
+Route::get('backend/cuentas/create', 'Backend\CuentasController@create')->name('cuentas.createitem');
+Route::post('backend/cuentas/nuevoitem', 'Backend\CuentasController@nuevoItem')->name('cuentas.nuevoitem');
+Route::get('backend/cuentas/ver/{movimiento}', 'Backend\CuentasController@ver')->name('cuentas.ver');
+Route::get('backend/cuentas/editar/{movimiento}', 'Backend\CuentasController@editar')->name('cuentas.editar');
+Route::patch('backend/cuentas/{movimiento}', 'Backend\CuentasController@update')->name('cuentas.update');
+Route::get('backend/cuentas/borrar/{movimiento}', 'Backend\CuentasController@borrar')->name('cuentas.borrar');
+Route::get('backend/cuentas/verfactura/{factura}', 'Backend\FacturasController@verFactura')->name('cuentas.verfactura');
+
+/** Facturas */
+Route::get('backend/facturas/gestion', 'Backend\FacturasController@index')->name('facturas.gestion');
+Route::get('backend/facturas/facturasdata', 'Backend\FacturasController@facturasData')->name('facturas.facturasdata');
+Route::get('backend/facturas/create', 'Backend\FacturasController@create')->name('facturas.create');
+Route::post('backend/facturas/nuevafactura', 'Backend\FacturasController@nuevaFactura')->name('facturas.nuevafactura');
+Route::get('backend/facturas/{factura}', 'Backend\FacturasController@importarFactura')
+->name('facturas.importarfactura');
+Route::post('backend/facturas/importar', 'Backend\FacturasController@registrarDocumento')
+->name('facturas.documento');
+Route::get('backend/facturas/ver/{factura}', 'Backend\FacturasController@ver')->name('facturas.ver');
+Route::get('backend/facturas/borrar/{factura}', 'Backend\FacturasController@borrar')->name('facturas.borrar');
+Route::get('backend/facturas/eliminar/{entrada}/{factura}', 'Backend\FacturasController@eliminar')
+->name('facturas.eliminar');
+Route::get('backend/facturas/editar/{factura}', 'Backend\FacturasController@editar')->name('facturas.editar');
+Route::patch('backend/facturas/actualizar/{factura}', 'Backend\FacturasController@update')->name('facturas.update');
 
 /**
  *  RUTA DE LA SELECCIÓN DE IDIOMA

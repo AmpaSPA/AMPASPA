@@ -490,5 +490,17 @@ return [
     'newcoursetitle'                  => 'Before closing the selected course you must enter the subscription for the
     next course.',
     'perioddata'                      => 'Data of Course',
-    'datatodate'                        => '(*) Data to date.'
+    'datatodate'                      => '(*) Data to date.',
+    'currentbalance'                  => 'Current balance:',
+    'additem'                         => 'New item',
+    'entrydata'                       => 'Data of entry',
+    'updateentry'                     => 'Update entry',
+    'invoices'                        => 'Invoices',
+    'addinvoice'                      => 'New invoice',
+    'importinvoicetext'               => 'It is necessary to import the scanned invoice. To do this, click on the
+    corresponding code.',
+    'importinvoice'                   => 'Import invoice',
+    'invoicedata'                     => 'Data of invoice',
+    'noimportinvoices'                => 'There are no import invoices (:numero).',
+    'updateinvoice'                   => 'Update invoice'
 ];

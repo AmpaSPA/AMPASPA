@@ -140,6 +140,9 @@ class PeriodosController extends Controller
         $nuevoCurso = $this->periodos->nuevoCurso($request);
         $this->periodos->marcarPeriodo($nuevoCurso->id, true);
 
+        /** Marcar a todos los socios como pendientes de pago de la cuota del nuevo curso y
+         * enviarles una notificación advirtiendoles de tal hecho. */
+
         flash(trans('acciones_crud.addedperiod', ['periodo' => $nuevoCurso->periodo]))->success();
         return redirect(route('periodos.gestion'));
     }
