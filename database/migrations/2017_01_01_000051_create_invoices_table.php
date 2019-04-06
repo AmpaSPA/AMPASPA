@@ -21,7 +21,7 @@ class CreateInvoicesTable extends Migration
             $table->string('emisor')->default(null);
             $table->string('destinatario')->default(null);
             $table->string('concepto')->default(null);
-            $table->string('factura', 100)->default(null);
+            $table->string('factura', 100)->nullable()->default(null);
             $table->decimal('importe')->default(null);
             $table->boolean('importada')->default(false);
             $table->timestamps();

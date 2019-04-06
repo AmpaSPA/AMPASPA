@@ -38,7 +38,7 @@ class AvisosRepository
         $aviso = Warning::firstOrCreate([
             'codigo' => strtoupper($codigo),
             'user_id' => $user_id,
-
+            'fecha' => $fecha,
         ], [
             'fecha' => $fecha,
             'aviso' => $aviso,
@@ -103,7 +103,7 @@ class AvisosRepository
     public function desactivarAviso($id, $codigo)
     {
         $socio = $this->socios->buscarsocioporid($id);
-        $aviso = $socio->warnings->where('codigo', $codigo)->where('user_id', $id)->first();
+        $aviso = $socio->warnings->where('codigo', $codigo)->where('user_id', $id)->where('cerrado', false)->first();
 
         if ($aviso) {
             $aviso->cerrado = true;
@@ -129,5 +129,10 @@ class AvisosRepository
         }
 
         return $aviso;
+    }
+
+    public function borrarAvisoRecibo($user_id)
+    {
+        return Warning::whereUserIdAndCodigo($user_id, 'WIMPRECI')->forceDelete();
     }
 }

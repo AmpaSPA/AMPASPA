@@ -22,9 +22,4 @@
             </div>
         </div>
     {!! Form::close() !!}
-
-    @component('backend.components.bootstrap-datepicker', [
-        'field_id' => 'fecha'
-    ])
-    @endcomponent
 @endsection

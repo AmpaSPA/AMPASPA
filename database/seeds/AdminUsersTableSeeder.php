@@ -14,7 +14,6 @@ class AdminUsersTableSeeder extends Seeder
     public function run()
     {
         DB::table('users')->insert([
-            'periodo' => Carbon::now()->year . '-' . Carbon::now()->addYear()->year,
             'nombre' => 'Usuario1',
             'apellidos' => 'Primer_apellido Segundo_apellido',
             'email' => 'emailusuario1@proveedor.com',

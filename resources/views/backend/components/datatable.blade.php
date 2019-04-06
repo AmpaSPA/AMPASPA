@@ -96,6 +96,21 @@
                         },
                     ],
                 @endif
+                @if ($table_id == 'cursos')
+                    "columnDefs": [
+                        {
+                            "targets": 5,
+                            "render": function ( data, type, row, meta )
+                            {
+                                if (row['saldo'] < 0) {
+                                    return '<span class="text-danger"><strong>'+row['saldo']+'€</strong></span>';
+                                } else {
+                                    return '<span class="text-success"><strong>'+row['saldo']+'€</strong></span>';
+                                }
+                            }
+                        },
+                    ],
+                @endif
                 @if ($table_id == 'facturas')
                     "columnDefs": [
                         {

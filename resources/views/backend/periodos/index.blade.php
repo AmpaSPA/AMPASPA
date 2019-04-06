@@ -25,7 +25,9 @@
                 ['data' => 'id', 'name' => 'id', 'header' => trans('form_periodo.cabid')],
                 ['data' => 'periodo', 'name' => 'periodo', 'header' => trans('form_periodo.cabcourse')],
                 ['data' => 'cuotaeuros', 'name' => 'cuotaeuros', 'header' => trans('form_periodo.cabsubscription')],
+                ['data' => 'totalsocios', 'name' => 'totalsocios', 'header' => trans('form_periodo.cabtotalmembers')],
                 ['data' => 'estado', 'name' => 'estado', 'header' => trans('form_periodo.cabstatus')],
+                ['data' => 'saldo', 'name' => 'saldo', 'header' => trans('form_periodo.cabbalance')],
                 ['data' => 'action', 'name' => 'action', 'header' => trans('form_periodo.cabactions')],
             ],
         'filter' => 'Filtrados'

@@ -63,6 +63,7 @@ class FacturaRepository
 
         $data = new Invoice();
         $data->periodo = $periodo->periodo;
+        $data->codigo = $codigo;
         $data->fecha = $request->fecha;
         $data->emisor = strtoupper($request->emisor);
         $data->destinatario = strtoupper($request->destinatario);

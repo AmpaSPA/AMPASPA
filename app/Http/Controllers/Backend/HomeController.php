@@ -2,18 +2,20 @@
 
 namespace App\Http\Controllers\Backend;
 
+use Carbon\Carbon;
+use Yajra\DataTables\DataTables;
 use App\Http\Controllers\Controller;
-use App\Repositories\ActivityRepository;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
 use App\Repositories\AlumnoRepository;
 use App\Repositories\AvisosRepository;
 use App\Repositories\MeetingRepository;
-use App\Repositories\NotificationRepository;
-use Carbon\Carbon;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Hash;
-use Yajra\DataTables\DataTables;
-use App\Repositories\TiposnotificacionRepository;
+use App\Repositories\PeriodoRepository;
+use App\Repositories\ActivityRepository;
 use App\Repositories\AttendeeRepository;
+use App\Repositories\NotificationRepository;
+use App\Repositories\TiposnotificacionRepository;
+use App\Repositories\SocioRepository;
 
 /**
  * Clase del controlador para la administración del home del backend
@@ -27,6 +29,8 @@ class HomeController extends Controller
     protected $avisos;
     protected $notificaciones;
     protected $tiposnotificacion;
+    protected $periodos;
+    protected $socios;
 
     /**
      * __construct: Constructor de la clase. Usa los modelos: Student, Activity y Warning
@@ -38,7 +42,9 @@ class HomeController extends Controller
         MeetingRepository $reuniones,
         AttendeeRepository $asistentes,
         NotificationRepository $notificaciones,
-        TiposnotificacionRepository $tiposnotificacion
+        TiposnotificacionRepository $tiposnotificacion,
+        PeriodoRepository $periodos,
+        SocioRepository $socios
     ) {
         $this->middleware('auth');
 
@@ -49,6 +55,8 @@ class HomeController extends Controller
         $this->avisos = $avisos;
         $this->notificaciones = $notificaciones;
         $this->tiposnotificacion = $tiposnotificacion;
+        $this->periodos = $periodos;
+        $this->socios = $socios;
     }
 
     /**
@@ -63,6 +71,8 @@ class HomeController extends Controller
         $avisos = $this->cargarAvisos();
         $autorizaciones = $this->cargarAutorizaciones();
         $notificaciones = $this->cargarNotificaciones();
+
+        $this->periodos->actualizarSocios($this->socios->totalsocios());
 
         $anio = Carbon::now()->year;
         $mes = Carbon::now()->month;
@@ -386,12 +396,11 @@ class HomeController extends Controller
             $fecha = Carbon::now()->format('Y-m-d');
             $codigo = 'WCHGPASS';
             $aviso = 'Por motivos de seguridad debería Ud. cambiar su contraseña ya que la actual es una
-            contraseña genérica. En caso de mantener su contraseña actual, terceras personas podrían
-             acceder a su cuenta';
+             contraseña genérica. En caso de mantener su contraseña actual, terceras personas podrían
+             acceder a su cuenta.';
             $solucion = 'Abra el desplegable con su nombre en la parte superior de la página y acceda
-            a su perfil donde, una vez haya importado su justificante de pago y éste haya
-            sido validado por la Asociación, encontrará activa la opción correspondiente.';
-
+             a su perfil donde, una vez haya importado su justificante de pago y éste haya
+             sido validado por la Asociación, encontrará activa la opción correspondiente.';
             $user_id = Auth::user()->id;
 
             return $this->avisos->crearAviso($codigo, $fecha, $aviso, $solucion, $user_id);
@@ -433,11 +442,12 @@ class HomeController extends Controller
             $codigo = 'WIMPRECI';
             $aviso = 'Por favor, Ud. debe hacernos llegar el recibo o justificante del pago de
              su cuota de socio.';
-            $solucion = 'Realice una de las siguientes acciones: a) Escanéelo en formato pdf y
-            súbalo a esta aplicación. Si desea optar por esta solución abra el desplegable con su
-            nombre en la parte superior de la página y acceda a su perfil donde encontrará la opción
-            correspondiente. b) deposítelo en nuestro buzón. c) entréguelo personalmente en nuestro
-            despacho sito en la planta superior sobre la secretaría del colegio.';
+            $solucion = 'Escanéelo en formato pdf y realice una de las siguientes acciones: a)
+             Súbalo a esta aplicación. Si desea optar por esta solución abra el desplegable con su
+             nombre en la parte superior de la página y acceda a su perfil donde encontrará la opción
+             correspondiente. b) Deposítelo en nuestro buzón. c) Entréguelo personalmente en nuestro
+             despacho sito en la planta superior sobre la secretaría del colegio. Le recomendamos que
+             domicilie el pago de su cuota, así se evitará recibir este aviso en sucesivas ocasiones.';
             $user_id = Auth::user()->id;
 
             return $this->avisos->crearAviso($codigo, $fecha, $aviso, $solucion, $user_id);

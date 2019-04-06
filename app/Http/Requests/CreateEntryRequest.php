@@ -28,14 +28,16 @@ class CreateEntryRequest extends FormRequest
             case 'DELETE':
             case 'POST':
                 return [
-                    'fecha' => 'required|date_format:Y-m-d|before:today',
-                    'descripcion' => 'required|max:500'
+                    'entrytype_id' => 'required',
+                    'descripcion' => 'required|max:500',
+                    'invoice_id' => 'required'
                 ];
             case 'PUT':
             case 'PATCH':
                 return [
-                    'fecha' => 'required|date_format:Y-m-d|before:today',
-                    'descripcion' => 'required|max:500'
+                    'entrytype_id' => 'required',
+                    'descripcion' => 'required|max:500',
+                    'invoice_id' => 'required'
                 ];
             default:
                 break;
@@ -49,11 +51,10 @@ class CreateEntryRequest extends FormRequest
     public function messages()
     {
         return [
-            'fecha.required' => 'La fecha de la entrada es obligatoria.',
-            'fecha.date_format' => 'La fecha de la entrada debe tener el formato AAAA-MM-DD.',
-            'fecha.before' => 'La fecha de la entrada debe ser una fecha anterior a hoy.',
-            'descripcion.required' => 'La descripción del concepto es obligatoria.',
-            'descripcion.max' => 'La descripción del concepto no puede exceder de 500 caracteres.',
+            'descripcion.required' => 'La descripción del movimiento es obligatoria.',
+            'descripcion.max' => 'La descripción del movimiento no puede exceder de 500 caracteres.',
+            'entrytype_id.required' => 'Un tipo de movimiento es obligatorio',
+            'invoice_id.required' => 'Un número de factura es obligatorio'
         ];
     }
 }

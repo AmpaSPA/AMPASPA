@@ -11,11 +11,11 @@
             <table class="table">
                 <tr>
                     <td id="celda_bloque_icono"><span class="fa fa-eur text-primary"></span></td>
-                    @if ($saldoPeriodo
-                    < 0) <td id="celda_bloque_texto"><a href="{{ route('cuentas.list') }}">{{ trans('message.accountsbook') }}</a><span class="texto-badge badge badgerojo">{{ $saldoPeriodo }}€</span></td>
-                        @else
+                    @if ($saldoPeriodo < 0)
+                        <td id="celda_bloque_texto"><a href="{{ route('cuentas.list') }}">{{ trans('message.accountsbook') }}</a><span class="texto-badge badge badgerojo">{{ $saldoPeriodo }}€</span></td>
+                    @else
                         <td id="celda_bloque_texto"><a href="{{ route('cuentas.list') }}">{{ trans('message.accountsbook') }}</a><span class="texto-badge badge badgeverde">{{ $saldoPeriodo }}€</span></td>
-                        @endif
+                    @endif
                 </tr>
                 <tr>
                     <td id="celda_bloque_icono"><span class="fa fa-list-alt text-primary"></span></td>

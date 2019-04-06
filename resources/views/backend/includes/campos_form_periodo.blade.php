@@ -69,7 +69,7 @@
                 {!! Form::label('ingresos', trans('form_periodo.lbincome_ast'),['class' => 'col-md-3 control-label']) !!}
                 <div class="col-md-8">
                     <div class="input-group">
-                        <span class="input-group-addon"><i class="fa fa-euro"></i></span> {!! Form::text(null, $totalIngresosPeriodo,
+                        <span class="input-group-addon"><i class="fa fa-euro"></i></span> {!! Form::text(null, $curso->ingresos,
                         ['class' => 'form-control', 'name' => 'ingresos', 'readonly' => 'readonly']) !!}
                     </div>
                 </div>
@@ -78,7 +78,7 @@
                 {!! Form::label('gastos', trans('form_periodo.lbexpenses_ast'),['class' => 'col-md-3 control-label']) !!}
                 <div class="col-md-8">
                     <div class="input-group">
-                        <span class="input-group-addon"><i class="fa fa-euro"></i></span> {!! Form::text(null, $totalGastosPeriodo,
+                        <span class="input-group-addon"><i class="fa fa-euro"></i></span> {!! Form::text(null, $curso->gastos,
                         ['class' => 'form-control', 'name' => 'gastos', 'readonly' => 'readonly']) !!}
                     </div>
                 </div>
@@ -87,7 +87,7 @@
                 {!! Form::label('saldo', trans('form_periodo.lbbalance_ast'),['class' => 'col-md-3 control-label']) !!}
                 <div class="col-md-8">
                     <div class="input-group">
-                        <span class="input-group-addon"><i class="fa fa-euro"></i></span> {!! Form::text(null, $saldoPeriodo,
+                        <span class="input-group-addon"><i class="fa fa-euro"></i></span> {!! Form::text(null, $curso->saldo,
                         ['class' => 'form-control', 'name' => 'saldo', 'readonly' => 'readonly']) !!}
                     </div>
                 </div>
@@ -96,7 +96,7 @@
                 {!! Form::label('totalsocios', trans('form_periodo.lbtotalpartners_ast'),['class' => 'col-md-3 control-label']) !!}
                 <div class="col-md-8">
                     <div class="input-group">
-                        <span class="input-group-addon"><i class="fa fa-users"></i></span> {!! Form::text(null, $totalSociosPeriodo,
+                        <span class="input-group-addon"><i class="fa fa-users"></i></span> {!! Form::text(null, $curso->totalsocios,
                         ['class' => 'form-control', 'name' => 'totalsocios', 'readonly' => 'readonly']) !!}
                     </div>
                 </div>

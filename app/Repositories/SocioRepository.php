@@ -7,35 +7,35 @@
 
 namespace App\Repositories;
 
+use Auth;
+use App\User;
 use App\Doctype;
+use App\Profile;
+use App\Student;
+use Carbon\Carbon;
 use App\Membertype;
 use App\Paymenttype;
-use App\Profile;
-use App\Repositories\CursoRepository;
-use App\Student;
-use App\User;
-use Auth;
-use Carbon\Carbon;
-use function GuzzleHttp\Psr7\str;
 use Illuminate\Support\Str;
+use function GuzzleHttp\Psr7\str;
 use Spatie\Permission\Models\Role;
+use App\Repositories\CursoRepository;
+use App\Repositories\ProfileRepository;
+use App\Warning;
 
 class SocioRepository
 {
     protected $cursos;
     protected $profile;
-    protected $periodos;
 
     /**
      * SocioRepository constructor.
      * @param \App\Repositories\CursoRepository $cursos
      * @param ProfileRepository $profile
      */
-    public function __construct(CursoRepository $cursos, ProfileRepository $profile, PeriodoRepository $periodos)
+    public function __construct(CursoRepository $cursos, ProfileRepository $profile)
     {
         $this->cursos = $cursos;
         $this->profile = $profile;
-        $this->periodos = $periodos;
     }
 
     /**
@@ -60,6 +60,14 @@ class SocioRepository
     public function socios()
     {
         return User::where('corrientepago', true)->get();
+    }
+
+    /**
+     * personas
+     */
+    public function personas()
+    {
+        return User::all();
     }
 
     /**
@@ -88,6 +96,7 @@ class SocioRepository
     public function updatesocio($id, $request)
     {
         $socio = $this->buscarsocioporid($id);
+
         if ($request->nombre) {
             $socio->nombre = $request->nombre;
         }
@@ -143,11 +152,9 @@ class SocioRepository
      */
     public function crearsocio($request): \App\User
     {
-        $periodo = $this->periodos->buscarPeriodoActivo()->periodo;
 
         // Se crea el usuario
         $data = new User();
-        $data->periodo = $periodo;
         $data->nombre = $request->nombre;
         $data->apellidos = $request->apellidos;
         $data->email = $request->email;
@@ -233,9 +240,7 @@ class SocioRepository
         }
 
         // Alta del socio
-        $periodo = $this->periodos->buscarPeriodoActivo()->periodo;
         $data = new User();
-        $data->periodo = $periodo;
         $data->nombre = $item->nombre;
         $data->apellidos = $item->apellidos;
         $data->email = $item->email;
@@ -652,8 +657,22 @@ class SocioRepository
         return User::where('id', '<>', $id)->where('reciboimportado', '=', true)->get();
     }
 
-    public function totalSociosPeriodo($periodo)
+    /**
+     * updateMasivo
+     */
+    public function updateMasivoSituacionPago()
     {
-        return User::wherePeriodo($periodo)->count();
+        foreach ($this->personas() as $socio) {
+            $avisos = $socio->warnings;
+            foreach ($avisos as $aviso) {
+                if ($aviso->codigo === 'WIMPRECI') {
+                    $aviso->forceDelete();
+                }
+            }
+            $socio->corrientepago = false;
+            $socio->reciboimportado = false;
+            $socio->activo = false;
+            $socio->save();
+        }
     }
 }

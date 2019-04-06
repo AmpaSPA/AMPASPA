@@ -16,8 +16,7 @@ class Entry extends Model
     protected $fillable = [
         'invoice_id',
         'periodo',
-        'fecha',
-        'tipo',
+        'entrytype_id',
         'descripcion',
         'importe'
     ];
@@ -30,5 +29,15 @@ class Entry extends Model
     public function invoice()
     {
         return $this->belongsTo(Invoice::class);
+    }
+
+    /**
+     * Relación Uno a Uno con la tabla Tipos de entrada
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
+    public function entrytype()
+    {
+        return $this->belongsTo(Entrytype::class);
     }
 }

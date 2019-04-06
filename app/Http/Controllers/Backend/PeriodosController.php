@@ -2,28 +2,35 @@
 
 namespace App\Http\Controllers\Backend;
 
-use App\Http\Controllers\Controller;
-use App\Http\Requests\CreatePeriodRequest;
-use App\Repositories\EntradaRepository;
-use App\Repositories\PeriodoRepository;
-use App\Repositories\SocioRepository;
 use Carbon\Carbon;
 use Yajra\DataTables\DataTables;
+use App\Http\Controllers\Controller;
+use App\Repositories\SocioRepository;
+use App\Repositories\EntradaRepository;
+use App\Repositories\PeriodoRepository;
+use App\Repositories\EntrytypeRepository;
+use App\Http\Requests\CreatePeriodRequest;
 
 class PeriodosController extends Controller
 {
     protected $periodos;
     protected $socios;
     protected $entradas;
+    protected $tipoEntrada;
 
     /**
      * __construct: Constructor de la clase. Usa los modelos: Period y User
      */
-    public function __construct(PeriodoRepository $periodos, SocioRepository $socios, EntradaRepository $entradas)
-    {
+    public function __construct(
+        PeriodoRepository $periodos,
+        SocioRepository $socios,
+        EntradaRepository $entradas,
+        EntrytypeRepository $tipoEntrada
+    ) {
         $this->periodos = $periodos;
         $this->socios = $socios;
         $this->entradas = $entradas;
+        $this->tipoEntrada = $tipoEntrada;
     }
 
     /**
@@ -55,8 +62,9 @@ class PeriodosController extends Controller
                 function ($period) {
                     $btnVer = null;
                     $btnCerrar = null;
+                    $btnAbrir = null;
                     if ($period->activo) {
-                        if (Carbon::now()->month >= 9 && Carbon::now()->month <= 11) {
+                        if ((Carbon::now()->month >= 9 && Carbon::now()->month <= 11) && !$period->standby) {
                             return $btnCerrar = '<i class="text-danger fa fa-calendar-times-o"></i>'
                             . '<a href="'
                             . route('periodos.cerrar', $period->id)
@@ -76,14 +84,25 @@ class PeriodosController extends Controller
                                 . '</a>';
                         }
                     } else {
-                        return $btnVer = '<i class="text-success fa fa-eye"></i>'
-                        . '<a href="'
-                        . route('periodos.ver', $period->id)
-                        . '">'
-                        . '<span class="text-success texto-accion">'
-                        . trans('acciones_crud.view')
-                            . '</span>'
-                            . '</a>';
+                        if ($period->totalsocios === 0) {
+                            return $btnAbrir = '<i class="text-success fa fa-folder-open-o"></i>'
+                            . '<a href="'
+                            . route('periodos.abrir', $period->id)
+                            . '">'
+                            . '<span class="text-success texto-accion">'
+                            . trans('acciones_crud.open')
+                                . '</span>'
+                                . '</a>';
+                        } else {
+                            return $btnVer = '<i class="text-success fa fa-eye"></i>'
+                            . '<a href="'
+                            . route('periodos.ver', $period->id)
+                            . '">'
+                            . '<span class="text-success texto-accion">'
+                            . trans('acciones_crud.view')
+                                . '</span>'
+                                . '</a>';
+                        }
                     }
                 }
             )
@@ -95,33 +114,15 @@ class PeriodosController extends Controller
      */
     public function cerrar($id)
     {
-        $periodo = $this->periodos->buscarPeriodoActivo()->periodo;
-        $totalSociosPeriodo = $this->socios->totalSociosPeriodo($periodo);
+        $periodo = $this->periodos->buscarPeriodoActivo();
 
-        $entradasIngresoPeriodo = $this->entradas->totalEntradasPeriodo($periodo, 'Ingreso');
+        $totalSocios = $this->socios->totalsocios();
+        $this->periodos->actualizarSocios($totalSocios);
 
-        if ($entradasIngresoPeriodo > 0) {
-            $totalIngresosPeriodo = $this->entradas->totalImportePeriodo($periodo, 'Ingreso')->total_importe;
-        } else {
-            $totalIngresosPeriodo = 0;
-        }
+        $importes = $this->entradas->calcularImportesPeriodo($periodo->periodo);
+        $this->periodos->actualizarImportes($importes);
 
-        $entradasGastoPeriodo = $this->entradas->totalEntradasPeriodo($periodo, 'Gasto');
-
-        if ($entradasGastoPeriodo > 0) {
-            $totalGastosPeriodo = $this->entradas->totalImportePeriodo($periodo, 'Gasto')->total_importe;
-        } else {
-            $totalGastosPeriodo = 0;
-        }
-
-        $periodo = $this->periodos->cerrarPeriodo(
-            [
-                'id' => $id,
-                'totalSociosPeriodo' => $totalSociosPeriodo,
-                'totalIngresosPeriodo' => $totalIngresosPeriodo,
-                'totalGastosPeriodo' => $totalGastosPeriodo,
-            ]
-        );
+        $this->socios->updateMasivoSituacionPago();
 
         $modo = 'new';
         $nuevoCurso = ($periodo->aniodesde + 1) . '-' . ($periodo->aniohasta + 1);
@@ -134,17 +135,42 @@ class PeriodosController extends Controller
      */
     public function store(CreatePeriodRequest $request)
     {
-        $antiguoCurso = $this->periodos->buscarPeriodoPorPeriodo($request->antiguoCurso);
-        $this->periodos->marcarPeriodo($antiguoCurso->id, false);
-
         $nuevoCurso = $this->periodos->nuevoCurso($request);
-        $this->periodos->marcarPeriodo($nuevoCurso->id, true);
 
-        /** Marcar a todos los socios como pendientes de pago de la cuota del nuevo curso y
-         * enviarles una notificación advirtiendoles de tal hecho. */
-
-        flash(trans('acciones_crud.addedperiod', ['periodo' => $nuevoCurso->periodo]))->success();
+        flash(
+            trans(
+                'acciones_crud.addedperiod',
+                [
+                    'periodo' => $nuevoCurso->periodo
+                ]
+            )
+        )->success();
         return redirect(route('periodos.gestion'));
+    }
+
+    /**
+     * abrir
+     */
+    public function abrir($id)
+    {
+        $periodo = $this->periodos->buscarPeriodoPorId($id);
+
+        $antiguoCurso = ($periodo->aniodesde - 1) . '-' . ($periodo->aniohasta - 1);
+        $antiguoCurso = $this->periodos->buscarPeriodoPorPeriodo($antiguoCurso);
+
+        $this->periodos->marcarPeriodo($antiguoCurso->id, false);
+        $this->periodos->marcarPeriodo($periodo->id, true);
+
+        flash(
+            trans(
+                'acciones_crud.proccessperiod',
+                [
+                    'periodo' => $this->periodos->buscarPeriodoPorId($id)->periodo
+                ]
+            )
+        )->success();
+
+        return redirect(route('home'));
     }
 
     /**
@@ -155,40 +181,6 @@ class PeriodosController extends Controller
         $modo = 'view';
         $curso = $this->periodos->buscarPeriodoPorId($id);
 
-        if (!$curso->activo) {
-            return view('backend.periodos.ver', compact('curso', 'modo'));
-        } else {
-            $totalSociosPeriodo = $this->socios->totalSociosPeriodo($curso->periodo);
-
-            $entradasIngresoPeriodo = $this->entradas->totalEntradasPeriodo($curso->periodo, 'Ingreso');
-
-            if ($entradasIngresoPeriodo > 0) {
-                $totalIngresosPeriodo = $this->entradas->totalImportePeriodo($curso->periodo, 'Ingreso')->total_importe;
-            } else {
-                $totalIngresosPeriodo = 0;
-            }
-
-            $entradasGastoPeriodo = $this->entradas->totalEntradasPeriodo($curso->periodo, 'Gasto');
-
-            if ($entradasGastoPeriodo > 0) {
-                $totalGastosPeriodo = $this->entradas->totalImportePeriodo($curso->periodo, 'Gasto')->total_importe;
-            } else {
-                $totalGastosPeriodo = 0;
-            }
-
-            $saldoPeriodo = $totalIngresosPeriodo - $totalGastosPeriodo;
-
-            return view(
-                'backend.periodos.ver',
-                compact(
-                    'curso',
-                    'totalSociosPeriodo',
-                    'totalIngresosPeriodo',
-                    'totalGastosPeriodo',
-                    'saldoPeriodo',
-                    'modo'
-                )
-            );
-        }
+        return view('backend.periodos.ver', compact('curso', 'modo'));
     }
 }

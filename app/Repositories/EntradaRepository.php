@@ -11,6 +11,8 @@ class EntradaRepository
 {
     protected $periodos;
     protected $socios;
+    protected $facturas;
+    protected $tipoEntrada;
 
     /**
      * __construct
@@ -19,10 +21,16 @@ class EntradaRepository
      *
      * @return void
      */
-    public function __construct(PeriodoRepository $periodos, SocioRepository $socios)
-    {
+    public function __construct(
+        PeriodoRepository $periodos,
+        SocioRepository $socios,
+        FacturaRepository $facturas,
+        EntrytypeRepository $tipoEntrada
+    ) {
         $this->periodos = $periodos;
         $this->socios = $socios;
+        $this->facturas = $facturas;
+        $this->tipoEntrada = $tipoEntrada;
     }
 
     /**
@@ -52,22 +60,21 @@ class EntradaRepository
     /**
      * notificacionesPendientesPorUserid
      */
-    public function totalImportePeriodo($periodo, $tipo)
+    public function totalImportesPeriodo($periodo)
     {
         return DB::table('entries')
             ->where('periodo', $periodo)
-            ->where('tipo', $tipo)
-            ->select(DB::raw('sum(importe) as total_importe'))
-            ->groupBy('tipo')
-            ->first();
+            ->select(DB::raw('entrytype_id, sum(importe) as total_importe'))
+            ->groupBy('entrytype_id')
+            ->get();
     }
 
     /**
      * totalEntradasPeriodo
      */
-    public function totalEntradasPeriodo($periodo, $tipo)
+    public function totalEntradasPeriodo($periodo, $tipo_id)
     {
-        return Entry::wherePeriodoAndTipo($periodo, $tipo)->count();
+        return Entry::wherePeriodoAndEntrytypeId($periodo, $tipo_id)->count();
     }
 
     /**
@@ -78,46 +85,35 @@ class EntradaRepository
         $data = new Entry();
 
         $data->periodo = $this->periodos->buscarPeriodoActivo()->periodo;
-        $data->invoice_id = $request->factura;
-        $data->fecha = $request->fecha;
-        $data->tipo = $request->tipo;
+        $data->invoice_id = $request->invoice_id;
+        $data->entrytype_id = $request->entrytype_id;
         $data->descripcion = $request->descripcion;
-        $data->importe = $request->importe;
+        $data->importe = $this->facturas->buscarFacturaPorId($request->invoice_id)->importe;
         $data->save();
 
         return $data;
     }
 
+    /**
+     * updateEntrada
+     */
     public function updateEntrada($id, $request)
     {
         $entrada = $this->buscarEntradaPorId($id);
 
         $entrada->periodo = $this->periodos->buscarPeriodoActivo()->periodo;
 
-        if ($request->fecha) {
-            $entrada->fecha = $request->fecha;
+        if ($request->invoice_id) {
+            $entrada->invoice_id = $request->invoice_id;
         }
-        if ($request->emisor) {
-            $entrada->emisor = strtoupper($request->emisor);
-        }
-        if ($request->destinatario) {
-            $entrada->destinatario = strtoupper($request->destinatario);
-        }
-        if ($request->tipo) {
-            $entrada->tipo = $request->tipo;
-        }
-        if ($request->concepto) {
-            $entrada->concepto = $request->concepto;
+        if ($request->entrytype_id) {
+            $entrada->entrytype_id = $request->entrytype_id;
         }
         if ($request->descripcion) {
             $entrada->descripcion = $request->descripcion;
         }
-        if ($request->codigofactura) {
-            $entrada->codigofactura = $request->codigofactura;
-        }
-        if ($request->importe) {
-            $entrada->importe = $request->importe;
-        }
+
+        $entrada->importe = $this->facturas->buscarFacturaPorId($request->invoice_id)->importe;
 
         $entrada->save();
 
@@ -125,10 +121,32 @@ class EntradaRepository
     }
 
     /**
-     * borrarEntrada
+     * calcularImportesPeriodo
      */
-    public function borrarEntrada($id)
+    public function calcularImportesPeriodo($periodo)
     {
-            return Entry::where('id', '=', $id)->forceDelete();
+        $totalIngresosPeriodo = 0;
+        $totalGastosPeriodo = 0;
+        $saldoPeriodo = 0;
+
+        $totalEntradasPeriodo = [
+            'ingreso' => $totalIngresosPeriodo,
+            'gasto' => $totalGastosPeriodo,
+            'saldo' => $saldoPeriodo
+        ];
+
+        $totalImportesPeriodo = $this->totalImportesPeriodo($periodo);
+
+        foreach ($totalImportesPeriodo as $importe) {
+            if ($this->tipoEntrada->buscarTipoEntradaPorId($importe->entrytype_id)->tipoentrada === 'Ingreso') {
+                $totalEntradasPeriodo['ingreso'] = $importe->total_importe;
+            } else {
+                $totalEntradasPeriodo['gasto'] = $importe->total_importe;
+            }
+        };
+
+        $totalEntradasPeriodo['saldo'] = $totalEntradasPeriodo['ingreso'] - $totalEntradasPeriodo['gasto'];
+
+        return $totalEntradasPeriodo;
     }
 }

@@ -25,6 +25,7 @@ class CreatePeriodsTable extends Migration
             $table->decimal('saldo')->default(0);
             $table->integer('totalsocios')->default(0);
             $table->boolean('activo')->default(false);
+            $table->boolean('standby')->default(false);
             $table->timestamps();
         });
     }

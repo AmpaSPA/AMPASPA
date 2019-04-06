@@ -28,7 +28,7 @@ class PeriodoRepository
         return Period::find($id);
     }
 
-        /**
+    /**
      * buscarPeriodoPorPeriodo
      */
     public function buscarPeriodoPorPeriodo($periodo)
@@ -37,7 +37,7 @@ class PeriodoRepository
     }
 
     /**
-     * @return mixed
+     * buscarPeriodoActivo
      */
     public function buscarPeriodoActivo()
     {
@@ -45,24 +45,8 @@ class PeriodoRepository
     }
 
     /**
-     * cerrarPeriodo
+     * marcarPeriodo
      */
-    public function cerrarPeriodo($datosPeriodo)
-    {
-        $periodo = $this->buscarPeriodoPorId($datosPeriodo['id']);
-
-        $saldoPeriodo = $datosPeriodo['totalIngresosPeriodo'] - $datosPeriodo['totalGastosPeriodo'];
-
-        $periodo->ingresos = $datosPeriodo['totalIngresosPeriodo'];
-        $periodo->gastos = $datosPeriodo['totalGastosPeriodo'];
-        $periodo->totalsocios = $datosPeriodo['totalSociosPeriodo'];
-        $periodo->saldo = $saldoPeriodo;
-
-        $periodo->save();
-
-        return $periodo;
-    }
-
     public function marcarPeriodo($id, $marca)
     {
         $periodo = $this->buscarPeriodoPorId($id);
@@ -73,8 +57,19 @@ class PeriodoRepository
         return $periodo;
     }
 
+    /**
+     * nuevoCurso
+     */
     public function nuevoCurso($request)
     {
+        $aniodesdeAnterior = substr($request->nuevoCurso, 0, 4) - 1;
+        $aniohastaAnterior = substr($request->nuevoCurso, 5, 4) - 1;
+        $periodoAnterior = $aniodesdeAnterior . '-' . $aniohastaAnterior;
+
+        $periodoAnterior = $this->buscarPeriodoPorPeriodo($periodoAnterior);
+        $periodoAnterior->standby = true;
+        $periodoAnterior->save();
+
         $data = new Period();
 
         $data->periodo = $request->nuevoCurso;
@@ -85,5 +80,35 @@ class PeriodoRepository
         $data->save();
 
         return $data;
+    }
+
+    /**
+     * actualizarImportes
+     */
+    public function actualizarImportes($importes)
+    {
+        $curso = $this->buscarPeriodoActivo();
+
+        $curso->ingresos = $importes['ingreso'];
+        $curso->gastos = $importes['gasto'];
+        $curso->saldo = $importes['saldo'];
+
+        $curso->save();
+
+        return $curso;
+    }
+
+    /**
+     * actualizarSocios
+     */
+    public function actualizarSocios($totalSocios)
+    {
+        $curso = $this->buscarPeriodoActivo();
+
+        $curso->totalsocios = $totalSocios;
+
+        $curso->save();
+
+        return $curso;
     }
 }

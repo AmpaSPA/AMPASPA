@@ -19,6 +19,8 @@ return [
     'cabid'                  => 'Id',
     'cabcourse'              => 'Course',
     'cabstatus'              => 'Status',
+    'cabbalance'             => 'Balance',
+    'cabtotalmembers'        => 'Total of members',
     'cabactions'             => 'Actions',
     'lbincome'               => 'Income:',
     'lbexpenses'             => 'Expenses:',

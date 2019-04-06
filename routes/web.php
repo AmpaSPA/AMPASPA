@@ -303,6 +303,7 @@ Route::view('backend/periodos/gestion', 'backend.periodos.index')->name('periodo
 Route::get('backend/periodos/periodosdata', 'Backend\PeriodosController@periodosData')
 ->name('periodos.periodosdata');
 Route::get('backend/periodos/cerrar/{periodo}', 'Backend\PeriodosController@cerrar')->name('periodos.cerrar');
+Route::get('backend/periodos/abrir/{periodo}', 'Backend\PeriodosController@abrir')->name('periodos.abrir');
 Route::post('backend/periodos/nuevo', 'Backend\PeriodosController@store')->name('periodos.nuevo');
 Route::get('backend/periodos/ver/{periodo}', 'Backend\PeriodosController@ver')->name('periodos.ver');
 
@@ -314,7 +315,6 @@ Route::post('backend/cuentas/nuevoitem', 'Backend\CuentasController@nuevoItem')-
 Route::get('backend/cuentas/ver/{movimiento}', 'Backend\CuentasController@ver')->name('cuentas.ver');
 Route::get('backend/cuentas/editar/{movimiento}', 'Backend\CuentasController@editar')->name('cuentas.editar');
 Route::patch('backend/cuentas/{movimiento}', 'Backend\CuentasController@update')->name('cuentas.update');
-Route::get('backend/cuentas/borrar/{movimiento}', 'Backend\CuentasController@borrar')->name('cuentas.borrar');
 Route::get('backend/cuentas/verfactura/{factura}', 'Backend\FacturasController@verFactura')->name('cuentas.verfactura');
 
 /** Facturas */

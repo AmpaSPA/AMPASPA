@@ -14,7 +14,6 @@
 @section('content')
     <div class="bg-primary">
         <h3>{{ trans('message.entrydata') }} {{ $item->id }}</h3>
-        <h6>({{ $item->concepto }})</h6>
     </div>
     {!! Form::open(['class' => 'form-horizontal', 'role' => 'form', 'method' => 'GET', 'novalidate' => 'novalidate']) !!}
         @include('backend.includes.campos_form_entrada')

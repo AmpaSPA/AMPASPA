@@ -13,10 +13,10 @@
 
 @section('content')
     <div class="bg-primary">
-        <h3>{{ trans('message.entrydata') }} {{ $item->id }}</h3>
-        <h6>({{ $item->concepto }})</h6>
+        <h3>{{ trans('message.entrydata') }} {{ $entrada->id }}</h3>
+        <h6>{{ trans('form_entrada.lbinvoice') }} {{ $entrada->invoice->codigo }} - {{ trans('form_entrada.lbamount') }} {{ $entrada->importe }}€</h6>
     </div>
-    {!! Form::model($item, ['class' => 'form-horizontal', 'url' => route('cuentas.update', $item->id), 'role' => 'form', 'method' => 'PATCH', 'novalidate' => 'novalidate']) !!}
+    {!! Form::model($entrada, ['class' => 'form-horizontal', 'url' => route('cuentas.update', $entrada->id), 'role' => 'form', 'method' => 'PATCH', 'novalidate' => 'novalidate']) !!}
         @include('backend.includes.campos_form_entrada')
         <div class="form-group">
             <div class="col-md-11">
@@ -26,9 +26,4 @@
             </div>
         </div>
     {!! Form::close() !!}
-
-    @component('backend.components.bootstrap-datepicker', [
-      'field_id' => 'fecha'
-    ])
-    @endcomponent
 @endsection

@@ -57,7 +57,7 @@ class ActivityRepository
      */
     public function actividades()
     {
-        return Activity::all();
+        return Activity::wherePeriodo($this->periodos->buscarPeriodoActivo()->periodo);
     }
 
     /**
@@ -290,10 +290,9 @@ class ActivityRepository
             foreach ($this->actividades() as $actividad) {
                 if ($actividad->fechaactividad < Carbon::now()->format('Y-m-d')) {
                     $actividad->cerrada = true;
+                    return $actividad->save();
                 }
             }
-
-            return $actividad->save();
         } else {
             return;
         }

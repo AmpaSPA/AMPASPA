@@ -4,8 +4,7 @@
     'icono_title' => 'fa fa-calendar',
     'trans_msg_title'=> trans('message.courses'),
     'items' => [
-        ['href' => '', 'icono' => 'fa fa-home', 'texto' => trans('message.home')],
-        ['href' => route('periodos.gestion'), 'icono' => 'fa fa-calendar', 'texto' => trans('message.courses')],
+        ['href' => route('home'), 'icono' => 'fa fa-home', 'texto' => trans('message.home')],
         ['href' => '', 'icono' => 'fa fa-calendar-times-o', 'texto' => trans('message.close')]
         ],
     ])

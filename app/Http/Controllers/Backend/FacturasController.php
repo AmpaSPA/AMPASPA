@@ -9,6 +9,7 @@ use App\Repositories\PeriodoRepository;
 use Yajra\DataTables\DataTables;
 use App\Http\Requests\UpdateFacturaRequest;
 use App\Repositories\EntradaRepository;
+use Illuminate\Support\Carbon;
 
 class FacturasController extends Controller
 {
@@ -168,9 +169,10 @@ class FacturasController extends Controller
     {
         $factura = $this->facturas->buscarFacturaPorId($id);
         $entrada = $this->entradas->buscarEntradaPorFacturaId($factura->id);
+        $fecha = Carbon::parse($entrada->created_at)->format('d-m-Y');
 
         if ($entrada) {
-            return view('backend.facturas.borrar', compact('factura', 'entrada'));
+            return view('backend.facturas.borrar', compact('factura', 'entrada', 'fecha'));
         } else {
             $this->borrarPdf($factura->id);
             $this->facturas->borrarFactura($factura->id);

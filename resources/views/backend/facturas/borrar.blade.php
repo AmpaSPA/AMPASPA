@@ -29,8 +29,8 @@
             <tbody>
                 <tr>
                     <td>{{ $entrada->id }}</td>
-                    <td>{{ $entrada->fecha }}</td>
-                    <td>{{ $entrada->tipo }}</td>
+                    <td>{{ $fecha }}</td>
+                    <td>{{ $entrada->entrytype->tipoentrada }}</td>
                     <td>{{ $entrada->importe }}€</td>
                     <td><a class="text-danger" href="{{ route('facturas.eliminar', [$entrada->id, $factura->id]) }}"><i class="fa fa-trash"></i>{{ trans('message.delete') }}</a></td>
                 </tr>

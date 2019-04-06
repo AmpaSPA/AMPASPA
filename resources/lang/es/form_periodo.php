@@ -19,6 +19,8 @@ return [
     'cabid'                  => 'Id',
     'cabcourse'              => 'Curso',
     'cabstatus'              => 'Estado',
+    'cabbalance'             => 'Saldo',
+    'cabtotalmembers'        => 'Total de socios',
     'cabactions'             => 'Acciones',
     'lbincome'               => 'Ingresos:',
     'lbexpenses'             => 'Gastos:',

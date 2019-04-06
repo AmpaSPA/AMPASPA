@@ -2,28 +2,35 @@
 
 namespace App\Http\Controllers\Backend;
 
-use Carbon\Carbon;
-use Yajra\DataTables\DataTables;
 use App\Http\Controllers\Controller;
+use App\Http\Requests\CreateEntryRequest;
 use App\Repositories\EntradaRepository;
+use App\Repositories\EntrytypeRepository;
 use App\Repositories\FacturaRepository;
 use App\Repositories\PeriodoRepository;
-use App\Http\Requests\CreateEntryRequest;
+use Carbon\Carbon;
+use Yajra\DataTables\DataTables;
 
 class CuentasController extends Controller
 {
     protected $periodo;
     protected $entrada;
     protected $factura;
+    protected $tipoEntrada;
 
     /**
      * __construct: Constructor de la clase. Usa los modelos: Periods y Entry
      */
-    public function __construct(PeriodoRepository $periodo, EntradaRepository $entrada, FacturaRepository $factura)
-    {
+    public function __construct(
+        PeriodoRepository $periodo,
+        EntradaRepository $entrada,
+        FacturaRepository $factura,
+        EntrytypeRepository $tipoEntrada
+    ) {
         $this->periodo = $periodo;
         $this->entrada = $entrada;
         $this->factura = $factura;
+        $this->tipoEntrada = $tipoEntrada;
     }
 
     /**
@@ -35,81 +42,79 @@ class CuentasController extends Controller
         $entries = $this->entrada->entradasPeriodo($curso)->sortByDesc('created_at');
 
         return DataTables::of($entries)
-        ->addColumn(
-            'created_at',
-            function ($entry) {
-                return Carbon::parse($entry->created_at)->format('d-m-Y');
-            }
-        )
-        ->addColumn(
-            'importe',
-            function ($entry) {
-                return $entry->invoice->importe;
-            }
-        )
-        ->addColumn(
-            'link',
-            function ($entry) {
-                return route('facturas.ver', $entry->invoice_id);
-            }
-        )
-        ->addColumn(
-            'codigo',
-            function ($entry) {
-                return $entry->invoice->codigo;
-            }
-        )
-        ->addColumn(
-            'saldo',
-            function ($entry) use ($entries) {
-                $saldo = 0;
-                foreach ($entries as $item) {
-                    if ($item->created_at <= $entry->created_at) {
-                        switch ($item->tipo) {
-                            case 'Ingreso':
-                                $saldo = $saldo + $item->importe;
-                                break;
-                            case 'Gasto':
-                                $saldo = $saldo - $item->importe;
-                                break;
+            ->addColumn(
+                'created_at',
+                function ($entry) {
+                    return Carbon::parse($entry->created_at)->format('d-m-Y');
+                }
+            )
+            ->addColumn(
+                'tipo',
+                function ($entry) {
+                    return $entry->entrytype->tipoentrada;
+                }
+            )
+            ->addColumn(
+                'importe',
+                function ($entry) {
+                    return $entry->invoice->importe . '€';
+                }
+            )
+            ->addColumn(
+                'link',
+                function ($entry) {
+                    return route('facturas.ver', $entry->invoice_id);
+                }
+            )
+            ->addColumn(
+                'codigo',
+                function ($entry) {
+                    return $entry->invoice->codigo;
+                }
+            )
+            ->addColumn(
+                'saldo',
+                function ($entry) use ($entries) {
+                    $saldo = 0;
+                    foreach ($entries as $item) {
+                        if ($item->created_at <= $entry->created_at) {
+                            switch ($item->entrytype->tipoentrada) {
+                                case 'Ingreso':
+                                    $saldo = $saldo + $item->importe;
+                                    break;
+                                case 'Gasto':
+                                    $saldo = $saldo - $item->importe;
+                                    break;
+                            }
                         }
                     }
+                    return $saldo;
                 }
-                return $saldo;
-            }
-        )
-        ->addColumn(
-            'action',
-            function ($entry) {
-                $btnVer = '<i class="text-success fa fa-eye"></i>'
-                . '<a href = "'
-                . route('cuentas.ver', $entry->id)
-                . '">'
-                . '<span class="text-success texto-accion">'
-                . trans('acciones_crud.view')
-                . '</span>'
-                . '</a>';
-                $btnEditar = '<i class="text-warning fa fa-pencil"></i>'
-                . '<a href="'
-                . route('cuentas.editar', $entry->id)
-                . '">'
-                . '<span class="text-warning texto-accion">'
-                . trans('acciones_crud.edit')
-                . '</span>'
-                . '</a>';
-                $btnEliminar = '<i class="text-danger fa fa-trash"></i>'
-                . '<a href="'
-                . route('cuentas.borrar', $entry->id)
-                . '">'
-                . '<span class="text-danger texto-accion">'
-                . trans('acciones_crud.delete')
-                . '</span>'
-                . '</a>';
+            )
+            ->addColumn(
+                'action',
+                function ($entry) {
+                    $btnVer = '<i class="text-success fa fa-eye"></i>'
+                    . '<a href = "'
+                    . route('cuentas.ver', $entry->id)
+                    . '">'
+                    . '<span class="text-success texto-accion">'
+                    . trans('acciones_crud.view')
+                        . '</span>'
+                        . '</a>';
+                    $btnEditar = '<i class="text-warning fa fa-pencil"></i>'
+                    . '<a href="'
+                    . route('cuentas.editar', $entry->id)
+                    . '">'
+                    . '<span class="text-warning texto-accion">'
+                    . trans('acciones_crud.edit')
+                        . '</span>'
+                        . '</a>';
 
-                return $btnVer . ' ' . $btnEditar . ' ' . $btnEliminar;
-            }
-        )
-        ->make(true);
+                    return $btnVer . ' ' . $btnEditar;
+                }
+            )
+            ->make(true);
     }
 
     /**
@@ -118,9 +123,10 @@ class CuentasController extends Controller
     public function create()
     {
         $modo = 'new';
+        $tiposEntrada = $this->tipoEntrada->tiposEntrada();
         $facturas = $this->factura->facturasImportadasPorPeriodo($this->periodo->buscarPeriodoActivo()->periodo);
 
-        return view('backend.cuentas.nueva', compact('modo', 'facturas'));
+        return view('backend.cuentas.nueva', compact('modo', 'facturas', 'tiposEntrada'));
     }
 
     /**
@@ -129,11 +135,11 @@ class CuentasController extends Controller
     public function nuevoItem(CreateEntryRequest $request)
     {
         $data = $this->entrada->crearEntrada($request);
-        $periodo = $this->periodo->buscarPeriodoActivo();
+        $importes = $this->entrada->calcularImportesPeriodo($data->periodo);
 
-        $this->periodo->actualizarSaldoPeriodo($periodo->periodo);
+        $this->periodo->actualizarImportes($data->periodo, $importes);
 
-        flash(trans('acciones_crud.addedentry', ['entrada' => $data->concepto]))->success();
+        flash(trans('acciones_crud.addedentry', ['entrada' => $data->created_at]))->success();
         return redirect(route('cuentas.list'));
     }
 
@@ -154,17 +160,31 @@ class CuentasController extends Controller
     public function editar($id)
     {
         $modo = 'update';
+        $tiposEntrada = $this->tipoEntrada->tiposEntrada();
         $facturas = $this->factura->facturasImportadasPorPeriodo($this->periodo->buscarPeriodoActivo()->periodo);
-        $item = $this->entrada->buscarEntradaPorId($id);
+        $entrada = $this->entrada->buscarEntradaPorId($id);
 
-        return view('backend.cuentas.editar', compact('modo', 'item', 'facturas'));
+        return view('backend.cuentas.editar', compact('modo', 'entrada', 'facturas', 'tiposEntrada'));
     }
 
+    /**
+     * update
+     */
     public function update($id, CreateEntryRequest $request)
     {
         $entrada = $this->entrada->updateEntrada($id, $request);
+        $importes = $this->entrada->calcularImportesPeriodo($entrada->periodo);
 
-        flash(trans('acciones_crud.updateentry', ['fecha' => $entrada->fecha]))->success();
+        $this->periodo->actualizarImportes($entrada->periodo, $importes);
+
+        flash(
+            trans(
+                'acciones_crud.updateentry',
+                [
+                'fecha' => Carbon::parse($entrada->created_at)->format('d-m-Y')
+                ]
+            )
+        )->success();
         return redirect(route('cuentas.list'));
     }
 }

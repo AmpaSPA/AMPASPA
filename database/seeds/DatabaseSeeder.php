@@ -23,5 +23,6 @@ class DatabaseSeeder extends Seeder
         $this->call(ActivitytargetsTableSeeder::class);
         $this->call(ChatterTableSeeder::class);
         $this->call(MeetingtypesTableSeeder::class);
+        $this->call(EntrytypesTableSeeder::class);
     }
 }
