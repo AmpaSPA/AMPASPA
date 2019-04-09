@@ -45,7 +45,7 @@
             {!! Form::label('tipo', trans('form_entrada.lbentrytype'), ['class' => 'col-md-3 control-label']) !!}
             <div class="col-md-8">
                 <div class="input-group">
-                    <span class="input-group-addon"><i class="fa fa-refresh"></i></span> {!! Form::text(null, $entrada->entrytype->tipoentrada,
+                    <span class="input-group-addon"><i class="fa fa-refresh"></i></span> {!! Form::text(null, $item->entrytype->tipoentrada,
                     ['class' => 'form-control', 'name' => 'tipo', 'readonly' => 'readonly']) !!}
                 </div>
             </div>
@@ -54,7 +54,7 @@
             {!! Form::label('descripcion', trans('form_entrada.lbdescription'), ['class' => 'col-md-3 control-label']) !!}
             <div class="col-md-8">
                 <div class="input-group">
-                    <span class="input-group-addon"><i class="fa fa-file-text-o"></i></span> {!! Form::textarea(null, $entrada->descripcion,
+                    <span class="input-group-addon"><i class="fa fa-file-text-o"></i></span> {!! Form::textarea(null, $item->descripcion,
                     ['class' => 'form-control', 'name' => 'descripcion', 'rows' => '4', 'readonly' => 'readonly']) !!}
                 </div>
             </div>

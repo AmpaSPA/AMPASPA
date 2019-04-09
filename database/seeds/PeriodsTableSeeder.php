@@ -12,10 +12,23 @@ class PeriodsTableSeeder extends Seeder
      */
     public function run()
     {
+        $anioDesde = null;
+        $anioHasta = null;
+
+        if (Carbon::now()->month >= 1 && Carbon::now()->month <= 6) {
+            $anioDesde = Carbon::now()->subYear()->year;
+            $anioHasta = Carbon::now()->year;
+        } else {
+            $anioDesde = Carbon::now()->year;
+            $anioHasta = Carbon::now()->addYear()->year;
+        }
+
+        $periodo = $anioDesde.'-'.$anioHasta;
+
         DB::table('periods')->insert(array(
-        'periodo' => Carbon::now()->year . '-' . Carbon::now()->addYear()->year,
-        'aniodesde' => Carbon::now()->year,
-        'aniohasta' => Carbon::now()->addYear()->year,
+        'periodo' => $periodo,
+        'aniodesde' => $anioDesde,
+        'aniohasta' => $anioHasta,
         'activo' => true,
         'created_at' => Carbon::now()->format('Y-m-d H:i:s'),
         'updated_at' => Carbon::now()->format('Y-m-d H:i:s'),

@@ -148,4 +148,11 @@ class User extends Authenticatable
         return $this->hasMany('App\Warning');
     }
 
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function receipts()
+    {
+        return $this->hasMany('App\Receipt');
+    }
 }

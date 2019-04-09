@@ -99,6 +99,19 @@ class PeriodoRepository
     }
 
     /**
+     * consolidarRecibosActivosPeriodo
+     */
+    public function consolidarRecibosActivosPeriodo($totalIngresosRecibos)
+    {
+        $curso = $this->buscarPeriodoActivo();
+
+        $curso->ingresos = $curso->ingresos + $totalIngresosRecibos;
+        $curso->saldo = $curso->ingresos - $curso->gastos;
+
+        $curso->save();
+    }
+
+    /**
      * actualizarSocios
      */
     public function actualizarSocios($totalSocios)

@@ -7,20 +7,19 @@
 
 namespace App\Repositories;
 
-use Auth;
-use App\User;
 use App\Doctype;
-use App\Profile;
-use App\Student;
-use Carbon\Carbon;
 use App\Membertype;
 use App\Paymenttype;
-use Illuminate\Support\Str;
-use function GuzzleHttp\Psr7\str;
-use Spatie\Permission\Models\Role;
+use App\Profile;
 use App\Repositories\CursoRepository;
 use App\Repositories\ProfileRepository;
-use App\Warning;
+use App\Student;
+use App\User;
+use Auth;
+use Carbon\Carbon;
+use function GuzzleHttp\Psr7\str;
+use Illuminate\Support\Str;
+use Spatie\Permission\Models\Role;
 
 class SocioRepository
 {
@@ -28,13 +27,13 @@ class SocioRepository
     protected $profile;
 
     /**
-     * SocioRepository constructor.
-     * @param \App\Repositories\CursoRepository $cursos
-     * @param ProfileRepository $profile
+     * __construct
      */
-    public function __construct(CursoRepository $cursos, ProfileRepository $profile)
-    {
-        $this->cursos = $cursos;
+    public function __construct(
+        CursoRepository $cursos,
+        ProfileRepository $profile
+    ) {
+        $this->cursos  = $cursos;
         $this->profile = $profile;
     }
 
@@ -154,14 +153,14 @@ class SocioRepository
     {
 
         // Se crea el usuario
-        $data = new User();
-        $data->nombre = $request->nombre;
-        $data->apellidos = $request->apellidos;
-        $data->email = $request->email;
-        $data->telefono = $request->telefono;
-        $data->doctype_id = $request->doctype_id;
-        $data->numdoc = $request->numdoc;
-        $data->membertype_id = $request->membertype_id;
+        $data                 = new User();
+        $data->nombre         = $request->nombre;
+        $data->apellidos      = $request->apellidos;
+        $data->email          = $request->email;
+        $data->telefono       = $request->telefono;
+        $data->doctype_id     = $request->doctype_id;
+        $data->numdoc         = $request->numdoc;
+        $data->membertype_id  = $request->membertype_id;
         $data->paymenttype_id = $request->paymenttype_id;
         $data->save();
 
@@ -169,7 +168,7 @@ class SocioRepository
         $this->profile->crearprofile($data->id);
 
         $avatar = public_path('assets/images/avatar_default.png');
-        $ruta = public_path('assets/images/uploads/') . $data->id . '/avatars/';
+        $ruta   = public_path('assets/images/uploads/') . $data->id . '/avatars/';
         @mkdir($ruta, 0777, true);
         @copy($avatar, $ruta . 'avatar_default.png');
 
@@ -186,9 +185,9 @@ class SocioRepository
      */
     public function altamasivasocio($item)
     {
-        $hijo = [];
+        $hijo      = [];
         $anionacim = [];
-        $numhijos = (int) $item->numhijos;
+        $numhijos  = (int) $item->numhijos;
 
         switch ($numhijos) {
             case 1:
@@ -240,12 +239,12 @@ class SocioRepository
         }
 
         // Alta del socio
-        $data = new User();
-        $data->nombre = $item->nombre;
+        $data            = new User();
+        $data->nombre    = $item->nombre;
         $data->apellidos = $item->apellidos;
-        $data->email = $item->email;
-        $data->telefono = substr($item->telefono, 0, 9);
-        $data->numdoc = $item->numdoc;
+        $data->email     = $item->email;
+        $data->telefono  = substr($item->telefono, 0, 9);
+        $data->numdoc    = $item->numdoc;
         $data->save();
 
         // Se asigna al usuario el rol "Socio"
@@ -256,17 +255,17 @@ class SocioRepository
 
         // Se guarda el avatar por defecto apuntado en el perfil
         $avatar = public_path('assets/images/avatar_default.png');
-        $ruta = public_path('assets/images/uploads/') . $data->id . '/avatars/';
+        $ruta   = public_path('assets/images/uploads/') . $data->id . '/avatars/';
         @mkdir($ruta, 0777, true);
         @copy($avatar, $ruta . 'avatar_default.png');
 
         // Alta de los hijos del socio
         for ($i = 1; $i <= $numhijos; $i++) {
-            $alumno = new Student();
-            $alumno->nombre = $hijo[$i];
+            $alumno            = new Student();
+            $alumno->nombre    = $hijo[$i];
             $alumno->anionacim = $anionacim[$i];
 
-            $edad = Carbon::now()->year - $anionacim[$i];
+            $edad  = Carbon::now()->year - $anionacim[$i];
             $curso = $this->cursos->buscarcursoporedad($edad);
 
             if ($edad > 15) {
@@ -278,12 +277,12 @@ class SocioRepository
             }
 
             $alumno->user_id = $data->id;
-            $socio = $this->buscarsocioporid($data->id);
+            $socio           = $this->buscarsocioporid($data->id);
 
             $socio->students()->save($alumno);
         }
 
-        return $item;
+        return $socio;
     }
 
     /**
@@ -317,18 +316,22 @@ class SocioRepository
      * @param $id
      * @return string
      */
-    public function removesocio($id)
+    public function removesocio($id, $periodo)
     {
-        // Se toman todos los datos del socio a borrar
+        // Se toman todos los datos del socio marcado para borrar
         $socio = User::withTrashed()->find($id);
 
         // Se borra el documento de adhesión
-        $ruta_docadhesion = public_path('assets/docs/');
+        $ruta_docadhesion = public_path('assets/docs/') . $id . '/adhesion/';
         unlink($ruta_docadhesion . $socio->numdoc . '.pdf');
+
+        // Se borra el documento de recibo
+        $ruta     = public_path('assets/docs/') . $id . '/recibos/';
+        $filename = $periodo->aniodesde . $periodo->aniohasta . $socio->numdoc . '.pdf';
 
         // Se borra el avatar
         $ruta_avatar = public_path('assets/images/uploads/') . $id . '/avatars/';
-        $files = scandir($ruta_avatar, SCANDIR_SORT_ASCENDING);
+        $files       = scandir($ruta_avatar, SCANDIR_SORT_ASCENDING);
         foreach ($files as $file) {
             if (!is_dir($file)) {
                 unlink($ruta_avatar . $file);
@@ -371,11 +374,11 @@ class SocioRepository
      */
     public function crearalumnoporsocio($request)
     {
-        $edad = Carbon::now()->year - $request->anionacim;
+        $edad  = Carbon::now()->year - $request->anionacim;
         $curso = $this->cursos->buscarcursoporedad($edad);
 
-        $data = new Student();
-        $data->nombre = $request->nombre;
+        $data            = new Student();
+        $data->nombre    = $request->nombre;
         $data->anionacim = $request->anionacim;
 
         if ($edad > 15) {
@@ -408,7 +411,7 @@ class SocioRepository
      */
     public function changeavatar($filename, $request)
     {
-        $profile = $this->profilesocio($request->user_id);
+        $profile         = $this->profilesocio($request->user_id);
         $profile->avatar = $filename;
         $profile->save();
     }
@@ -419,7 +422,7 @@ class SocioRepository
      */
     public function changefirma($filename, $id)
     {
-        $profile = $this->profilesocio($id);
+        $profile        = $this->profilesocio($id);
         $profile->firma = $filename;
         $profile->save();
     }
@@ -430,7 +433,7 @@ class SocioRepository
      */
     public function changerecibo($filename, $id)
     {
-        $profile = $this->profilesocio($id);
+        $profile         = $this->profilesocio($id);
         $profile->recibo = $filename;
         $profile->save();
     }
@@ -440,8 +443,8 @@ class SocioRepository
      */
     public function changeprofileinfo($request)
     {
-        $profile = $this->profilesocio($request->user_id);
-        $profile->bio = $request->bio;
+        $profile            = $this->profilesocio($request->user_id);
+        $profile->bio       = $request->bio;
         $profile->aficiones = $request->aficiones;
         $profile->profesion = $request->profesion;
         $profile->save();
@@ -637,10 +640,10 @@ class SocioRepository
 
         if ($documento == 'Recibo') {
             $socio->reciboimportado = false;
-            $socio->corrientepago = false;
+            $socio->corrientepago   = false;
         } elseif ($documento == 'Firma') {
             $socio->firmaimportada = false;
-            $socio->firmacorrecta = false;
+            $socio->firmacorrecta  = false;
         }
 
         $socio->save();
@@ -663,15 +666,15 @@ class SocioRepository
     public function updateMasivoSituacionPago()
     {
         foreach ($this->personas() as $socio) {
-            $avisos = $socio->warnings;
+            $avisos = $socio->warnings();
             foreach ($avisos as $aviso) {
                 if ($aviso->codigo === 'WIMPRECI') {
                     $aviso->forceDelete();
                 }
             }
-            $socio->corrientepago = false;
+            $socio->corrientepago   = false;
             $socio->reciboimportado = false;
-            $socio->activo = false;
+            $socio->activo          = false;
             $socio->save();
         }
     }

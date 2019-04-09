@@ -12,6 +12,7 @@ use App\Http\Requests\UpdateJpagoRequest;
 use App\Mail\BienvenidaMail;
 use App\Repositories\AvisosRepository;
 use App\Repositories\PeriodoRepository;
+use App\Repositories\RecibosRepository;
 use App\Repositories\SocioRepository;
 use Auth;
 use Barryvdh\Snappy\Facades\SnappyPdf as PDF;
@@ -25,15 +26,21 @@ class SociosController extends Controller
     protected $socios;
     protected $avisos;
     protected $periodo;
+    protected $recibos;
 
     /**
      * __construct: Constructor de la clase. Usa los modelos: User, Warnings y Periods
      */
-    public function __construct(SocioRepository $socios, AvisosRepository $avisos, PeriodoRepository $periodo)
-    {
-        $this->socios = $socios;
-        $this->avisos = $avisos;
+    public function __construct(
+        SocioRepository $socios,
+        AvisosRepository $avisos,
+        PeriodoRepository $periodo,
+        RecibosRepository $recibos
+    ) {
+        $this->socios  = $socios;
+        $this->avisos  = $avisos;
         $this->periodo = $periodo;
+        $this->recibos = $recibos;
     }
 
     /**
@@ -50,10 +57,10 @@ class SociosController extends Controller
      */
     public function create()
     {
-        $modo = 'new';
-        $tdocs = $this->socios->tiposdoc();
+        $modo    = 'new';
+        $tdocs   = $this->socios->tiposdoc();
         $tsocios = $this->socios->tipossocio();
-        $tpagos = $this->socios->tipospago();
+        $tpagos  = $this->socios->tipospago();
 
         return view('backend.socios.nuevo', compact('modo', 'tdocs', 'tsocios', 'tpagos'));
     }
@@ -63,11 +70,11 @@ class SociosController extends Controller
      */
     public function edit($id)
     {
-        $modo = 'update';
-        $socio = $this->socios->buscarsocioporid($id);
-        $tdocs = $this->socios->tiposdoc();
+        $modo    = 'update';
+        $socio   = $this->socios->buscarsocioporid($id);
+        $tdocs   = $this->socios->tiposdoc();
         $tsocios = $this->socios->tipossocio();
-        $tpagos = $this->socios->tipospago();
+        $tpagos  = $this->socios->tipospago();
 
         return view(
             'backend.socios.editar',
@@ -142,8 +149,8 @@ class SociosController extends Controller
      */
     public function verdata($id)
     {
-        $socio = $this->socios->socioAutenticado();
-        $tdocs = $this->socios->tiposdoc();
+        $socio  = $this->socios->socioAutenticado();
+        $tdocs  = $this->socios->tiposdoc();
         $tpagos = $this->socios->tipospago();
 
         return view('backend.socios.verdata', compact('socio', 'tdocs', 'tpagos'));
@@ -192,36 +199,36 @@ class SociosController extends Controller
                 function ($user) {
                     $btnVer = '<i class="text-success fa fa-eye"></i>'
                     . '<a href = "'
-                    . url('backend/socios/ver/'.$user->id)
+                    . url('backend/socios/ver/' . $user->id)
                     . '">'
                     . '<span class="text-success texto-accion">'
                     . trans('acciones_crud.view')
-                    . '</span>'
-                    . '</a>';
+                        . '</span>'
+                        . '</a>';
                     $btnEditar = '<i class="text-warning fa fa-pencil"></i>'
                     . '<a href="'
-                    . url('backend/socios/edit/'.$user->id)
+                    . url('backend/socios/edit/' . $user->id)
                     . '">'
                     . '<span class="text-warning texto-accion">'
                     . trans('acciones_crud.edit')
-                    . '</span>'
-                    . '</a>';
+                        . '</span>'
+                        . '</a>';
                     $btnEliminar = '<i class="text-danger fa fa-trash"></i>'
                     . '<a href="'
-                    . url('backend/socios/borrar/'.$user->id)
+                    . url('backend/socios/borrar/' . $user->id)
                     . '">'
                     . '<span class="text-danger texto-accion">'
                     . trans('acciones_crud.delete')
-                    . '</span>'
-                    . '</a>';
+                        . '</span>'
+                        . '</a>';
                     $btnAlumnos = '<i class="text-info fa fa-graduation-cap"></i>'
                     . '<a href="'
-                    . url('/backend/alumnos/create/socio/'.$user->id)
+                    . url('/backend/alumnos/create/socio/' . $user->id)
                     . '">'
                     . '<span class="text-info texto-accion">'
                     . trans('acciones_crud.students')
-                    . '</span>'
-                    . '</a>';
+                        . '</span>'
+                        . '</a>';
 
                     return $btnVer . ' ' . $btnEditar . ' ' . $btnEliminar . ' ' . $btnAlumnos;
                 }
@@ -234,11 +241,11 @@ class SociosController extends Controller
      */
     public function view($id)
     {
-        $modo = 'view';
-        $socio = $this->socios->buscarsocioporid($id);
+        $modo         = 'view';
+        $socio        = $this->socios->buscarsocioporid($id);
         $sociotipodoc = $this->socios->buscartipodocumento($id);
-        $sociotipo = $this->socios->buscartiposocio($id);
-        $pagotipo = $this->socios->buscartipopago($id);
+        $sociotipo    = $this->socios->buscartiposocio($id);
+        $pagotipo     = $this->socios->buscartipopago($id);
 
         return view('backend.socios.ver', compact('socio', 'modo', 'sociotipodoc', 'sociotipo', 'pagotipo'));
     }
@@ -249,7 +256,7 @@ class SociosController extends Controller
     public function viewsignature($id)
     {
         $socio = $this->socios->buscarsocioporid($id);
-        $pdf = public_path('assets/docs/') . $id . '/adhesion/' . $socio->numdoc . '.pdf';
+        $pdf   = public_path('assets/docs/') . $id . '/adhesion/' . $socio->numdoc . '.pdf';
 
         header('Content-type: application/pdf');
         readfile($pdf);
@@ -261,7 +268,7 @@ class SociosController extends Controller
     public function viewrecibo($id)
     {
         $periodo = $this->periodo->buscarPeriodoActivo();
-        $socio = $this->socios->buscarsocioporid($id);
+        $socio   = $this->socios->buscarsocioporid($id);
 
         $pdf = public_path('assets/docs/') . $id
         . '/recibos/'
@@ -279,8 +286,8 @@ class SociosController extends Controller
      */
     public function viewprofile($id)
     {
-        $socio = $this->socios->buscarsocioporid($id);
-        $hijos = $this->socios->alumnosporsocio($id);
+        $socio   = $this->socios->buscarsocioporid($id);
+        $hijos   = $this->socios->alumnosporsocio($id);
         $profile = $this->socios->profilesocio($id);
 
         return view('backend.socios.infocompleta', compact('socio', 'hijos', 'profile'));
@@ -292,11 +299,12 @@ class SociosController extends Controller
      */
     public function store(CreateUserRequest $request)
     {
-        $data = $this->socios->crearsocio($request);
+        $data   = $this->socios->crearsocio($request);
+        $recibo = $this->recibos->crearReciboUsuario($data->id);
 
         $tdocumento = $data->doctype->tipodoc;
-        $tpago = $data->paymenttype->tipopago;
-        $pdf = public_path('assets/docs/' . $data->id . '/adhesion/') . $data->numdoc . '.pdf';
+        $tpago      = $data->paymenttype->tipopago;
+        $pdf        = public_path('assets/docs/' . $data->id . '/adhesion/') . $data->numdoc . '.pdf';
 
         PDF::loadView(
             'backend.socios.adhesion',
@@ -332,6 +340,7 @@ class SociosController extends Controller
         $socio = $this->socios->buscarsocioporid($id);
 
         if (Auth::user()->id != $id) {
+            $this->socios->borrarsocio($id);
             flash(
                 trans(
                     'acciones_crud.deletemember',
@@ -398,7 +407,10 @@ class SociosController extends Controller
      */
     public function bajadefinitiva($id)
     {
-        $nombre_socio = $this->socios->removesocio($id);
+        $periodo = $this->periodo->buscarPeriodoActivo();
+
+        $this->recibos->borrarRecibosSocio($id);
+        $nombre_socio = $this->socios->removesocio($id, $periodo);
 
         $carpeta = public_path('assets/docs/') . $id;
 
@@ -474,7 +486,7 @@ class SociosController extends Controller
             ->addColumn(
                 'action',
                 function ($inactivo) {
-                    $btnFirma = null;
+                    $btnFirma  = null;
                     $btnRecibo = null;
 
                     if (!$inactivo->firmaimportada) {
@@ -484,8 +496,8 @@ class SociosController extends Controller
                         . '">'
                         . '<span class="text-warning texto-accion">'
                         . trans('message.importsignature')
-                        . '</span>'
-                        . '</a>';
+                            . '</span>'
+                            . '</a>';
                     }
                     if (!$inactivo->reciboimportado) {
                         $btnRecibo = '<i class="text-success fa fa-upload"></i>'
@@ -494,8 +506,8 @@ class SociosController extends Controller
                         . '">'
                         . '<span class="text-success texto-accion">'
                         . trans('message.importreceipt')
-                        . '</span>'
-                        . '</a>';
+                            . '</span>'
+                            . '</a>';
                     }
 
                     return $btnFirma . ' ' . $btnRecibo;
@@ -510,7 +522,7 @@ class SociosController extends Controller
     public function importarRecibo($id)
     {
         $url_profile = false;
-        $url = $this->obtenerUrl();
+        $url         = $this->obtenerUrl();
 
         if (stripos($url, 'profile')) {
             $url_profile = true;
@@ -530,7 +542,7 @@ class SociosController extends Controller
     {
         $periodo = $this->periodo->buscarPeriodoActivo();
 
-        $ruta = public_path('assets/docs/') . $id . '/recibos/';
+        $ruta     = public_path('assets/docs/') . $id . '/recibos/';
         $filename = $periodo->aniodesde . $periodo->aniohasta . $request->numdoc . '.pdf';
 
         $request->file('jpago')->move($ruta, $filename);
@@ -538,9 +550,10 @@ class SociosController extends Controller
         $this->socios->changerecibo($ruta . $filename, $id);
 
         $this->socios->reciboImportado($id);
+        $this->recibos->actualizarReciboUsuario($id, $ruta, $filename);
 
         $url_profile = false;
-        $url = $this->obtenerUrl();
+        $url         = $this->obtenerUrl();
 
         if (stripos($url, 'profile')) {
             flash(
@@ -555,6 +568,7 @@ class SociosController extends Controller
             )->success();
             return redirect(route('profile.home', $id));
         } elseif ($this->socios->activarSocio($id)->activo) {
+            $this->recibos->activarReciboUsuario($id);
             flash(
                 trans(
                     'acciones_crud.addedreceipt',
@@ -618,6 +632,7 @@ class SociosController extends Controller
 
         if ($this->socios->corrientePago($id)) {
             $this->socios->activarSocio($id);
+            $this->recibos->activarReciboUsuario($id);
             if (!$this->avisos->avisoCerrado($id, 'WIMPRECI')) {
                 $this->avisos->desactivarAviso($id, 'WIMPRECI');
             }
@@ -659,7 +674,7 @@ class SociosController extends Controller
     public function rechazarRecibo($id)
     {
         $documento = 'Recibo';
-        $socio = $this->socios->marcasDocumentoEstadoInicial($id, $documento);
+        $socio     = $this->socios->marcasDocumentoEstadoInicial($id, $documento);
 
         $carpeta_recibos = public_path('assets/docs/') . $id . '/recibos';
         $this->borrarCarpetaDocumentos($carpeta_recibos);
@@ -700,7 +715,7 @@ class SociosController extends Controller
     public function importarFirma($id)
     {
         $url_profile = false;
-        $url = $this->obtenerUrl();
+        $url         = $this->obtenerUrl();
 
         if (stripos($url, 'profile')) {
             $url_profile = true;
@@ -716,7 +731,7 @@ class SociosController extends Controller
      */
     public function gestionaradhesion(UpdateFirmaRequest $request, $id)
     {
-        $ruta = public_path('assets/docs/') . $id . '/adhesion/';
+        $ruta     = public_path('assets/docs/') . $id . '/adhesion/';
         $filename = $request->numdoc . '.pdf';
 
         $request->file('firma')->move($ruta, $filename);
@@ -726,7 +741,7 @@ class SociosController extends Controller
         $this->socios->firmaImportada($id);
 
         $url_profile = false;
-        $url = $this->obtenerUrl();
+        $url         = $this->obtenerUrl();
 
         if (stripos($url, 'profile')) {
             flash(
@@ -742,6 +757,7 @@ class SociosController extends Controller
 
             return redirect(route('profile.home', $id));
         } elseif ($this->socios->activarSocio($id)->activo) {
+            $this->recibos->activarReciboUsuario($id);
             flash(
                 trans(
                     'acciones_crud.addedsignature',
@@ -805,6 +821,7 @@ class SociosController extends Controller
 
         if ($this->socios->firmaCorrecta($id)) {
             $this->socios->activarSocio($id);
+            $this->recibos->activarReciboUsuario($id);
             if (!$this->avisos->avisoCerrado($id, 'WIMPDADH')) {
                 $this->avisos->desactivarAviso($id, 'WIMPDADH');
             }
@@ -846,7 +863,7 @@ class SociosController extends Controller
     public function rechazarFirma($id)
     {
         $documento = 'Firma';
-        $socio = $this->socios->marcasDocumentoEstadoInicial($id, $documento);
+        $socio     = $this->socios->marcasDocumentoEstadoInicial($id, $documento);
 
         $carpeta_firma = public_path('assets/docs/') . $id . '/adhesion';
         $this->borrarCarpetaDocumentos($carpeta_firma);
@@ -888,7 +905,7 @@ class SociosController extends Controller
      */
     public function altamasiva(ImportCsvFileRequest $request)
     {
-        $ruta = public_path('assets/docs/');
+        $ruta     = public_path('assets/docs/');
         $filename = 'alta masiva.csv';
 
         $request->file('csvfile')->move($ruta, $filename);
@@ -905,7 +922,8 @@ class SociosController extends Controller
                     foreach ($result as $fila) {
                         if ($fila->nombre !== null && $fila->apellidos !== null) {
                             if ($this->socios->buscarsocioporemail($fila->email) === 0) {
-                                $alta = $this->socios->altamasivasocio($fila);
+                                $socio  = $this->socios->altamasivasocio($fila);
+                                $recibo = $this->recibos->crearReciboUsuario($socio->id);
                             }
                         }
                     }

@@ -13,10 +13,23 @@ class AdminUsersTableSeeder extends Seeder
      */
     public function run()
     {
+        $anioDesde = null;
+        $anioHasta = null;
+
+        if (Carbon::now()->month >= 1 && Carbon::now()->month <= 6) {
+            $anioDesde = Carbon::now()->subYear()->year;
+            $anioHasta = Carbon::now()->year;
+        } else {
+            $anioDesde = Carbon::now()->year;
+            $anioHasta = Carbon::now()->addYear()->year;
+        }
+
+        $periodo = $anioDesde.'-'.$anioHasta;
+
         DB::table('users')->insert([
             'nombre' => 'Usuario1',
             'apellidos' => 'Primer_apellido Segundo_apellido',
-            'email' => 'emailusuario1@proveedor.com',
+            'email' => 'emailUsuario1@proveedorCorreo.com',
             'password' => bcrypt('11111111a'),
             'telefono' => '111111111',
             'doctype_id' => 2,
@@ -46,6 +59,13 @@ class AdminUsersTableSeeder extends Seeder
             'role_id' => 1,
             'model_id' => 1,
             'model_type' => 'App\User',
+        ));
+        DB::table('receipts')->insert(array(
+            'user_id' => 1,
+            'periodo' => $periodo,
+            'importe' => 25,
+            'created_at' => Carbon::now()->format('Y-m-d H:i:s'),
+            'updated_at' => Carbon::now()->format('Y-m-d H:i:s'),
         ));
     }
 }

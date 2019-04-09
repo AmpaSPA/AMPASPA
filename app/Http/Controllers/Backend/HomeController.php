@@ -2,20 +2,24 @@
 
 namespace App\Http\Controllers\Backend;
 
-use Carbon\Carbon;
-use Yajra\DataTables\DataTables;
 use App\Http\Controllers\Controller;
+use App\Repositories\ActivityRepository;
+use App\Repositories\AlumnoRepository;
+use App\Repositories\AttendeeRepository;
+use App\Repositories\AvisosRepository;
+use App\Repositories\EntradaRepository;
+use App\Repositories\EntrytypeRepository;
+use App\Repositories\FacturaRepository;
+use App\Repositories\MeetingRepository;
+use App\Repositories\NotificationRepository;
+use App\Repositories\PeriodoRepository;
+use App\Repositories\RecibosRepository;
+use App\Repositories\SocioRepository;
+use App\Repositories\TiposnotificacionRepository;
+use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
-use App\Repositories\AlumnoRepository;
-use App\Repositories\AvisosRepository;
-use App\Repositories\MeetingRepository;
-use App\Repositories\PeriodoRepository;
-use App\Repositories\ActivityRepository;
-use App\Repositories\AttendeeRepository;
-use App\Repositories\NotificationRepository;
-use App\Repositories\TiposnotificacionRepository;
-use App\Repositories\SocioRepository;
+use Yajra\DataTables\DataTables;
 
 /**
  * Clase del controlador para la administración del home del backend
@@ -31,6 +35,10 @@ class HomeController extends Controller
     protected $tiposnotificacion;
     protected $periodos;
     protected $socios;
+    protected $entradas;
+    protected $recibos;
+    protected $facturas;
+    protected $tipoEntrada;
 
     /**
      * __construct: Constructor de la clase. Usa los modelos: Student, Activity y Warning
@@ -44,19 +52,27 @@ class HomeController extends Controller
         NotificationRepository $notificaciones,
         TiposnotificacionRepository $tiposnotificacion,
         PeriodoRepository $periodos,
-        SocioRepository $socios
+        SocioRepository $socios,
+        EntradaRepository $entradas,
+        RecibosRepository $recibos,
+        FacturaRepository $facturas,
+        EntrytypeRepository $tipoEntrada
     ) {
         $this->middleware('auth');
 
-        $this->alumnos = $alumnos;
-        $this->actividades = $actividades;
-        $this->reuniones = $reuniones;
-        $this->asistentes = $asistentes;
-        $this->avisos = $avisos;
-        $this->notificaciones = $notificaciones;
+        $this->alumnos           = $alumnos;
+        $this->actividades       = $actividades;
+        $this->reuniones         = $reuniones;
+        $this->asistentes        = $asistentes;
+        $this->avisos            = $avisos;
+        $this->notificaciones    = $notificaciones;
         $this->tiposnotificacion = $tiposnotificacion;
-        $this->periodos = $periodos;
-        $this->socios = $socios;
+        $this->periodos          = $periodos;
+        $this->socios            = $socios;
+        $this->entradas          = $entradas;
+        $this->recibos           = $recibos;
+        $this->facturas          = $facturas;
+        $this->tipoEntrada       = $tipoEntrada;
     }
 
     /**
@@ -67,15 +83,16 @@ class HomeController extends Controller
     public function index()
     {
         $cerrarActividades = $this->actividades->cerrarActividades();
-        $cerrarReuniones = $this->reuniones->cerrarReuniones();
-        $avisos = $this->cargarAvisos();
-        $autorizaciones = $this->cargarAutorizaciones();
-        $notificaciones = $this->cargarNotificaciones();
+        $cerrarReuniones   = $this->reuniones->cerrarReuniones();
+        $avisos            = $this->cargarAvisos();
+        $autorizaciones    = $this->cargarAutorizaciones();
+        $notificaciones    = $this->cargarNotificaciones();
 
         $this->periodos->actualizarSocios($this->socios->totalsocios());
+        $this->cargarRecibosEnEntradas($this->periodos->buscarPeriodoActivo()->periodo);
 
         $anio = Carbon::now()->year;
-        $mes = Carbon::now()->month;
+        $mes  = Carbon::now()->month;
 
         return view('backend.home', compact('anio', 'mes', 'autorizaciones', 'avisos', 'notificaciones'));
     }
@@ -162,7 +179,7 @@ class HomeController extends Controller
      */
     public function notificacionesTipo($tiponotificacion)
     {
-        $tipo = $this->tiposnotificacion->textoNotificacionPorTipo($tiponotificacion)->notificacion;
+        $tipo           = $this->tiposnotificacion->textoNotificacionPorTipo($tiponotificacion)->notificacion;
         $notificaciones = $this->notificaciones->notificacionesPorTipoyUserid($tiponotificacion, Auth::user()->id);
 
         return view('backend.home.notificacionestipo', compact('tipo', 'notificaciones'));
@@ -174,8 +191,7 @@ class HomeController extends Controller
     public function notificacionesTipoLeer($id)
     {
         $notificacion = $this->notificaciones->notificacionesPorIdyUserid($id, Auth::user()->id);
-        $tipo = $this->tiposnotificacion->textoNotificacionPorTipo($notificacion->type)->notificacion;
-
+        $tipo         = $this->tiposnotificacion->textoNotificacionPorTipo($notificacion->type)->notificacion;
 
         return view('backend.home.notificacionestipoleer', compact('notificacion', 'tipo'));
     }
@@ -210,7 +226,7 @@ class HomeController extends Controller
     public function notificacionesVencida($id)
     {
         $notificacion = $this->notificaciones->notificacionesPorIdyUserid($id, Auth::user()->id);
-        $tipo = $notificacion->type;
+        $tipo         = $notificacion->type;
 
         $notificacion->markAsRead();
 
@@ -231,9 +247,9 @@ class HomeController extends Controller
      */
     public function panelAutorizaciones()
     {
-        $alumnos = Auth::user()->students;
+        $alumnos                   = Auth::user()->students;
         $autorizaciones_pendientes = [];
-        $total_aut_pendientes = 0;
+        $total_aut_pendientes      = 0;
 
         foreach ($alumnos as $alumno) {
             $tot_aut_pend = 0;
@@ -245,9 +261,10 @@ class HomeController extends Controller
 
             if ($tot_aut_pend > 0) {
                 $total_aut_pendientes = $total_aut_pendientes + $tot_aut_pend;
+
                 $autorizaciones_pendientes[] = array(
-                    'id' => $alumno->id,
-                    'nombre' => $alumno->nombre,
+                    'id'           => $alumno->id,
+                    'nombre'       => $alumno->nombre,
                     'tot_aut_pend' => $tot_aut_pend,
                 );
             }
@@ -263,7 +280,7 @@ class HomeController extends Controller
      */
     public function cargarAutorizaciones()
     {
-        $alumnos = Auth::user()->students;
+        $alumnos              = Auth::user()->students;
         $total_aut_pendientes = 0;
 
         foreach ($alumnos as $alumno) {
@@ -288,44 +305,44 @@ class HomeController extends Controller
      */
     public function autorizarSeleccion($id_alumno)
     {
-        $alumno = $this->alumnos->buscaralumnoporid($id_alumno);
+        $alumno     = $this->alumnos->buscaralumnoporid($id_alumno);
         $url_alumno = false;
-        $url = $this->obtenerUrl();
+        $url        = $this->obtenerUrl();
 
         if (stripos($url, 'alumno')) {
             $url_alumno = true;
         }
 
-        $act_pend_aut = [];
-        $act_ya_aut = [];
+        $act_pend_aut  = [];
+        $act_ya_aut    = [];
         $act_desistida = [];
 
         foreach ($alumno->activities as $actividad) {
             if (!$actividad->pivot->authorized && !$actividad->cerrada) {
-                $act_pend = $this->actividades->buscaractividadporid($actividad->id);
+                $act_pend       = $this->actividades->buscaractividadporid($actividad->id);
                 $act_pend_aut[] = array(
-                    'id' => $act_pend->id,
-                    'fecha' => $act_pend->fechaactividad,
-                    'nombre' => $act_pend->nombre,
+                    'id'          => $act_pend->id,
+                    'fecha'       => $act_pend->fechaactividad,
+                    'nombre'      => $act_pend->nombre,
                     'descripcion' => $act_pend->descripcion,
-                    'tipo' => $act_pend->activitytype->tipoactividad,
-                    'precio' => $act_pend->precio,
-                    'subvencion' => $act_pend->subvencion,
+                    'tipo'        => $act_pend->activitytype->tipoactividad,
+                    'precio'      => $act_pend->precio,
+                    'subvencion'  => $act_pend->subvencion,
                 );
             } elseif ($actividad->cerrada && !$actividad->pivot->authorized) {
-                $act_des = $this->actividades->buscaractividadporid($actividad->id);
+                $act_des         = $this->actividades->buscaractividadporid($actividad->id);
                 $act_desistida[] = array(
-                    'id' => $act_des->id,
-                    'fecha' => $act_des->fechaactividad,
-                    'nombre' => $act_des->nombre,
+                    'id'          => $act_des->id,
+                    'fecha'       => $act_des->fechaactividad,
+                    'nombre'      => $act_des->nombre,
                     'descripcion' => $act_des->descripcion,
                 );
             } elseif ($actividad->pivot->authorized) {
-                $act_ya = $this->actividades->buscaractividadporid($actividad->id);
+                $act_ya       = $this->actividades->buscaractividadporid($actividad->id);
                 $act_ya_aut[] = array(
-                    'id' => $act_ya->id,
-                    'fecha' => $act_ya->fechaactividad,
-                    'nombre' => $act_ya->nombre,
+                    'id'          => $act_ya->id,
+                    'fecha'       => $act_ya->fechaactividad,
+                    'nombre'      => $act_ya->nombre,
                     'descripcion' => $act_ya->descripcion,
                 );
             };
@@ -350,7 +367,7 @@ class HomeController extends Controller
     public function autorizarActividad($id_alumno, $id_actividad)
     {
         $actividad = $this->actividades->buscaractividadporid($id_actividad);
-        $alumno = $this->alumnos->buscaralumnoporid($id_alumno);
+        $alumno    = $this->alumnos->buscaralumnoporid($id_alumno);
 
         if ($actividad->fechaactividad >= Carbon::now()->format('Y-m-d')) {
             $this->actividades->autorizarActividadPivot($id_alumno, $id_actividad);
@@ -393,9 +410,9 @@ class HomeController extends Controller
     public function avisoCambiarPassword($secret)
     {
         if (Hash::check($secret, Auth::user()->password)) {
-            $fecha = Carbon::now()->format('Y-m-d');
+            $fecha  = Carbon::now()->format('Y-m-d');
             $codigo = 'WCHGPASS';
-            $aviso = 'Por motivos de seguridad debería Ud. cambiar su contraseña ya que la actual es una
+            $aviso  = 'Por motivos de seguridad debería Ud. cambiar su contraseña ya que la actual es una
              contraseña genérica. En caso de mantener su contraseña actual, terceras personas podrían
              acceder a su cuenta.';
             $solucion = 'Abra el desplegable con su nombre en la parte superior de la página y acceda
@@ -414,9 +431,9 @@ class HomeController extends Controller
     public function avisoSubirAcuerdoDeAdhesion()
     {
         if (!Auth::user()->firmacorrecta) {
-            $fecha = Carbon::now()->format('Y-m-d');
+            $fecha  = Carbon::now()->format('Y-m-d');
             $codigo = 'WIMPDADH';
-            $aviso = 'Por favor, Ud. debe hacernos llegar el documento de acuerdo de adhesión que en
+            $aviso  = 'Por favor, Ud. debe hacernos llegar el documento de acuerdo de adhesión que en
             su día le fue remitido por esta AMPA. Dicho documento deberá estar firmado por Ud.';
             $solucion = 'Realice una de las siguientes acciones: a) Imprímalo, fírmelo y escanéelo
              en formato pdf y súbalo a esta aplicación. Si desea optar por esta solución abra el
@@ -438,9 +455,9 @@ class HomeController extends Controller
     public function avisoSubirRecibo()
     {
         if (!Auth::user()->corrientepago) {
-            $fecha = Carbon::now()->format('Y-m-d');
+            $fecha  = Carbon::now()->format('Y-m-d');
             $codigo = 'WIMPRECI';
-            $aviso = 'Por favor, Ud. debe hacernos llegar el recibo o justificante del pago de
+            $aviso  = 'Por favor, Ud. debe hacernos llegar el recibo o justificante del pago de
              su cuota de socio.';
             $solucion = 'Escanéelo en formato pdf y realice una de las siguientes acciones: a)
              Súbalo a esta aplicación. Si desea optar por esta solución abra el desplegable con su
@@ -451,6 +468,67 @@ class HomeController extends Controller
             $user_id = Auth::user()->id;
 
             return $this->avisos->crearAviso($codigo, $fecha, $aviso, $solucion, $user_id);
+        }
+    }
+
+    /**
+     * cargarRecibosEnEntradas
+     */
+    public function cargarRecibosEnEntradas($periodo)
+    {
+        $datosFactura = [
+            'periodo'      => $periodo,
+            'fecha'        => null,
+            'emisor'       => null,
+            'destinatario' => 'AMPASPAB',
+            'concepto'     => null,
+            'factura'      => null,
+            'importe'      => null,
+            'importada'    => true,
+        ];
+
+        $datosEntrada = [
+            'periodo'      => $periodo,
+            'invoice_id'   => null,
+            'emisor'       => null,
+            'entrytype_id' => null,
+            'descripcion'  => null,
+            'importe'      => null,
+        ];
+
+        $totalIngresosRecibos = 0;
+
+        $recibos = $this->recibos->buscarRecibosActivosPorPeriodo($periodo);
+
+        foreach ($recibos as $recibo) {
+            $socio = $this->socios->buscarsocioporid($recibo->user_id);
+
+            $datosFactura['fecha']    = Carbon::parse($recibo->created_at)->format('Y-m-d');
+            $datosFactura['factura']  = $recibo->ruta . $recibo->fichero;
+            $datosFactura['importe']  = $recibo->importe;
+            $datosFactura['emisor']   = $socio->nombre . ' ' . $socio->apellidos;
+            $datosFactura['concepto'] = 'Cuota de '
+            . $socio->nombre
+            . ' '
+            . $socio->apellidos
+            . ' ('
+            . $socio->numdoc
+                . ')';
+
+            $factura = $this->facturas->crearFacturaReciboSocio($datosFactura);
+
+            if ($factura) {
+                $datosEntrada['invoice_id']   = $factura->id;
+                $datosEntrada['entrytype_id'] = $this->tipoEntrada->buscarIdPorTipoEntrada('Ingreso')->id;
+                $datosEntrada['descripcion']  = $factura->concepto;
+                $datosEntrada['importe']      = $factura->importe;
+
+                $entrada = $this->entradas->crearEntradaReciboSocio($datosEntrada);
+
+                $totalIngresosRecibos = $totalIngresosRecibos + $entrada->importe;
+            }
+
+            $this->periodos->consolidarRecibosActivosPeriodo($totalIngresosRecibos);
         }
     }
 

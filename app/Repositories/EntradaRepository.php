@@ -27,9 +27,9 @@ class EntradaRepository
         FacturaRepository $facturas,
         EntrytypeRepository $tipoEntrada
     ) {
-        $this->periodos = $periodos;
-        $this->socios = $socios;
-        $this->facturas = $facturas;
+        $this->periodos    = $periodos;
+        $this->socios      = $socios;
+        $this->facturas    = $facturas;
         $this->tipoEntrada = $tipoEntrada;
     }
 
@@ -84,12 +84,31 @@ class EntradaRepository
     {
         $data = new Entry();
 
-        $data->periodo = $this->periodos->buscarPeriodoActivo()->periodo;
-        $data->invoice_id = $request->invoice_id;
+        $data->periodo      = $this->periodos->buscarPeriodoActivo()->periodo;
+        $data->invoice_id   = $request->invoice_id;
         $data->entrytype_id = $request->entrytype_id;
-        $data->descripcion = $request->descripcion;
-        $data->importe = $this->facturas->buscarFacturaPorId($request->invoice_id)->importe;
+        $data->descripcion  = $request->descripcion;
+        $data->importe      = $this->facturas->buscarFacturaPorId($request->invoice_id)->importe;
         $data->save();
+
+        return $data;
+    }
+
+    /**
+     * crearEntradaReciboSocio
+     */
+    public function crearEntradaReciboSocio($datosEntrada)
+    {
+        if ($this->buscarEntradaPorFacturaId($datosEntrada['invoice_id']) === null) {
+            $data = new Entry();
+
+            $data->periodo      = $datosEntrada['periodo'];
+            $data->invoice_id   = $datosEntrada['invoice_id'];
+            $data->entrytype_id = $datosEntrada['entrytype_id'];
+            $data->descripcion  = $datosEntrada['descripcion'];
+            $data->importe      = $datosEntrada['importe'];
+            $data->save();
+        }
 
         return $data;
     }
@@ -126,13 +145,13 @@ class EntradaRepository
     public function calcularImportesPeriodo($periodo)
     {
         $totalIngresosPeriodo = 0;
-        $totalGastosPeriodo = 0;
-        $saldoPeriodo = 0;
+        $totalGastosPeriodo   = 0;
+        $saldoPeriodo         = 0;
 
         $totalEntradasPeriodo = [
             'ingreso' => $totalIngresosPeriodo,
-            'gasto' => $totalGastosPeriodo,
-            'saldo' => $saldoPeriodo
+            'gasto'   => $totalGastosPeriodo,
+            'saldo'   => $saldoPeriodo,
         ];
 
         $totalImportesPeriodo = $this->totalImportesPeriodo($periodo);

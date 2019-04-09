@@ -6,7 +6,7 @@
     'items' => [
         ['href' => '', 'icono' => 'fa fa-home', 'texto' => trans('message.home')],
         ['href' => '', 'icono' => 'fa fa-users', 'texto' => trans('message.membersbook')],
-        ['href' => route('socios.listabajas') 'icono' => 'fa fa-times-rectangle', 'texto' => trans('message.unsubscribesmaintenance')],
+        ['href' => route('socios.listabajas'), 'icono' => 'fa fa-times-rectangle', 'texto' => trans('message.unsubscribesmaintenance')],
         ['href' => '', 'icono' => 'fa fa-graduation-cap', 'texto' => trans('acciones_crud.children')],
         ],
     ])

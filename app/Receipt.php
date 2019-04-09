@@ -4,12 +4,12 @@ namespace App;
 
 use Illuminate\Database\Eloquent\Model;
 
-class Activitytype extends Model
+class Receipt extends Model
 {
     /**
      * @var string
      */
-    protected $table = 'activitytypes';
+    protected $table = 'receipts';
 
     /**
      * The attributes that are mass assignable.
@@ -17,14 +17,19 @@ class Activitytype extends Model
      * @var array
      */
     protected $fillable = [
-        'tipoactividad',
+        'user_id',
+        'periodo',
+        'fichero',
+        'ruta',
+        'importe',
+        'estado'
     ];
 
     /**
      * @return \Illuminate\Database\Eloquent\Relations\HasMany
      */
-    public function activities()
+    public function user()
     {
-        return $this->hasMany('App\Activity');
+        return $this->belongsTo('App\User');
     }
 }
