@@ -11,6 +11,7 @@
 @endcomponent
 
 @section('content')
+
     <h3>{{ trans('message.pendingimportdocuments') }}</h3>
     <p>{{ trans('message.markeddocuments') }}</p>
 

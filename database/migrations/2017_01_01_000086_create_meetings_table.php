@@ -23,6 +23,7 @@ class CreateMeetingsTable extends Migration
                 $table->time('horafinreunion');
                 $table->integer('meetingtype_id')->default(1)->unsigned();
                 $table->mediumText('nota')->nullable();
+                $table->boolean('conformada')->nullable()->default(false);
                 $table->boolean('convocada')->default(false);
                 $table->boolean('celebrada')->default(false);
                 $table->timestamps();

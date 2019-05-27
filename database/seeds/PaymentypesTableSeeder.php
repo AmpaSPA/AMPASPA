@@ -28,7 +28,7 @@ class PaymentypesTableSeeder extends Seeder
         'updated_at' => Carbon::now()->format('Y-m-d H:i:s'),
         ));
         DB::table('paymenttypes')->insert(array(
-        'tipopago' => 'Domiciciliación a mi cuenta',
+        'tipopago' => 'Domiciliación a mi cuenta',
         'created_at' => Carbon::now()->format('Y-m-d H:i:s'),
         'updated_at' => Carbon::now()->format('Y-m-d H:i:s'),
         ));

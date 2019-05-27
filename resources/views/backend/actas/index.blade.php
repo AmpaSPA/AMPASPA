@@ -18,14 +18,15 @@
         'route_param' => '',
         'columndefs' => [
             ['width' => '3%', 'targets' => 0],
-            ['width' => '44%', 'targets' => 4],
+            ['width' => '44%', 'targets' => 5],
             ],
         'columns'=> [
             ['data' => 'fecha_acta', 'name' => 'fecha_acta', 'header' => trans('cabecera_actas.date')],
             ['data' => 'autoria', 'name' => 'autoria', 'header' => trans('cabecera_actas.authorship')],
             ['data' => 'reunion', 'name' => 'reunion', 'header' => trans('form_reunion.cabmeeting')],
             ['data' => 'tipo', 'name' => 'tipo', 'header' => trans('form_reunion.cabtype')],
-            ['data' => 'action', 'name' => 'action', 'header' => trans('cabecera_socios.actions')],
+            ['data' => 'estado', 'name' => 'estado', 'header' => trans('cabecera_actas.cabstatus')],
+            ['data' => 'action', 'name' => 'action', 'header' => trans('cabecera_socios.actions')]
             ],
         'filter' => 'Filtrados'
         ])

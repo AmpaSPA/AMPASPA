@@ -18,4 +18,9 @@
     {!! Form::open(['class' => 'form-horizontal', 'role' => 'form', 'method' => 'GET', 'novalidate' => 'novalidate']) !!}
         @include('backend.includes.campos_form_entrada')
     {!! Form::close() !!}
+
+    @component('backend.components.ckeditor', [
+        'field_id' => 'descripcion'
+    ])
+    @endcomponent
 @endsection

@@ -2,14 +2,15 @@
 
 namespace App\Http\Controllers\Backend;
 
+use App\Http\Controllers\Controller;
+use App\Http\Requests\CreatePeriodRequest;
+use App\Repositories\EntradaRepository;
+use App\Repositories\EntrytypeRepository;
+use App\Repositories\PeriodoRepository;
+use App\Repositories\RecibosRepository;
+use App\Repositories\SocioRepository;
 use Carbon\Carbon;
 use Yajra\DataTables\DataTables;
-use App\Http\Controllers\Controller;
-use App\Repositories\SocioRepository;
-use App\Repositories\EntradaRepository;
-use App\Repositories\PeriodoRepository;
-use App\Repositories\EntrytypeRepository;
-use App\Http\Requests\CreatePeriodRequest;
 
 class PeriodosController extends Controller
 {
@@ -17,6 +18,7 @@ class PeriodosController extends Controller
     protected $socios;
     protected $entradas;
     protected $tipoEntrada;
+    protected $recibos;
 
     /**
      * __construct: Constructor de la clase. Usa los modelos: Period y User
@@ -25,12 +27,14 @@ class PeriodosController extends Controller
         PeriodoRepository $periodos,
         SocioRepository $socios,
         EntradaRepository $entradas,
-        EntrytypeRepository $tipoEntrada
+        EntrytypeRepository $tipoEntrada,
+        RecibosRepository $recibos
     ) {
-        $this->periodos = $periodos;
-        $this->socios = $socios;
-        $this->entradas = $entradas;
+        $this->periodos    = $periodos;
+        $this->socios      = $socios;
+        $this->entradas    = $entradas;
         $this->tipoEntrada = $tipoEntrada;
+        $this->recibos     = $recibos;
     }
 
     /**
@@ -60,9 +64,9 @@ class PeriodosController extends Controller
             ->addColumn(
                 'action',
                 function ($period) {
-                    $btnVer = null;
+                    $btnVer    = null;
                     $btnCerrar = null;
-                    $btnAbrir = null;
+                    $btnAbrir  = null;
                     if ($period->activo) {
                         if ((Carbon::now()->month >= 9 && Carbon::now()->month <= 11) && !$period->standby) {
                             return $btnCerrar = '<i class="text-danger fa fa-calendar-times-o"></i>'
@@ -117,14 +121,14 @@ class PeriodosController extends Controller
         $periodo = $this->periodos->buscarPeriodoActivo();
 
         $totalSocios = $this->socios->totalsocios();
-        $this->periodos->actualizarSocios($totalSocios);
+        $this->periodos->actualizarSocios($totalSocios, $periodo->periodo);
 
         $importes = $this->entradas->calcularImportesPeriodo($periodo->periodo);
         $this->periodos->actualizarImportes($importes);
 
         $this->socios->updateMasivoSituacionPago();
 
-        $modo = 'new';
+        $modo       = 'new';
         $nuevoCurso = ($periodo->aniodesde + 1) . '-' . ($periodo->aniohasta + 1);
 
         return view('backend.periodos.abrir', compact('modo', 'periodo', 'nuevoCurso'));
@@ -141,7 +145,7 @@ class PeriodosController extends Controller
             trans(
                 'acciones_crud.addedperiod',
                 [
-                    'periodo' => $nuevoCurso->periodo
+                    'periodo' => $nuevoCurso->periodo,
                 ]
             )
         )->success();
@@ -161,11 +165,15 @@ class PeriodosController extends Controller
         $this->periodos->marcarPeriodo($antiguoCurso->id, false);
         $this->periodos->marcarPeriodo($periodo->id, true);
 
+        foreach ($this->personas() as $socio) {
+            $this->recibos->crearReciboUsuario($socio->id, $socio->paymenttype->tipopago);
+        }
+
         flash(
             trans(
                 'acciones_crud.proccessperiod',
                 [
-                    'periodo' => $this->periodos->buscarPeriodoPorId($id)->periodo
+                    'periodo' => $this->periodos->buscarPeriodoPorId($id)->periodo,
                 ]
             )
         )->success();
@@ -178,7 +186,7 @@ class PeriodosController extends Controller
      */
     public function ver($id)
     {
-        $modo = 'view';
+        $modo  = 'view';
         $curso = $this->periodos->buscarPeriodoPorId($id);
 
         return view('backend.periodos.ver', compact('curso', 'modo'));

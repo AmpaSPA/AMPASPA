@@ -107,6 +107,8 @@ class EntradaRepository
             $data->entrytype_id = $datosEntrada['entrytype_id'];
             $data->descripcion  = $datosEntrada['descripcion'];
             $data->importe      = $datosEntrada['importe'];
+            $data->domiciliacion = $datosEntrada['domiciliacion'];
+
             $data->save();
         }
 
@@ -167,5 +169,13 @@ class EntradaRepository
         $totalEntradasPeriodo['saldo'] = $totalEntradasPeriodo['ingreso'] - $totalEntradasPeriodo['gasto'];
 
         return $totalEntradasPeriodo;
+    }
+
+    /**
+     * borrarEntrada
+     */
+    public function borrarEntrada($id)
+    {
+        return Entry::where('id', '=', $id)->forceDelete();
     }
 }

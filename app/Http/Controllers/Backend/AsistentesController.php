@@ -78,6 +78,7 @@ class AsistentesController extends Controller
         } else {
             $asistente = $this->asistentes->crearAsistentePorReunion($request);
             $asistente->meetings()->attach($request->meeting_id);
+            $this->reuniones->comprobarReunionConformada($request->meeting_id);
         }
         return redirect()->back();
     }

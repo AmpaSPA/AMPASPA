@@ -114,9 +114,9 @@ class PeriodoRepository
     /**
      * actualizarSocios
      */
-    public function actualizarSocios($totalSocios)
+    public function actualizarSocios($totalSocios, $periodo)
     {
-        $curso = $this->buscarPeriodoActivo();
+        $curso = $this->buscarPeriodoPorPeriodo($periodo);
 
         $curso->totalsocios = $totalSocios;
 

@@ -385,7 +385,7 @@ return [
     'pendingimportsignature'            => ':socio, tu acuerdo de adhesión está pendiente de importar',
     'nocurrentpaymenttext'              => ':socio, actualmente no te encuentras al corriente de pago de tu cuota
     de socio',
-    'nocurrentsignaturetext'            => 'además, tu acuerdo de adhesión también está pendiente de importar',
+    'nocurrentsignaturetext'            => ':socio, tu acuerdo de adhesión está pendiente de importar',
     'rolassignedfollowingusers'         => 'El rol :role, está asignado a los siguientes usuarios',
     'totaluserwithrole'                 => 'Total de usuarios con el rol :role: :numero',
     'deleteroletext'                    => 'Para poder borrar el rol primeramente se han de desasignar aquellos
@@ -506,10 +506,29 @@ return [
     'updateentry'                       => 'Actualizar entrada',
     'invoices'                          => 'Facturas',
     'addinvoice'                        => 'Nueva factura',
-    'importinvoicetext'                 => 'Es necesario importar la factura escaneada. Para ello haz clic sobre el código
-    que corresponda.',
+    'importinvoicetext'                 => 'Es necesario importar la factura escaneada. Para ello haz clic sobre el
+    código que corresponda.',
     'importinvoice'                     => 'Importar factura',
     'invoicedata'                       => 'Datos de la factura',
-    'noimportinvoices'                  => 'Existen facturas (:numero) sin subir a la aplicación.',
-    'updateinvoice'                     => 'Actualizar factura'
+    'noimportinvoices'                  => '{1} Hay :numero factura sin subir a la aplicación.|
+    [2,*] Hay :numero facturas sin subir a la aplicación',
+    'updateinvoice'                     => 'Actualizar factura',
+    'oldreceiptsof'                     => 'Recibos anteriores al curso actual',
+    'member'                            => 'Socio/a:',
+    'auxiliarytables'                   => 'Tablas auxiliares',
+    'newmeetingtext'                    => 'La hora de finalización de la reunión será calculada
+     como dos horas más tarde de la hora de inicio.',
+    'noimportproceedings'               => '{1} Hay :numero acta con alguna firma pendiente y que pertenece a alguna de
+     las reuniones listadas.|[2,*] Hay :numero actas con alguna firma pendiente y que pertenecen a alguna de
+     las reuniones listadas.',
+    'importproceedingtextone'           => 'Es necesario importar las actas firmadas por todos los asistentes a
+    cada una de las reuniones celebradas. ',
+    'importproceedingtexttwo'           => 'Para ello haz clic',
+    'pendingimportproceedings'          => 'Actas pendientes de importar',
+    'proceedingdata'                    => 'Datos del acta de',
+    'proceedingauthor'                  => 'Redactada por:',
+    'uploadedproceeding'                => 'El acta :acta ha sido importado correctamente.',
+    'verifydebits'                      => 'Verificar domiciliaciones',
+    'debitvalidated'                    => 'La domiciliación ha sido verfificada correctamente. :socio se encuentra al
+    corriente de pago.'
 ];

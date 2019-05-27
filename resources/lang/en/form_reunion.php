@@ -15,6 +15,7 @@ return [
     'lbmeetingdate' => 'Meeting date:',
     'entermeetingdate' => 'Enter meeting date',
     'lbmeetingtime' => 'Meeting time:',
+    'lbmeetingendtime' => 'End meeting time:',
     'entermeetingtime' => 'Enter meeting time',
     'lbnote' => 'Note:',
     'enternote' => 'Enter a short note',

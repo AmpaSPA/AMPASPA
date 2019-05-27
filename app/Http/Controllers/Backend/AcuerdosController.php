@@ -55,7 +55,7 @@ class AcuerdosController extends Controller
         $this->temas->marcarTemaAcordado($request->topic_id, true);
 
         if ($this->temas->buscarTemasNoAcordadosPorReunion($request->reunion_id)->count() > 0) {
-            return redirect(route('acuerdos.acuerdostemas', $request->topic_id));
+            return redirect(route('acuerdos.acuerdostemas', $request->reunion_id));
         } else {
             $this->actas->ponerFechaDeAutoria($request->reunion_id);
             return redirect(route('actas.list'));

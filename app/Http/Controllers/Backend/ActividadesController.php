@@ -8,10 +8,10 @@ use App\Notifications\ActividadPublicada;
 use App\Repositories\ActivityRepository;
 use App\Repositories\AlumnoRepository;
 use App\Repositories\CursoRepository;
+use App\Repositories\TiposnotificacionRepository;
 use Carbon\Carbon;
 use DataTables;
 use Illuminate\View\View;
-use App\Repositories\TiposnotificacionRepository;
 
 /**
  * Clase del controlador para la administración de las actividades
@@ -23,7 +23,6 @@ class ActividadesController extends Controller
     protected $cursos;
     protected $tiposnotificacion;
 
-
     /**
      * __construct: Constructor de la clase. Usa los modelos: Activity, Student y Course
      */
@@ -33,9 +32,9 @@ class ActividadesController extends Controller
         CursoRepository $cursos,
         TiposnotificacionRepository $tiposnotificacion
     ) {
-        $this->actividades = $actividades;
-        $this->alumnos = $alumnos;
-        $this->cursos = $cursos;
+        $this->actividades       = $actividades;
+        $this->alumnos           = $alumnos;
+        $this->cursos            = $cursos;
         $this->tiposnotificacion = $tiposnotificacion;
     }
 
@@ -69,10 +68,22 @@ class ActividadesController extends Controller
 
         return DataTables::of($activities)
             ->addColumn(
+                'fechaactividad',
+                function ($activity) {
+                    return Carbon::parse($activity->fechaactividad)->format('d-m-Y');
+                }
+            )
+            ->addColumn(
+                'subvencion',
+                function ($activity) {
+                    return $activity->subvencion . '€';
+                }
+            )
+            ->addColumn(
                 'action',
                 function ($activity) {
-                    $btnEditar = null;
-                    $btnEliminar = null;
+                    $btnEditar       = null;
+                    $btnEliminar     = null;
                     $btnAsignaciones = null;
 
                     $btnVer = '<i class="text-success fa fa-eye"></i>'
@@ -84,7 +95,7 @@ class ActividadesController extends Controller
                         . '</span>'
                         . '</a>';
 
-                    if (!$activity->publicada) {
+                    if (!$activity->publicada && !$activity->cerrada) {
                         $btnEditar = '<i class="text-warning fa fa-pencil"></i>'
                         . '<a href="'
                         . route('actividades.edit', $activity->id)
@@ -104,7 +115,7 @@ class ActividadesController extends Controller
 
                         return $btnVer . ' ' . $btnEditar . ' ' . $btnEliminar;
                     } else {
-                        if (!$activity->cerrada) {
+                        if ($activity->publicada) {
                             if ($alumnos = $activity->students->count() > 0) {
                                 $btnAsignaciones = '<i class="text-info fa fa-address-book"></i>'
                                 . '<a href="'
@@ -114,10 +125,21 @@ class ActividadesController extends Controller
                                 . trans('acciones_crud.seeassignments')
                                     . '</span>'
                                     . '</a>';
-                            }
-                        }
 
-                        return $btnVer . ' ' . $btnAsignaciones;
+                                return $btnVer . ' ' . $btnAsignaciones;
+                            }
+                        } else {
+                            $btnReagendar = '<i class="text-info fa fa-calendar"></i>'
+                            . '<a href="'
+                            . route('actividades.edit', $activity->id)
+                            . '">'
+                            . '<span class="text-info texto-accion">'
+                            . trans('acciones_crud.backtoschedule')
+                                . '</span>'
+                                . '</a>';
+
+                            return $btnVer . ' ' . $btnReagendar;
+                        }
                     }
                 }
             )
@@ -129,9 +151,9 @@ class ActividadesController extends Controller
      */
     public function create()
     {
-        $modo = 'new';
+        $modo         = 'new';
         $tactividades = $this->actividades->tiposactividad();
-        $targets = $this->actividades->colectivosactividad();
+        $targets      = $this->actividades->colectivosactividad();
 
         return view('backend.actividades.nueva', compact('modo', 'tactividades', 'targets'));
     }
@@ -152,7 +174,7 @@ class ActividadesController extends Controller
      */
     public function view($id)
     {
-        $modo = 'view';
+        $modo      = 'view';
         $actividad = $this->actividades->buscaractividadporid($id);
 
         return view('backend.actividades.ver', compact('actividad', 'modo'));
@@ -166,9 +188,9 @@ class ActividadesController extends Controller
         $actividad = $this->actividades->buscaractividadporid($id);
 
         if ($actividad->students->count() === 0) {
-            $modo = 'update';
+            $modo         = 'update';
             $tactividades = $this->actividades->tiposactividad();
-            $targets = $this->actividades->colectivosactividad();
+            $targets      = $this->actividades->colectivosactividad();
             return view('backend.actividades.editar', compact('actividad', 'tactividades', 'targets', 'modo'));
         } else {
             flash(trans('acciones_crud.noeditactivity', ['actividad' => $actividad->nombre]))->error();
@@ -204,7 +226,7 @@ class ActividadesController extends Controller
      */
     public function verAsignaciones($id_actividad)
     {
-        $actividad = $this->actividades->buscaractividadporid($id_actividad);
+        $actividad            = $this->actividades->buscaractividadporid($id_actividad);
         $total_autorizaciones = $this->actividades->totalAutorizaciones($id_actividad);
 
         return view('backend.actividades.verasignaciones', compact('actividad', 'total_autorizaciones'));
@@ -244,7 +266,7 @@ class ActividadesController extends Controller
     public function publicarActividad($id)
     {
         $actividad = $this->actividades->buscaractividadporid($id);
-        $fecha = Carbon::parse($actividad->fechaactividad)->format('d-m-Y');
+        $fecha     = Carbon::parse($actividad->fechaactividad)->format('d-m-Y');
 
         $publicada = true;
 
@@ -262,7 +284,7 @@ class ActividadesController extends Controller
             $cursos = $this->cursos->buscarCursosPorColectivo($colectivo);
 
             foreach ($cursos as $curso) {
-                $alumnos = $curso->students;
+                $alumnos = $curso->students();
                 foreach ($alumnos as $alumno) {
                     $alumno->activities()->attach($id);
                     $alumno->user->notify(new ActividadPublicada($actividad, $alumno, $fecha));
@@ -271,7 +293,7 @@ class ActividadesController extends Controller
         }
 
         $icononotificacion = 'fa-universal-access';
-        $tiponotificacion = 'App\Notifications\ActividadPublicada';
+        $tiponotificacion  = 'App\Notifications\ActividadPublicada';
         $textonotificacion = 'Actividad publicada';
         $this->tiposnotificacion->crearTipoNotificacion($icononotificacion, $tiponotificacion, $textonotificacion);
 
@@ -344,7 +366,7 @@ class ActividadesController extends Controller
     public function asignacionesData($id_actividad)
     {
         $actividad = $this->actividades->buscaractividadporid($id_actividad);
-        $students = $actividad->students;
+        $students  = $actividad->students;
 
         return DataTables::of($students)
             ->addColumn(
@@ -397,7 +419,7 @@ class ActividadesController extends Controller
     public function autorizarActividad($id_alumno, $id_actividad)
     {
         $actividad = $this->actividades->buscaractividadporid($id_actividad);
-        $alumno = $this->alumnos->buscaralumnoporid($id_alumno);
+        $alumno    = $this->alumnos->buscaralumnoporid($id_alumno);
 
         if ($actividad->fechaactividad >= Carbon::now()->format('Y-m-d')) {
             $this->actividades->autorizarActividadPivot($id_alumno, $id_actividad);
@@ -426,7 +448,7 @@ class ActividadesController extends Controller
     public function desautorizarActividad($id_alumno, $id_actividad)
     {
         $actividad = $this->actividades->buscaractividadporid($id_actividad);
-        $alumno = $this->alumnos->buscaralumnoporid($id_alumno);
+        $alumno    = $this->alumnos->buscaralumnoporid($id_alumno);
 
         $this->actividades->desautorizarActividadPivot($id_alumno, $id_actividad);
 

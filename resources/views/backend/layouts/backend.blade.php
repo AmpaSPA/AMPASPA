@@ -40,6 +40,8 @@
 			<script src="{{ asset('assets/js/backend/ampaspa.js') }}"></script>
 			@stack('datepicker')
 			@stack('timepicker')
+			@stack('ckeditor')
 			@stack('scripts')
+			@yield('js')
 		</body>
 	</html>

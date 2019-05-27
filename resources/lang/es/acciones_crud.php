@@ -99,8 +99,10 @@ return [
     'agreements'              => 'Acuerdos',
     'makeproceeding'          => 'Elaborar acta',
     'viewproceeding'          => 'Ver acta',
+    'uploadsignedproceeding'  => 'Importar acta firmada',
     'updateagreement'         => 'Modificar acuerdo',
     'proceedinggenerated'     => 'El acta se ha grabado correctamente',
+    'pendingproceedings'      => 'Actas pendientes',
     'close'                   => 'Cerrar',
     'open'                    => 'Abrir',
     'addedperiod'             => 'El curso :periodo ha sido grabado correctamente. Ahora debes abrirlo para su
@@ -112,5 +114,8 @@ return [
     'importedinvoice'         => 'La factura :factura ha sido importada correctamente.',
     'deletedinvoiceentry'     => 'La factura :factura y su entrada correspondiente han sido borradas correctamente.',
     'deletedinvoice'          => 'La factura :factura ha sido borrada correctamente',
-    'updateinvoice'           => 'La factura de :factura se ha actualizado correctamente.'
+    'updateinvoice'           => 'La factura de :factura se ha actualizado correctamente.',
+    'validatebank'            => 'Validar domiciliación',
+    'addeddebit'              => 'La domiciliación de :socio ha sido verificada correctamente.',
+    'invoice'                 => 'Factura'
 ];

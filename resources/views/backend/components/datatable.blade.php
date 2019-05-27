@@ -35,7 +35,6 @@
                             { data: '{{ $column['data'] }}', name: '{{ $column['name'] }}', orderable: false, searchable: true },
                         @endif
                     @endforeach
-
                 ],
                 @if ($table_id == 'perfilesinactivos')
                     "columnDefs": [
@@ -62,7 +61,7 @@
                 @if ($table_id == 'movimientos')
                     "columnDefs": [
                         {
-                            "targets": 1,
+                            "targets": 2,
                             "render": function ( data, type, row, meta )
                             {
                                 if (row['tipo'] === 'Gasto') {
@@ -73,17 +72,6 @@
                             }
                         },
                         {
-                            "targets": 2,
-                            "render": function ( data, type, row, meta )
-                            {
-                                return '<a target="_blank" href="'+data+'">'+row['codigo']+'</a>';
-                            }
-                        },
-                        {
-                            "targets": 3,
-                            "visible": false,
-                        },
-                        {
                             "targets": 5,
                             "render": function ( data, type, row, meta )
                             {
@@ -91,6 +79,21 @@
                                     return '<span class="text-danger"><strong>'+row['saldo']+'€</strong></span>';
                                 } else {
                                     return '<span class="text-success"><strong>'+row['saldo']+'€</strong></span>';
+                                }
+                            }
+                        },
+                    ],
+                @endif
+                @if ($table_id == 'actas')
+                    "columnDefs": [
+                        {
+                            "targets": 4,
+                            "render": function ( data, type, row, meta )
+                            {
+                                if (row['estado'] == false) {
+                                    return '<span class="text-danger"><strong>Firma pendiente</strong></span>';
+                                } else {
+                                    return '<span class="text-success"><strong>Firmada</strong></span>';
                                 }
                             }
                         },
@@ -131,6 +134,21 @@
                                 return row['importe']+'€';
                             }
                         }
+                    ],
+                @endif
+                @if ($table_id == 'recibos')
+                    "columnDefs": [
+                        {
+                            "targets": 2,
+                            "render": function ( data, type, row, meta )
+                            {
+                                if (row['estado'] === 'Pendiente') {
+                                    return '<span class="text-danger"><strong>'+row['estado']+'</strong></span>';
+                                } else {
+                                    return '<span class="text-success"><strong>'+row['estado']+'</strong></span>';
+                                }
+                            }
+                        },
                     ],
                 @endif
                 "language": {

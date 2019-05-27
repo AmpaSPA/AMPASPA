@@ -32,8 +32,9 @@
         ],
         'columns' => [
             ['data' => 'id', 'name' => 'id', 'header' => trans('form_actividad.cabid')],
+            ['data' => 'fechaactividad', 'name' => 'fechaactividad', 'header' => trans('form_actividad.cabdate')],
             ['data' => 'nombre', 'name' => 'nombre', 'header' => trans('form_actividad.cabname')],
-            ['data' => 'descripcion', 'name' => 'descripcion', 'header' => trans('form_actividad.cabdescription')],
+            ['data' => 'subvencion', 'name' => 'subvencion', 'header' => trans('form_actividad.cabgrant')],
             ['data' => 'action', 'name' => 'action', 'header' => trans('form_actividad.cabactions')],
         ],
         'filter' => 'Filtradas'

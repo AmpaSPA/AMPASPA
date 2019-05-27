@@ -62,6 +62,7 @@ class BackendComposer
             ->with('saldoPeriodo', $importes['saldo'])
             ->with('numsocios', $this->socios->totalsocios())
             ->with('numActas', $this->actas->totalActas())
+            ->with('actasSinFirma', $this->actas->totalActasSinFirmar())
             ->with('docs_pendientes_importar', $this->socios->obtenerDocsPendientesImportar()->count())
             ->with('verificar_documentos', $this->socios->verificarDocumentos()->count())
             ->with('facturas_pendientes', $this->facturas->totalFacturasSinImportar($periodo->periodo));

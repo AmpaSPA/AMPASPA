@@ -27,4 +27,9 @@
             </div>
         </div>
     {!! Form::close() !!}
+
+    @component('backend.components.ckeditor', [
+        'field_id' => 'tema'
+    ])
+    @endcomponent
 @endsection

@@ -49,4 +49,9 @@
         'time_id' => 'time'
     ])
     @endcomponent
+
+    @component('backend.components.ckeditor', [
+        'field_id' => 'nota'
+    ])
+    @endcomponent
 @endsection

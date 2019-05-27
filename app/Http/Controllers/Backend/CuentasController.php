@@ -27,9 +27,9 @@ class CuentasController extends Controller
         FacturaRepository $factura,
         EntrytypeRepository $tipoEntrada
     ) {
-        $this->periodo = $periodo;
-        $this->entrada = $entrada;
-        $this->factura = $factura;
+        $this->periodo     = $periodo;
+        $this->entrada     = $entrada;
+        $this->factura     = $factura;
         $this->tipoEntrada = $tipoEntrada;
     }
 
@@ -38,7 +38,7 @@ class CuentasController extends Controller
      */
     public function cuentasData()
     {
-        $curso = $this->periodo->buscarPeriodoActivo()->periodo;
+        $curso   = $this->periodo->buscarPeriodoActivo()->periodo;
         $entries = $this->entrada->entradasPeriodo($curso)->sortByDesc('created_at');
 
         return DataTables::of($entries)
@@ -49,27 +49,31 @@ class CuentasController extends Controller
                 }
             )
             ->addColumn(
+                'domiciliacion',
+                function ($entry) {
+                    if ($entry->domiciliacion) {
+                        return 'Si';
+                    } else {
+                        return 'No';
+                    }
+                }
+            )
+            ->addColumn(
                 'tipo',
                 function ($entry) {
                     return $entry->entrytype->tipoentrada;
                 }
             )
             ->addColumn(
-                'importe',
-                function ($entry) {
-                    return $entry->invoice->importe . '€';
-                }
-            )
-            ->addColumn(
-                'link',
-                function ($entry) {
-                    return route('facturas.ver', $entry->invoice_id);
-                }
-            )
-            ->addColumn(
                 'codigo',
                 function ($entry) {
                     return $entry->invoice->codigo;
+                }
+            )
+            ->addColumn(
+                'importe',
+                function ($entry) {
+                    return $entry->invoice->importe . '€';
                 }
             )
             ->addColumn(
@@ -94,6 +98,8 @@ class CuentasController extends Controller
             ->addColumn(
                 'action',
                 function ($entry) {
+                    $btnFactura = null;
+
                     $btnVer = '<i class="text-success fa fa-eye"></i>'
                     . '<a href = "'
                     . route('cuentas.ver', $entry->id)
@@ -110,8 +116,18 @@ class CuentasController extends Controller
                     . trans('acciones_crud.edit')
                         . '</span>'
                         . '</a>';
+                    if (!$entry->domiciliacion) {
+                        $btnFactura = '<i class="text-info fa fa-file-text"></i>'
+                        . '<a href="'
+                        . route('facturas.ver', $entry->invoice->id)
+                        . '">'
+                        . '<span class="text-info texto-accion">'
+                        . trans('acciones_crud.invoice')
+                            . '</span>'
+                            . '</a>';
+                    }
 
-                    return $btnVer . ' ' . $btnEditar;
+                    return $btnVer . ' ' . $btnEditar . ' ' . $btnFactura;
                 }
             )
             ->make(true);
@@ -122,9 +138,9 @@ class CuentasController extends Controller
      */
     public function create()
     {
-        $modo = 'new';
+        $modo         = 'new';
         $tiposEntrada = $this->tipoEntrada->tiposEntrada();
-        $facturas = $this->factura->facturasImportadasPorPeriodo($this->periodo->buscarPeriodoActivo()->periodo);
+        $facturas     = $this->factura->facturasImportadasPorPeriodo($this->periodo->buscarPeriodoActivo()->periodo);
 
         return view('backend.cuentas.nueva', compact('modo', 'facturas', 'tiposEntrada'));
     }
@@ -134,7 +150,7 @@ class CuentasController extends Controller
      */
     public function nuevoItem(CreateEntryRequest $request)
     {
-        $data = $this->entrada->crearEntrada($request);
+        $data     = $this->entrada->crearEntrada($request);
         $importes = $this->entrada->calcularImportesPeriodo($data->periodo);
 
         $this->periodo->actualizarImportes($data->periodo, $importes);
@@ -159,10 +175,10 @@ class CuentasController extends Controller
      */
     public function editar($id)
     {
-        $modo = 'update';
+        $modo         = 'update';
         $tiposEntrada = $this->tipoEntrada->tiposEntrada();
-        $facturas = $this->factura->facturasImportadasPorPeriodo($this->periodo->buscarPeriodoActivo()->periodo);
-        $entrada = $this->entrada->buscarEntradaPorId($id);
+        $facturas     = $this->factura->facturasImportadasPorPeriodo($this->periodo->buscarPeriodoActivo()->periodo);
+        $entrada      = $this->entrada->buscarEntradaPorId($id);
 
         return view('backend.cuentas.editar', compact('modo', 'entrada', 'facturas', 'tiposEntrada'));
     }
@@ -172,16 +188,16 @@ class CuentasController extends Controller
      */
     public function update($id, CreateEntryRequest $request)
     {
-        $entrada = $this->entrada->updateEntrada($id, $request);
+        $entrada  = $this->entrada->updateEntrada($id, $request);
         $importes = $this->entrada->calcularImportesPeriodo($entrada->periodo);
 
-        $this->periodo->actualizarImportes($entrada->periodo, $importes);
+        $this->periodo->actualizarImportes($importes);
 
         flash(
             trans(
                 'acciones_crud.updateentry',
                 [
-                'fecha' => Carbon::parse($entrada->created_at)->format('d-m-Y')
+                    'fecha' => Carbon::parse($entrada->created_at)->format('d-m-Y'),
                 ]
             )
         )->success();

@@ -32,6 +32,7 @@ return [
     'entertarget' => 'Enter target',
     'cabid' => 'ID',
     'cabname' => 'Name',
+    'cabgrant' => 'Grant',
     'cabdescription' => 'Description',
     'cabdate' => 'Date',
     'cabtype' => 'Type',

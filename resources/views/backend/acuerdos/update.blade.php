@@ -43,4 +43,9 @@
             </div>
         {!! Form::close() !!}
     </div>
+
+    @component('backend.components.ckeditor', [
+        'field_id' => 'acuerdo'
+    ])
+    @endcomponent
 @endsection

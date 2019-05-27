@@ -16,10 +16,10 @@ use App\Repositories\RecibosRepository;
 use App\Repositories\SocioRepository;
 use Auth;
 use Barryvdh\Snappy\Facades\SnappyPdf as PDF;
-use DataTables;
 use Excel;
 use Illuminate\Foundation\Auth\User;
 use Illuminate\Support\Facades\Mail;
+use Yajra\DataTables\DataTables;
 
 class SociosController extends Controller
 {
@@ -299,12 +299,14 @@ class SociosController extends Controller
      */
     public function store(CreateUserRequest $request)
     {
-        $data   = $this->socios->crearsocio($request);
-        $recibo = $this->recibos->crearReciboUsuario($data->id);
+        $data = $this->socios->crearsocio($request);
 
         $tdocumento = $data->doctype->tipodoc;
         $tpago      = $data->paymenttype->tipopago;
-        $pdf        = public_path('assets/docs/' . $data->id . '/adhesion/') . $data->numdoc . '.pdf';
+
+        $recibo = $this->recibos->crearReciboUsuario($data->id, $tpago);
+
+        $pdf = public_path('assets/docs/' . $data->id . '/adhesion/') . $data->numdoc . '.pdf';
 
         PDF::loadView(
             'backend.socios.adhesion',
@@ -435,6 +437,7 @@ class SociosController extends Controller
     public function gestiondocumentos()
     {
         $pendientes_gestion = $this->socios->obtenerDocsPendientesImportar();
+
         return view('backend.socios.listainactivos', compact('pendientes_gestion'));
     }
 
@@ -472,22 +475,27 @@ class SociosController extends Controller
             ->addColumn(
                 'recibo',
                 function ($inactivo) {
-                    if (!$inactivo->reciboimportado) {
-                        return trans(
-                            'message.yes'
-                        );
+                    if ($inactivo->paymenttype->tipopago === 'Domiciliación a mi cuenta') {
+                        return 'n/a';
                     } else {
-                        return trans(
-                            'message.not'
-                        );
+                        if (!$inactivo->reciboimportado) {
+                            return trans(
+                                'message.yes'
+                            );
+                        } else {
+                            return trans(
+                                'message.not'
+                            );
+                        }
                     }
                 }
             )
             ->addColumn(
                 'action',
                 function ($inactivo) {
-                    $btnFirma  = null;
-                    $btnRecibo = null;
+                    $btnFirma         = null;
+                    $btnRecibo        = null;
+                    $btnDomiciliacion = null;
 
                     if (!$inactivo->firmaimportada) {
                         $btnFirma = '<i class="text-warning fa fa-upload"></i>'
@@ -632,12 +640,17 @@ class SociosController extends Controller
 
         if ($this->socios->corrientePago($id)) {
             $this->socios->activarSocio($id);
-            $this->recibos->activarReciboUsuario($id);
-            if (!$this->avisos->avisoCerrado($id, 'WIMPRECI')) {
-                $this->avisos->desactivarAviso($id, 'WIMPRECI');
+
+            if ($socio->paymenttype->tipopago === 'Domiciliación a mi cuenta') {
+                $this->recibos->crearReciboUsuario($socio->id, $socio->paymenttype->tipopago);
             }
 
-            if ($socio->firmaimportada && !$socio->firmacorrecta) {
+            $this->recibos->activarReciboUsuario($id);
+
+            if ($socio->paymenttype->tipopago !== 'Domiciliación a mi cuenta') {
+                if (!$this->avisos->avisoCerrado($id, 'WIMPRECI')) {
+                    $this->avisos->desactivarAviso($id, 'WIMPRECI');
+                }
                 flash(
                     trans(
                         'message.receiptvalidated',
@@ -648,12 +661,10 @@ class SociosController extends Controller
                         ]
                     )
                 )->success();
-
-                return redirect(route('profile.validardocs', $id));
             } else {
                 flash(
                     trans(
-                        'message.receiptvalidated',
+                        'message.debitvalidated',
                         [
                             'socio' => $socio->nombre
                             . ' '
@@ -661,7 +672,11 @@ class SociosController extends Controller
                         ]
                     )
                 )->success();
+            }
 
+            if ($socio->firmaimportada && !$socio->firmacorrecta) {
+                return redirect(route('profile.validardocs', $id));
+            } else {
                 return redirect(route('home'));
             }
         };
@@ -923,7 +938,7 @@ class SociosController extends Controller
                         if ($fila->nombre !== null && $fila->apellidos !== null) {
                             if ($this->socios->buscarsocioporemail($fila->email) === 0) {
                                 $socio  = $this->socios->altamasivasocio($fila);
-                                $recibo = $this->recibos->crearReciboUsuario($socio->id);
+                                $recibo = $this->recibos->crearReciboUsuario($socio->id, $socio->paymenttype->tipopago);
                             }
                         }
                     }

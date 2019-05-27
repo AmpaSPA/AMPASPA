@@ -3,6 +3,7 @@
 namespace App\Repositories;
 
 use App\Receipt;
+use Illuminate\Support\Facades\DB;
 
 class RecibosRepository
 {
@@ -20,6 +21,14 @@ class RecibosRepository
     }
 
     /**
+     * buscarReciboPorId
+     */
+    public function buscarReciboPorId($id)
+    {
+        return Receipt::whereId($id)->first();
+    }
+
+    /**
      * buscarReciboUsuario
      */
     public function buscarReciboUsuario($id)
@@ -29,11 +38,29 @@ class RecibosRepository
     }
 
     /**
+     * buscarRecibosUsuarioPorPeriodo
+     *
+     * @param  mixed $id
+     *
+     * @return void
+     */
+    public function buscarRecibosUsuarioPorPeriodo($id)
+    {
+        $periodo = $this->periodo->buscarPeriodoActivo();
+        return Receipt::whereUserIdAndPeriodo($id, $periodo->periodo)->get();
+    }
+
+    /**
      * buscarRecibosUsuario
      */
-    public function buscarRecibosUsuario($id)
+    public function buscarRecibosAntiguosPorUsuario($id)
     {
-        return Receipt::whereUserId($id)->get();
+        $periodoActual = $this->periodo->buscarPeriodoActivo()->periodo;
+
+        return DB::table('receipts')
+                        ->where('user_id', $id)
+                        ->where('periodo', '<', $periodoActual)
+                        ->get();
     }
 
     /**
@@ -47,7 +74,7 @@ class RecibosRepository
     /**
      * crearReciboUsuario
      */
-    public function crearReciboUsuario($id)
+    public function crearReciboUsuario($id, $tipoPago)
     {
         $periodo = $this->periodo->buscarPeriodoActivo();
 
@@ -55,6 +82,10 @@ class RecibosRepository
         $recibo->user_id = $id;
         $recibo->periodo = $periodo->periodo;
         $recibo->importe = $periodo->cuota;
+
+        if ($tipoPago === 'Domiciliación a mi cuenta') {
+            $recibo->domiciliacion = true;
+        }
 
         $recibo->save();
     }

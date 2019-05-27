@@ -17,9 +17,11 @@ class MeetingRepository
     protected $socios;
     protected $actas;
 
+
     /**
-     * MeetingRepository constructor.
-     * @param PeriodoRepository $periodos
+     * __construct
+     *
+     * @return void
      */
     public function __construct(
         PeriodoRepository $periodos,
@@ -68,6 +70,7 @@ class MeetingRepository
         $data->periodo = $periodo->periodo;
         $data->fechareunion = $request->fechareunion;
         $data->horareunion = $request->horareunion;
+        $data->horafinreunion = Carbon::parse($data->horareunion)->addHours(2);
         $data->meetingtype_id = $request->meetingtype_id;
         $data->nota = $request->nota;
         $data->save();
@@ -84,11 +87,11 @@ class MeetingRepository
     }
 
     /**
-     * obtenerReunionesNoConvocadas
+     * obtenerReunionesNoConvocadasConformadas
      */
-    public function obtenerReunionesNoConvocadas()
+    public function obtenerReunionesNoConvocadasConformadas()
     {
-        return Meeting::All()->where('convocada', false)->where('celebrada', false);
+        return Meeting::All()->where('convocada', false)->where('celebrada', false)->where('conformada', true);
     }
 
     /**
@@ -106,6 +109,7 @@ class MeetingRepository
         }
         if ($request->horareunion) {
             $reunion->horareunion = $request->horareunion;
+            $reunion->horafinreunion = Carbon::parse($reunion->horareunion)->addHours(2);
         }
         if ($request->meetingtype_id) {
             $reunion->meetingtype_id = $request->meetingtype_id;
@@ -148,29 +152,11 @@ class MeetingRepository
                     $reunion->save();
 
                     $this->actas->crearRegistroActa($reunion->id);
-
-                    $fecha = Carbon::parse($reunion->fechareunion)->format('d-m-Y');
-                    $correo = false;
-
-                    foreach ($reunion->attendees as $asistente) {
-                        $notificaciones = $this->notificaciones->notificacionesPorTipoyUserid(
-                            'App\Notifications\ReunionConvocada',
-                            $asistente->id
-                        );
-                        foreach ($notificaciones as $notificacion) {
-                            if ($notificacion->data['reunion']['id'] === $reunion->id) {
-                                $notificacion->delete();
-                                $this->socios->buscarsocioporid($asistente->id)
-                                ->notify(new ReunionConvocada($reunion, $fecha, $correo));
-                            }
-                        }
-                    }
                 }
             }
         }
         return;
     }
-
 
     /**
      * confirmarReunionPivot
@@ -186,5 +172,25 @@ class MeetingRepository
             ->where('attendee_id', '=', $id_asistente)
             ->where('meeting_id', '=', $id_reunion)
             ->update(array('confirmed' => true));
+    }
+
+    /**
+     * comprobarReunionConformada
+     *
+     * @param  mixed $id_reunion
+     *
+     * @return void
+     */
+    public function comprobarReunionConformada($id_reunion)
+    {
+        $reunion = $this->buscarReunionPorId($id_reunion);
+
+        if (!$reunion->topics()->exists() || !$reunion->attendees()->exists()) {
+            $reunion->conformada = false;
+            $reunion->save();
+        } else {
+            $reunion->conformada = true;
+            $reunion->save();
+        }
     }
 }

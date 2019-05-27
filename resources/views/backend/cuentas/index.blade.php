@@ -18,7 +18,7 @@
             @if ($saldoPeriodo >= 0)
                 <p class="text-success">{{ trans('message.currentbalance') }} {{ $saldoPeriodo }}€</p>
             @else
-                <p class="text-danger">Saldo actual: {{ $saldoPeriodo }}€</p>
+                <p class="text-danger">{{ trans('message.currentbalance') }} {{ $saldoPeriodo }}€</p>
             @endif
             </td>
         </tr>
@@ -34,8 +34,8 @@
             ],
         'columns'=> [
             ['data' => 'created_at', 'name' => 'created_at', 'header' => trans('cabecera_cuentas.entrydate')],
+            ['data' => 'domiciliacion', 'name' => 'domiciliacion', 'header' => trans('cabecera_cuentas.debit')],
             ['data' => 'tipo', 'name' => 'tipo', 'header' => trans('cabecera_cuentas.type')],
-            ['data' => 'link', 'name' => 'link', 'header' => trans('cabecera_cuentas.invoicecode')],
             ['data' => 'codigo', 'name' => 'codigo', 'header' => trans('cabecera_cuentas.invoicecode')],
             ['data' => 'importe', 'name' => 'importe', 'header' => trans('cabecera_cuentas.amount')],
             ['data' => 'saldo', 'name' => 'saldo', 'header' => trans('cabecera_cuentas.balance')],

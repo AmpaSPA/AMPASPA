@@ -47,6 +47,15 @@
             </div>
         </div>
         <div class="form-group">
+            {!! Form::label('horafinreunion', trans('form_reunion.lbmeetingendtime'), ['class' => 'col-md-3 control-label']) !!}
+            <div class="col-md-8">
+                <div class="input-group">
+                    <span class="input-group-addon"><i class="fa fa-tag"></i></span>
+                    {!! Form::text(null, $reunion->horafinreunion, ['class' => 'form-control', 'name' => 'horafinreunion', 'readonly' => 'readonly']) !!}
+                </div>
+            </div>
+        </div>
+        <div class="form-group">
             {!! Form::label('tiporeunion', trans('form_reunion.lbmeetingtype'), ['class' => 'col-md-3 control-label']) !!}
             <div class="col-md-8">
                 <div class="input-group">

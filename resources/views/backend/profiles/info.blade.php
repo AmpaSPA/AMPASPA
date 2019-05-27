@@ -28,4 +28,14 @@
             {{ Form::close() }}
         </div>
     </div>
+
+    @component('backend.components.ckeditor', [
+        'field_id' => 'bio'
+    ])
+    @endcomponent
+
+    @component('backend.components.ckeditor', [
+        'field_id' => 'aficiones'
+    ])
+    @endcomponent
 @endsection

@@ -2,16 +2,17 @@
 
 namespace App\Http\Controllers\Backend;
 
-use Carbon\Carbon;
-use Yajra\DataTables\DataTables;
 use App\Http\Controllers\Controller;
-use App\Repositories\SocioRepository;
-use App\Repositories\TopicRepository;
+use App\Http\Requests\CreateMeetingRequest;
 use App\Notifications\ReunionCancelada;
 use App\Notifications\ReunionConvocada;
 use App\Repositories\MeetingRepository;
-use App\Http\Requests\CreateMeetingRequest;
+use App\Repositories\ProceedingRepository;
+use App\Repositories\SocioRepository;
 use App\Repositories\TiposnotificacionRepository;
+use App\Repositories\TopicRepository;
+use Carbon\Carbon;
+use Yajra\DataTables\DataTables;
 
 class ReunionesController extends Controller
 {
@@ -19,6 +20,7 @@ class ReunionesController extends Controller
     protected $temas;
     protected $socios;
     protected $tiposnotificacion;
+    protected $actas;
 
     /**
      * __construct: Constructor de la clase. Usa los modelos: Meeting y Topic
@@ -27,12 +29,14 @@ class ReunionesController extends Controller
         MeetingRepository $reuniones,
         TopicRepository $temas,
         SocioRepository $socios,
-        TiposnotificacionRepository $tiposnotificacion
+        TiposnotificacionRepository $tiposnotificacion,
+        ProceedingRepository $actas
     ) {
-        $this->reuniones = $reuniones;
-        $this->temas = $temas;
-        $this->socios = $socios;
+        $this->reuniones         = $reuniones;
+        $this->temas             = $temas;
+        $this->socios            = $socios;
         $this->tiposnotificacion = $tiposnotificacion;
+        $this->actas             = $actas;
     }
 
     /**
@@ -40,17 +44,31 @@ class ReunionesController extends Controller
      */
     public function index()
     {
+        foreach ($this->reuniones->reuniones() as $reunion) {
+            $this->reuniones->comprobarReunionConformada($reunion->id);
+        }
+
         $hay_reuniones_a_convocar = false;
         $hay_reuniones_a_cancelar = false;
+        $aviso                    = 0;
 
-        if ($this->reuniones->obtenerReunionesNoConvocadas()->count() > 0) {
+        if ($this->reuniones->obtenerReunionesNoConvocadasConformadas()->count() > 0) {
             $hay_reuniones_a_convocar = true;
         }
         if ($this->reuniones->obtenerReunionesConvocadas()->count() > 0) {
             $hay_reuniones_a_cancelar = true;
         }
 
-        return view('backend.reuniones.index', compact('hay_reuniones_a_convocar', 'hay_reuniones_a_cancelar'));
+        $aviso = $this->actas->totalActasSinFirmar();
+
+        return view(
+            'backend.reuniones.index',
+            compact(
+                'hay_reuniones_a_convocar',
+                'hay_reuniones_a_cancelar',
+                'aviso'
+            )
+        );
     }
 
     /**
@@ -91,11 +109,11 @@ class ReunionesController extends Controller
             ->addColumn(
                 'action',
                 function ($meeting) {
-                    $btnEditar = null;
-                    $btnEliminar = null;
+                    $btnEditar     = null;
+                    $btnEliminar   = null;
                     $btnAsistentes = null;
-                    $btnAddTemas = null;
-                    $btnUpdTemas = null;
+                    $btnAddTemas   = null;
+                    $btnUpdTemas   = null;
 
                     $btnVer = '<i class="text-success fa fa-eye"></i>'
                     . '<a href="'
@@ -195,7 +213,7 @@ class ReunionesController extends Controller
      */
     public function create()
     {
-        $modo = 'new';
+        $modo       = 'new';
         $treuniones = $this->reuniones->tiposReunion();
 
         return view('backend.reuniones.nueva', compact('modo', 'treuniones'));
@@ -217,7 +235,7 @@ class ReunionesController extends Controller
      */
     public function view($id)
     {
-        $modo = 'view';
+        $modo    = 'view';
         $reunion = $this->reuniones->buscarReunionPorId($id);
 
         return view('backend.reuniones.ver', compact('reunion', 'modo'));
@@ -228,8 +246,8 @@ class ReunionesController extends Controller
      */
     public function edit($id)
     {
-        $reunion = $this->reuniones->buscarReunionPorId($id);
-        $modo = 'update';
+        $reunion    = $this->reuniones->buscarReunionPorId($id);
+        $modo       = 'update';
         $treuniones = $this->reuniones->tiposReunion();
 
         return view('backend.reuniones.editar', compact('reunion', 'treuniones', 'modo'));
@@ -268,7 +286,7 @@ class ReunionesController extends Controller
      */
     public function noConvocadasData()
     {
-        $meetings = $this->reuniones->obtenerReunionesNoConvocadas();
+        $meetings = $this->reuniones->obtenerReunionesNoConvocadasConformadas();
 
         return DataTables::of($meetings)
             ->addColumn(
@@ -302,8 +320,8 @@ class ReunionesController extends Controller
     public function convocarReunion($id)
     {
         $reunion = $this->reuniones->buscarReunionPorId($id);
-        $fecha = Carbon::parse($reunion->fechareunion)->format('d-m-Y');
-        $mail = true;
+        $fecha   = Carbon::parse($reunion->fechareunion)->format('d-m-Y');
+        $mail    = true;
 
         $convocada = true;
 
@@ -317,11 +335,11 @@ class ReunionesController extends Controller
         }
 
         $icononotificacion = 'fa-comments';
-        $tiponotificacion = 'App\Notifications\ReunionConvocada';
+        $tiponotificacion  = 'App\Notifications\ReunionConvocada';
         $textonotificacion = 'Reunión convocada';
         $this->tiposnotificacion->crearTipoNotificacion($icononotificacion, $tiponotificacion, $textonotificacion);
 
-        if ($this->reuniones->obtenerReunionesNoConvocadas()->count() > 0) {
+        if ($this->reuniones->obtenerReunionesNoConvocadasConformadas()->count() > 0) {
             flash(trans('message.meetingarranged', ['fecha' => $reunion->fechareunion]))->success();
             return redirect(route('reuniones.arrangemeeting'));
         } else {
@@ -368,7 +386,7 @@ class ReunionesController extends Controller
     public function cancelarReunion($id)
     {
         $reunion = $this->reuniones->buscarReunionPorId($id);
-        $fecha = Carbon::parse($reunion->fechareunion)->format('d-m-Y');
+        $fecha   = Carbon::parse($reunion->fechareunion)->format('d-m-Y');
 
         $convocada = false;
 
@@ -382,7 +400,7 @@ class ReunionesController extends Controller
         }
 
         $icononotificacion = 'fa-comments';
-        $tiponotificacion = 'App\Notifications\ReunionCancelada';
+        $tiponotificacion  = 'App\Notifications\ReunionCancelada';
         $textonotificacion = 'Reunión cancelada';
         $this->tiposnotificacion->crearTipoNotificacion($icononotificacion, $tiponotificacion, $textonotificacion);
 

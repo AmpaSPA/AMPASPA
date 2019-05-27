@@ -18,7 +18,7 @@
     @if ($aviso > 0)
         <div class="bg-danger text-danger">
             <h5 class="alert-heading"><strong>{{ trans('message.important') }}</strong></h5>
-            <p><strong>(*) </strong>{{ trans('message.noimportinvoices', ['numero' => $aviso]) }} {{ trans('message.importinvoicetext') }}</p>
+            <p><strong>(*) </strong>{{ trans_choice('message.noimportinvoices', $aviso, ['numero' => $aviso]) }} {{ trans('message.importinvoicetext') }}</p>
         </div>
         <br>
     @endif

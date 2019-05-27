@@ -15,4 +15,5 @@ return [
     'date'                      => 'Date',
     'authorship'                => 'Authorship',
     'proceedingtype'            => 'Proceeding type',
+    'cabstatus'                 => 'Status'
 ];

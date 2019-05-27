@@ -44,9 +44,9 @@ class TopicRepository
     public function crearTemaPorReunion($request)
     {
         $data = new Topic();
-        $data->titulo = $request->titulo;
-        $data->propietario = $request->propietario;
-        $data->responsable = $request->responsable;
+        $data->titulo = strtoupper($request->titulo);
+        $data->propietario = strtoupper($request->propietario);
+        $data->responsable = strtoupper($request->responsable);
         $data->tema = $request->tema;
         $data->meeting_id = $request->meeting_id;
 
@@ -73,13 +73,13 @@ class TopicRepository
         $tema = $this->buscarTopicPorId($id);
 
         if ($request->titulo) {
-            $tema->titulo = $request->titulo;
+            $tema->titulo = strtoupper($request->titulo);
         }
         if ($request->propietario) {
-            $tema->propietario = $request->propietario;
+            $tema->propietario = strtoupper($request->propietario);
         }
         if ($request->responsable) {
-            $tema->responsable = $request->responsable;
+            $tema->responsable = strtoupper($request->responsable);
         }
         if ($request->tema) {
             $tema->tema = $request->tema;

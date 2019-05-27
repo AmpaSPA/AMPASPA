@@ -2,17 +2,18 @@
 
 namespace App\Http\Controllers\Backend;
 
-use Carbon\Carbon;
-use Yajra\DataTables\DataTables;
 use App\Http\Controllers\Controller;
+use App\Http\Requests\UpdateActaRequest;
 use App\Notifications\ActaDisponible;
-use App\Repositories\SocioRepository;
-use App\Repositories\TopicRepository;
 use App\Repositories\MeetingRepository;
 use App\Repositories\PeriodoRepository;
 use App\Repositories\ProceedingRepository;
-use Barryvdh\Snappy\Facades\SnappyPdf as PDF;
+use App\Repositories\SocioRepository;
 use App\Repositories\TiposnotificacionRepository;
+use App\Repositories\TopicRepository;
+use Barryvdh\Snappy\Facades\SnappyPdf as PDF;
+use Carbon\Carbon;
+use Yajra\DataTables\DataTables;
 
 class ActasController extends Controller
 {
@@ -34,11 +35,11 @@ class ActasController extends Controller
         SocioRepository $socios,
         TiposnotificacionRepository $tiposnotificacion
     ) {
-        $this->reuniones = $reuniones;
-        $this->actas = $actas;
-        $this->temas = $temas;
-        $this->periodos = $periodos;
-        $this->socios = $socios;
+        $this->reuniones         = $reuniones;
+        $this->actas             = $actas;
+        $this->temas             = $temas;
+        $this->periodos          = $periodos;
+        $this->socios            = $socios;
         $this->tiposnotificacion = $tiposnotificacion;
     }
 
@@ -65,10 +66,10 @@ class ActasController extends Controller
             ->addColumn(
                 'action',
                 function ($proceeding) {
-                    $btnAddAcuerdos = null;
+                    $btnAddAcuerdos    = null;
                     $btnUpdateAcuerdos = null;
-                    $btnElaborarActa = null;
-                    $btnVerActa = null;
+                    $btnElaborarActa   = null;
+                    $btnVerActa        = null;
 
                     if ($this->temas->buscarTemasNoAcordadosPorReunion($proceeding->meeting_id)->count() > 0) {
                         $btnAddAcuerdos = '<i class="text-primary fa fa-handshake-o"></i>'
@@ -109,7 +110,8 @@ class ActasController extends Controller
                         }
                     }
 
-                    return $btnAddAcuerdos . ' ' . $btnUpdateAcuerdos . ' ' . $btnElaborarActa . ' ' . $btnVerActa;
+                    return $btnAddAcuerdos . ' ' . $btnUpdateAcuerdos . ' ' . $btnElaborarActa
+                        . ' ' . $btnVerActa;
                 }
             )
             ->make(true);
@@ -121,7 +123,7 @@ class ActasController extends Controller
     public function elaborarActa($id_reunion)
     {
         $reunion = $this->reuniones->buscarReunionPorId($id_reunion);
-        $temas = $reunion->topics;
+        $temas   = $reunion->topics;
 
         $periodo = $this->periodos->buscarPeriodoActivo()->periodo;
 
@@ -129,11 +131,11 @@ class ActasController extends Controller
         $hoy = $this->obtenerFechaLiteral($hoy);
 
         $fechaReunion = Carbon::parse($reunion->fechareunion);
-        $fecha = $fechaReunion->format('d/m/Y');
+        $fecha        = $fechaReunion->format('d/m/Y');
 
         $fechaLiteral = $this->obtenerFechaLiteral($fecha);
 
-        $tipo = $reunion->meetingtype->tiporeunion;
+        $tipo       = $reunion->meetingtype->tiporeunion;
         $asistentes = $reunion->attendees;
 
         $acta = public_path('assets/docs/actas/')
@@ -148,13 +150,13 @@ class ActasController extends Controller
         $actaFooter = view()->make('backend.includes.acta_pie')->render();
 
         $options = [
-            'orientation' => 'portrait',
-            'encoding' => 'UTF-8',
-            'header-html' => $actaHeader,
-            'footer-html' => $actaFooter,
-            'margin-top' => '40mm',
+            'orientation'   => 'portrait',
+            'encoding'      => 'UTF-8',
+            'header-html'   => $actaHeader,
+            'footer-html'   => $actaFooter,
+            'margin-top'    => '40mm',
             'margin-bottom' => '20mm',
-            'footer-right' => '[page] de [toPage]'
+            'footer-right'  => '[page] de [toPage]',
         ];
 
         $this->actas->registrarActaPdf($id_reunion, $acta);
@@ -174,15 +176,15 @@ class ActasController extends Controller
             )
         )->setOptions($options)->save($acta);
 
-        $mail = true;
-
         foreach ($asistentes as $asistente) {
-            $this->socios->buscarsocioporid($asistente->user_id)
-                ->notify(new ActaDisponible($reunion, $fecha, $mail));
+            if ($asistente->pivot->confirmed) {
+                $this->socios->buscarsocioporid($asistente->user_id)
+                    ->notify(new ActaDisponible($reunion, $fecha));
+            }
         }
 
         $icononotificacion = 'fa-list-alt';
-        $tiponotificacion = 'App\Notifications\ActaDisponible';
+        $tiponotificacion  = 'App\Notifications\ActaDisponible';
         $textonotificacion = 'Acta disponible';
         $this->tiposnotificacion->crearTipoNotificacion($icononotificacion, $tiponotificacion, $textonotificacion);
 
@@ -195,9 +197,9 @@ class ActasController extends Controller
      */
     public function obtenerFechaLiteral($fecha)
     {
-        $dia = substr($fecha, 0, 2);
-        $mes = (int) substr($fecha, 3, 2) - 1;
-        $anio = substr($fecha, 6, 4);
+        $dia   = substr($fecha, 0, 2);
+        $mes   = (int) substr($fecha, 3, 2) - 1;
+        $anio  = substr($fecha, 6, 4);
         $meses = [
             'enero',
             'febrero',
@@ -221,9 +223,90 @@ class ActasController extends Controller
     public function verActa($reunion_id)
     {
         $acta = $this->actas->buscarActaPorReunion($reunion_id);
-        $pdf = $acta->documento;
+        $pdf  = $acta->documento;
 
         header('Content-type: application/pdf');
         readfile($pdf);
+    }
+
+    /**
+     * importarActaFirmada
+     */
+    public function listarActasPendientes()
+    {
+        $actasPendientes = $this->actas->buscarActasSinFirmar();
+
+        return view('backend.actas.pendientes', compact('actasPendientes'));
+    }
+
+    /**
+     * pendientesData
+     */
+    public function pendientesData()
+    {
+        $proceedings = $this->actas->buscarActasSinFirmar();
+
+        return DataTables::of($proceedings)
+            ->addColumn(
+                'reunion',
+                function ($proceeding) {
+                    return $proceeding->meeting->fechareunion;
+                }
+            )
+            ->addColumn(
+                'tipo',
+                function ($proceeding) {
+                    return $proceeding->meeting->meetingtype()->pluck('tiporeunion')->implode('');
+                }
+            )
+            ->addColumn(
+                'action',
+                function ($proceeding) {
+                    return '<i class="text-info fa fa-upload"></i>'
+                    . '<a href = "'
+                    . route('actas.importarfirmada', $proceeding->id)
+                    . '">'
+                    . '<span class="text-info texto-accion">'
+                    . trans('acciones_crud.uploadsignedproceeding')
+                        . '</span>'
+                        . '</a>';
+                }
+            )
+            ->make(true);
+    }
+
+    /**
+     * importarFactura
+     */
+    public function importarActa($id)
+    {
+        $acta = $this->actas->buscarActaPorId($id);
+
+        return view('backend.actas.importar', compact('acta'));
+    }
+
+    /**
+     * registrarActaFirmada
+     */
+    public function registrarActaFirmada(UpdateActaRequest $request)
+    {
+        $acta = $this->actas->buscarActaPorId($request->id_acta);
+
+        unlink($acta->documento);
+
+        $ruta    = public_path('assets/docs/actas/');
+        $fichero = 'Acta ' . Carbon::parse($acta->meeting->fechareunion)->format('Y_m_d') . '.pdf';
+
+        $request->file('documento_acta')->move($ruta, $fichero);
+
+        $this->actas->firmarActa($acta->id);
+
+        flash(trans('message.uploadedproceeding', ['acta' => $fichero]))->success();
+
+        if ($this->actas->totalActasSinFirmar() > 0) {
+            return redirect(route('actas.listarpendientes'));
+        } else {
+            return redirect(route('reuniones.gestion'));
+        }
     }
 }

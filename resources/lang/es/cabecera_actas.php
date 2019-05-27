@@ -15,4 +15,5 @@ return [
     'date'                      => 'Fecha',
     'authorship'                => 'Autoría',
     'proceedingtype'            => 'Reunión',
+    'cabstatus'                 => 'Estado'
 ];

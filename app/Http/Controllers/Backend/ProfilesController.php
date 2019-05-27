@@ -5,10 +5,9 @@ namespace App\Http\Controllers\Backend;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\UpdateAvatarRequest;
 use App\Repositories\SocioRepository;
-use Auth;
+use DataTables;
 use Illuminate\Http\Request;
 use Intervention\Image\Facades\Image;
-use DataTables;
 
 /**
  * Clase del controlador para la administración de Perfiles de usuario
@@ -19,6 +18,10 @@ class ProfilesController extends Controller
 
     /**
      * __construct: Constructor de la clase. Usa los modelos: User
+     *
+     * @param  mixed $socios
+     *
+     * @return void
      */
     public function __construct(SocioRepository $socios)
     {
@@ -43,17 +46,17 @@ class ProfilesController extends Controller
     public function updateAvatar(UpdateAvatarRequest $request)
     {
         if ($request->hasFile('avatar')) {
-            $avatar = $request->file('avatar');
+            $avatar   = $request->file('avatar');
             $filename = $avatar->getClientOriginalName();
-            $ruta = public_path('assets/images/uploads/').$request->user_id.'/avatars/';
+            $ruta     = public_path('assets/images/uploads/') . $request->user_id . '/avatars/';
 
             $ficheros = scandir($ruta, 0);
             foreach ($ficheros as $fichero) {
-                if (is_file($ruta.$fichero)) {
-                    unlink($ruta.$fichero);
+                if (is_file($ruta . $fichero)) {
+                    unlink($ruta . $fichero);
                 }
             }
-            Image::make($avatar)->resize(128, 128)->save($ruta.$filename);
+            Image::make($avatar)->resize(128, 128)->save($ruta . $filename);
             $this->socios->changeavatar($filename, $request);
         }
 
@@ -90,55 +93,67 @@ class ProfilesController extends Controller
         $inactivos = $this->socios->verificarDocumentos();
 
         return DataTables::of($inactivos)
-        ->addColumn(
-            'avatar',
-            function ($inactivo) {
-                return '/assets/images/uploads/'
-                . $inactivo->profile->user_id
-                . '/avatars/'
-                . $inactivo->profile->avatar;
-            }
-        )
-        ->addColumn(
-            'nombre',
-            function ($inactivo) {
-                return $inactivo->nombre
-                . ' '
-                . $inactivo->apellidos;
-            }
-        )
-        ->addColumn(
-            'action',
-            function ($inactivo) {
-                $btnFirma = null;
-                $btnRecibo = null;
-
-                if (!$inactivo->firmacorrecta && $inactivo->firmaimportada) {
-                    $btnFirma = '<i class="text-warning fa fa-search"></i>'
-                    . '<a id="btver" href="'
-                    . route('socios.validarfirma', $inactivo->id)
-                    . '">'
-                    . '<span class="text-warning texto-accion">'
-                    . trans('message.verifysignature')
-                    . '</span>'
-                    . '</a>';
+            ->addColumn(
+                'avatar',
+                function ($inactivo) {
+                    return '/assets/images/uploads/'
+                    . $inactivo->profile->user_id
+                    . '/avatars/'
+                    . $inactivo->profile->avatar;
                 }
-
-                if (!$inactivo->corrientepago && $inactivo->reciboimportado) {
-                    $btnRecibo = '<i class="text-success fa fa-search"></i>'
-                    . '<a id="btver" href="'
-                    . route('socios.validarrecibo', $inactivo->id)
-                    . '">'
-                    . '<span class="text-success texto-accion">'
-                    . trans('message.verifyreceipt')
-                    . '</span>'
-                    . '</a>';
+            )
+            ->addColumn(
+                'nombre',
+                function ($inactivo) {
+                    return $inactivo->nombre
+                    . ' '
+                    . $inactivo->apellidos;
                 }
+            )
+            ->addColumn(
+                'action',
+                function ($inactivo) {
+                    $btnFirma  = null;
+                    $btnRecibo = null;
+                    $btnDomiciliacion = null;
 
-                return $btnFirma . ' ' . $btnRecibo;
-            }
-        )
-        ->make(true);
+                    if (!$inactivo->firmacorrecta && $inactivo->firmaimportada) {
+                        $btnFirma = '<i class="text-warning fa fa-search"></i>'
+                        . '<a id="btver" href="'
+                        . route('socios.validarfirma', $inactivo->id)
+                        . '">'
+                        . '<span class="text-warning texto-accion">'
+                        . trans('message.verifysignature')
+                            . '</span>'
+                            . '</a>';
+                    }
+
+                    if (!$inactivo->corrientepago && $inactivo->reciboimportado) {
+                        if ($inactivo->paymenttype->tipopago === 'Domiciliación a mi cuenta') {
+                            $btnDomiciliacion = '<i class="text-success fa fa-check"></i>'
+                            . '<a id="btver" href="'
+                            . route('socios.confirmarrecibo', $inactivo->id)
+                            . '">'
+                            . '<span class="text-success texto-accion">'
+                            . trans('acciones_crud.validatebank')
+                                . '</span>'
+                                . '</a>';
+                        } else {
+                            $btnRecibo = '<i class="text-success fa fa-search"></i>'
+                            . '<a id="btver" href="'
+                            . route('socios.validarrecibo', $inactivo->id)
+                            . '">'
+                            . '<span class="text-success texto-accion">'
+                            . trans('message.verifyreceipt')
+                                . '</span>'
+                                . '</a>';
+                        }
+                    }
+
+                    return $btnFirma . ' ' . $btnRecibo . ' ' . $btnDomiciliacion;
+                }
+            )
+            ->make(true);
     }
 
     /**

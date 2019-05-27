@@ -22,4 +22,9 @@
     {!! Form::open(['class' => 'form-horizontal', 'role' => 'form', 'method' => 'GET', 'novalidate' => 'novalidate']) !!}
         @include('backend.includes.campos_form_tema')
     {!! Form::close() !!}
+
+    @component('backend.components.ckeditor', [
+        'field_id' => 'tema'
+    ])
+    @endcomponent
 @endsection

@@ -69,7 +69,7 @@ return [
     |
     */
 
-    'master_file_extend' => 'layouts.app',
+    'master_file_extend' => 'backend.layouts.backend',
 
     /*
     |--------------------------------------------------------------------------
@@ -253,7 +253,7 @@ return [
     'paginate' => [
         'num_of_results' => 10,
     ],
-    
+
     /*
     |--------------------------------------------------------------------------
     | Show missing fields to users in forms

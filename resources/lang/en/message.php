@@ -380,7 +380,7 @@ return [
     'documentsof'                     => 'Documents of',
     'pendingimportsignature'          => ':socio, your signature is pending to import',
     'nocurrentpaymenttext'            => ':socio, currently you are not up to date with your membership fee',
-    'nocurrentsignaturetext'          => 'so, your signature agreement is also pending to import',
+    'nocurrentsignaturetext'          => ':socio, your signature agreement is pending to import',
     'rolassignedfollowingusers'       => 'The role :role is assigned to the following users',
     'totaluserwithrole'               => 'Total users with the role :role: :numero',
     'deleteroletext'                  => 'In order to be able to erase the role, the users that own it must first
@@ -501,6 +501,26 @@ return [
     corresponding code.',
     'importinvoice'                   => 'Import invoice',
     'invoicedata'                     => 'Data of invoice',
-    'noimportinvoices'                => 'There are no import invoices (:numero).',
-    'updateinvoice'                   => 'Update invoice'
+    'noimportinvoices'                => '{1} There is :numero not import invoice.|
+     [2,*] There are :numero not import invoices.',
+    'updateinvoice'                   => 'Update invoice',
+    'oldreceiptsof'                   => 'Old Receipts of',
+    'member'                          => 'Member:',
+    'auxiliarytables'                 => 'Auxiliary tables',
+    'newmeetingtext'                  => 'The end time of the meeting will automatically be recorded as two hours
+     after the start time.',
+    'noimportproceedings'             => '{1}There is :numero meeting that belong to :numero meeting whose signature
+    must be checked to upload them to the application.|[2,*]There are :numero meetings that belong to :numero meeting
+     whose signatures
+    must be checked to upload them to the application.',
+    'importproceedingtextone'         => 'It is necessary to import all the proceedings signed by the assistants to
+    the meetings',
+    'importproceedingtexttwo'         => 'To do this click',
+    'pendingimportproceedings'        => 'Pending import proceedings',
+    'proceedingdata'                  => 'Data of proceeding of',
+    'proceedingauthor'                => 'Elaborated by:',
+    'uploadedproceeding'              => 'The proceeding :acta has been successfully uploaded.',
+    'verifydebits'                    => 'Verify debits',
+    'debitvalidated'                  => 'The debit has been successfully verified. :socio is up to date with
+    your payment.'
 ];

@@ -30,16 +30,14 @@ class ReunionConvocada extends Notification
 
     protected $reunion;
     protected $fecha;
-    protected $correo;
 
     /**
      * Create a new notification instance.
      */
-    public function __construct($reunion, $fecha, $correo)
+    public function __construct($reunion, $fecha)
     {
         $this->reunion = $reunion;
         $this->fecha = $fecha;
-        $this->correo = $correo;
     }
 
     /**
@@ -51,11 +49,7 @@ class ReunionConvocada extends Notification
      */
     public function via($notifiable)
     {
-        if ($this->correo) {
-            return ['mail', 'database'];
-        } else {
-            return ['database'];
-        }
+        return ['mail', 'database'];
     }
 
     /**
@@ -86,16 +80,12 @@ class ReunionConvocada extends Notification
      */
     public function toDatabase($notifiable)
     {
-        if ($this->correo) {
-            return ['reunion' => $this->reunion];
-        } else {
-            return [
-                'reunion' => $this->reunion,
-                'attendees' => $this->reunion->attendees,
-                'topics' => $this->reunion->topics,
-                'meetingtype' => $this->reunion->meetingtype->tiporeunion
-            ];
-        }
+        return [
+            'reunion' => $this->reunion,
+            'attendees' => $this->reunion->attendees,
+            'topics' => $this->reunion->topics,
+            'meetingtype' => $this->reunion->meetingtype->tiporeunion
+        ];
     }
 
     /**

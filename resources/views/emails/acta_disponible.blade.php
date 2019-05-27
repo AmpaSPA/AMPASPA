@@ -4,7 +4,7 @@
 
 ## Hola {{ $notifiable->nombre }}
 
-estás recibiendo este correo electrónico porque el acta correspondiente a esta reunión a la que acudistes ha sido publicada y está disponible.
+estás recibiendo este correo electrónico porque el acta correspondiente a esta reunión, a la que confirmastes tu asistencia, ha sido publicada y está disponible.
 
 Fecha: {{ $fecha }}
 

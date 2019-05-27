@@ -183,6 +183,12 @@ Route::get('backend/socios/showchangepassword', 'Backend\SociosController@showch
 Route::post('backend/socios/changepassword', 'Backend\SociosController@changepassword')->middleware('auth');
 Route::get('backend/socios/verdata/{socio}', 'Backend\SociosController@verdata')->name('socios.verdata');
 Route::patch('backend/socios/changedata/{socio}', 'Backend\SociosController@changedata')->name('socios.changedata');
+Route::get('backend/socios/verificardomiciliaciones', 'Backend\SociosController@verificarDomiciliaciones')
+    ->name('socios.verificardomiciliaciones');
+Route::get('backend/socios/domiciliacionesdata', 'Backend\SociosController@domiciliacionesData')
+    ->name('socios.domiciliacionesdata');
+Route::get('socios/backend/validardomiciliacion/{socio}', 'Backend\SociosController@validarDomiciliacion')
+    ->name('socios.validardomiciliacion');
 
 /** Alumnos */
 Route::get('backend/alumnos/create/socio/{socio}', 'Backend\AlumnosController@create')->name('alumnos.socio');
@@ -242,6 +248,13 @@ Route::view('backend/actas', 'backend.actas.index')->name('actas.list');
 Route::get('backend/actas/actasdata', 'Backend\ActasController@actasData')->name('actas.actasdata');
 Route::get('backend/actas/elaborar/{reunion}', 'Backend\ActasController@elaborarActa')->name('actas.elaborar');
 Route::get('backend/actas/ver/{reunion}', 'Backend\ActasController@verActa')->name('actas.ver');
+Route::get('backend/actas/listarpendientes', 'Backend\ActasController@listarActasPendientes')
+->name('actas.listarpendientes');
+Route::get('backend/actas/importar/{acta}', 'Backend\ActasController@importarActa')
+->name('actas.importarfirmada');
+Route::post('backend/actas/registrar', 'Backend\ActasController@registrarActaFirmada')
+->name('actas.registrarfirmada');
+Route::get('backend/actas/pendientes', 'Backend\ActasController@pendientesData')->name('actas.pendientesdata');
 
 /** Acuerdos */
 Route::get('backend/acuerdos/temas/{reunion}', 'Backend\AcuerdosController@nuevoAcuerdoTema')
@@ -332,6 +345,12 @@ Route::get('backend/facturas/eliminar/{entrada}/{factura}', 'Backend\FacturasCon
 ->name('facturas.eliminar');
 Route::get('backend/facturas/editar/{factura}', 'Backend\FacturasController@editar')->name('facturas.editar');
 Route::patch('backend/facturas/actualizar/{factura}', 'Backend\FacturasController@update')->name('facturas.update');
+
+/** Recibos */
+Route::view('backend/recibos', 'backend.recibos.index')->name('recibos.list');
+Route::get('backend/recibos/recibosdata/{usuario}', 'Backend\RecibosController@recibosData')
+->name('recibos.recibosdata');
+Route::get('backend/recibos/ver/{recibo}', 'Backend\RecibosController@ver')->name('recibos.ver');
 
 /**
  *  RUTA DE LA SELECCIÓN DE IDIOMA

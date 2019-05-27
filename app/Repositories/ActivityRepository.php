@@ -18,14 +18,21 @@ use Illuminate\Support\Facades\DB;
 class ActivityRepository
 {
     protected $periodos;
+    protected $tiposActividad;
+    protected $facturas;
 
     /**
      * ActivityRepository constructor.
      * @param PeriodoRepository $periodos
      */
-    public function __construct(PeriodoRepository $periodos)
-    {
-        $this->periodos = $periodos;
+    public function __construct(
+        PeriodoRepository $periodos,
+        ActivitytypeRepository $tiposActividad,
+        FacturaRepository $facturas
+    ) {
+        $this->periodos       = $periodos;
+        $this->tiposActividad = $tiposActividad;
+        $this->facturas       = $facturas;
     }
 
     /**
@@ -57,7 +64,7 @@ class ActivityRepository
      */
     public function actividades()
     {
-        return Activity::wherePeriodo($this->periodos->buscarPeriodoActivo()->periodo);
+        return Activity::wherePeriodo($this->periodos->buscarPeriodoActivo()->periodo)->get();
     }
 
     /**
@@ -91,15 +98,33 @@ class ActivityRepository
     {
         $periodo = $this->periodos->buscarPeriodoActivo();
 
-        $data = new Activity();
-        $data->periodo = $periodo->periodo;
-        $data->fechaactividad = $request->fechaactividad;
-        $data->nombre = strtoupper($request->nombre);
-        $data->descripcion = $request->descripcion;
-        $data->activitytype_id = $request->activitytype_id;
+        $data                    = new Activity();
+        $data->periodo           = $periodo->periodo;
+        $data->fechaactividad    = $request->fechaactividad;
+        $data->nombre            = strtoupper($request->nombre);
+        $data->descripcion       = $request->descripcion;
+        $data->activitytype_id   = $request->activitytype_id;
         $data->activitytarget_id = $request->activitytarget_id;
-        $data->subvencion = $request->subvencion;
-        $data->precio = $request->precio;
+
+        switch ($this->tiposActividad->buscarTipoActividadPorId($request->activitytype_id)) {
+            case 'COLEGIO':
+                if ($request->subvencion >= 0) {
+                    $data->subvencion = $request->subvencion;
+                    $data->precio     = $request->subvencion;
+                }
+                break;
+            case 'AMPA':
+                $data->subvencion = 0;
+                if ($request->precio >= 0) {
+                    $data->precio = $request->precio;
+                }
+                break;
+            default:
+                $data->subvencion = 0;
+                $data->precio     = 0;
+                break;
+        }
+
         $data->save();
 
         return $data;
@@ -132,11 +157,24 @@ class ActivityRepository
         if ($request->activitytarget_id) {
             $actividad->activitytarget_id = $request->activitytarget_id;
         }
-        if ($request->subvencion >= 0) {
-            $actividad->subvencion = $request->subvencion;
-        }
-        if ($request->precio >= 0) {
-            $actividad->precio = $request->precio;
+
+        switch ($this->tiposActividad->buscarTipoActividadPorId($request->activitytype_id)) {
+            case 'COLEGIO':
+                if ($request->subvencion >= 0) {
+                    $actividad->subvencion = $request->subvencion;
+                    $actividad->precio     = $request->subvencion;
+                }
+                break;
+            case 'AMPA':
+                $actividad->subvencion = 0;
+                if ($request->precio >= 0) {
+                    $actividad->precio = $request->precio;
+                }
+                break;
+            default:
+                $actividad->subvencion = 0;
+                $actividad->precio     = 0;
+                break;
         }
 
         $actividad->save();
@@ -250,7 +288,7 @@ class ActivityRepository
      */
     public function obtenerActividadesNoPublicadas()
     {
-        return Activity::All()->where('publicada', false);
+        return Activity::All()->where('publicada', false)->where('cerrada', false);
     }
 
     /**
@@ -280,7 +318,10 @@ class ActivityRepository
     }
 
     /**
-     * cerrarActividades: Se marcan como cerradas todas las actividades cuya fecha es menor a la actual
+     * cerrarActividades: Se marcan como cerradas todas las actividades cuya fecha es menor a la actual. En caso de
+     * tratarse de una actividad subvencionada se crea una factura para registrar el importe de dicha subvención. En
+     * caso de tratarse de una actividad para socios no gratuita organizada por la AMPA, también se crea una factura
+     * que regsitre el total que se recaude.
      *
      * @return void
      */
@@ -289,6 +330,37 @@ class ActivityRepository
         if ($this->actividades()->count() > 0) {
             foreach ($this->actividades() as $actividad) {
                 if ($actividad->fechaactividad < Carbon::now()->format('Y-m-d')) {
+                    if ($actividad->students()->count() > 0) {
+                        $datosFactura = [
+                            'periodo'      => $actividad->periodo,
+                            'fecha'        => $actividad->fechaactividad,
+                            'emisor'       => null,
+                            'destinatario' => null,
+                            'concepto'     => null,
+                            'factura'      => null,
+                            'importe'      => $actividad->students()->count() * $actividad->precio,
+                            'importada'    => false,
+                        ];
+                        switch ($actividad->activitytype->tipoactividad) {
+                            case 'COLEGIO':
+                                $datosFactura['emisor']       = 'AMPASPAB';
+                                $datosFactura['destinatario'] = 'COLEGIO';
+                                $datosFactura['concepto']     = 'Pago de la subvención de la actividad: '
+                                . $actividad->nombre;
+                                $factura = $this->facturas->crearFacturaAutomatica($datosFactura);
+                                break;
+                            case 'AMPA':
+                                if ($datosFactura['importe'] != 0) {
+                                    $datosFactura['emisor']       = 'RECAUDACIÓN DE LA ACTIVIDAD: ' . $actividad->nombre;
+                                    $datosFactura['destinatario'] = 'COLEGIO';
+                                    $datosFactura['concepto']     = 'Pago de la subvención de la actividad '
+                                    . $actividad->nombre;
+                                    $factura = $this->facturas->crearFacturaAutomatica($datosFactura);
+                                }
+                                break;
+                        }
+                    }
+
                     $actividad->cerrada = true;
                     return $actividad->save();
                 }

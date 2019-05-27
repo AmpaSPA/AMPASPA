@@ -82,19 +82,24 @@ class HomeController extends Controller
      */
     public function index()
     {
+        $this->periodos->actualizarSocios(
+            $this->socios->totalsocios(),
+            $this->periodos->buscarPeriodoActivo()->periodo
+        );
+
+        $this->cargarRecibosEnEntradas($this->periodos->buscarPeriodoActivo()->periodo);
+
         $cerrarActividades = $this->actividades->cerrarActividades();
         $cerrarReuniones   = $this->reuniones->cerrarReuniones();
         $avisos            = $this->cargarAvisos();
         $autorizaciones    = $this->cargarAutorizaciones();
         $notificaciones    = $this->cargarNotificaciones();
-
-        $this->periodos->actualizarSocios($this->socios->totalsocios());
-        $this->cargarRecibosEnEntradas($this->periodos->buscarPeriodoActivo()->periodo);
+        $recibos           = $this->cargarRecibos();
 
         $anio = Carbon::now()->year;
         $mes  = Carbon::now()->month;
 
-        return view('backend.home', compact('anio', 'mes', 'autorizaciones', 'avisos', 'notificaciones'));
+        return view('backend.home', compact('anio', 'mes', 'autorizaciones', 'avisos', 'notificaciones', 'recibos'));
     }
 
     /**
@@ -160,7 +165,7 @@ class HomeController extends Controller
             ->addColumn(
                 'action',
                 function ($notification) {
-                    $btnSeleccionar = '<i class="text-success fa fa-check"></i>'
+                    return '<i class="text-success fa fa-check"></i>'
                     . '<a href="'
                     . route('home.notificacionestipo', $notification->type)
                     . '">'
@@ -168,7 +173,6 @@ class HomeController extends Controller
                     . trans('acciones_crud.select')
                         . '</span>'
                         . '</a>';
-                    return $btnSeleccionar;
                 }
             )
             ->make(true);
@@ -203,11 +207,16 @@ class HomeController extends Controller
     {
         $notificacion = $this->notificaciones->notificacionesPorIdyUserid($id, Auth::user()->id);
 
-        $tipo = $notificacion->type;
+        $tipo       = $notificacion->type;
+        $id_reunion = $notificacion->data['reunion']['id'];
 
         $notificacion->markAsRead();
 
-        $this->reuniones->confirmarReunionPivot($notificacion->data['reunion']['id'], Auth::user()->id);
+        $asistentes = $notificacion->data['reunion']['attendees'];
+
+        foreach ($asistentes as $asistente) {
+            $this->reuniones->confirmarReunionPivot($id_reunion, $asistente['id']);
+        }
 
         if ($this->notificaciones->notificacionesPorTipoyUserid($tipo, Auth::user()->id)->count() > 0) {
             return redirect(route('home.notificacionestipo', $tipo));
@@ -402,6 +411,22 @@ class HomeController extends Controller
     }
 
     /**
+     * cargarRecibos
+     */
+    public function cargarRecibos()
+    {
+        return $this->recibos->buscarRecibosAntiguosPorUsuario(Auth::user()->id)->count();
+    }
+
+    /**
+     * panelRecibos
+     */
+    public function panelRecibos()
+    {
+        dd('vista de recibos.');
+    }
+
+    /**
      * avisoCambiarPassword: Se procesa el aviso WCHGPASS. Si la contraseña del usuario
      * que hace login es la misma que se define por defecto (secret), se definen el código
      * y el texto del aviso de cambio de password de defecto a ser notificado al uasuario
@@ -454,20 +479,22 @@ class HomeController extends Controller
      */
     public function avisoSubirRecibo()
     {
-        if (!Auth::user()->corrientepago) {
-            $fecha  = Carbon::now()->format('Y-m-d');
-            $codigo = 'WIMPRECI';
-            $aviso  = 'Por favor, Ud. debe hacernos llegar el recibo o justificante del pago de
-             su cuota de socio.';
-            $solucion = 'Escanéelo en formato pdf y realice una de las siguientes acciones: a)
-             Súbalo a esta aplicación. Si desea optar por esta solución abra el desplegable con su
-             nombre en la parte superior de la página y acceda a su perfil donde encontrará la opción
-             correspondiente. b) Deposítelo en nuestro buzón. c) Entréguelo personalmente en nuestro
-             despacho sito en la planta superior sobre la secretaría del colegio. Le recomendamos que
-             domicilie el pago de su cuota, así se evitará recibir este aviso en sucesivas ocasiones.';
-            $user_id = Auth::user()->id;
+        if (Auth::user()->paymenttype->tipopago !== 'Domiciliación a mi cuenta') {
+            if (!Auth::user()->corrientepago) {
+                $fecha  = Carbon::now()->format('Y-m-d');
+                $codigo = 'WIMPRECI';
+                $aviso  = 'Por favor, Ud. debe hacernos llegar el recibo o justificante del pago de
+                 su cuota de socio.';
+                $solucion = 'Escanéelo en formato pdf y realice una de las siguientes acciones: a)
+                 Súbalo a esta aplicación. Si desea optar por esta solución abra el desplegable con su
+                 nombre en la parte superior de la página y acceda a su perfil donde encontrará la opción
+                 correspondiente. b) Deposítelo en nuestro buzón. c) Entréguelo personalmente en nuestro
+                 despacho sito en la planta superior sobre la secretaría del colegio. Le recomendamos que
+                 domicilie el pago de su cuota, así se evitará recibir este aviso en sucesivas ocasiones.';
+                $user_id = Auth::user()->id;
 
-            return $this->avisos->crearAviso($codigo, $fecha, $aviso, $solucion, $user_id);
+                return $this->avisos->crearAviso($codigo, $fecha, $aviso, $solucion, $user_id);
+            }
         }
     }
 
@@ -488,12 +515,13 @@ class HomeController extends Controller
         ];
 
         $datosEntrada = [
-            'periodo'      => $periodo,
-            'invoice_id'   => null,
-            'emisor'       => null,
-            'entrytype_id' => null,
-            'descripcion'  => null,
-            'importe'      => null,
+            'periodo'       => $periodo,
+            'invoice_id'    => null,
+            'emisor'        => null,
+            'entrytype_id'  => null,
+            'descripcion'   => null,
+            'importe'       => null,
+            'domiciliacion' => null,
         ];
 
         $totalIngresosRecibos = 0;
@@ -515,13 +543,14 @@ class HomeController extends Controller
             . $socio->numdoc
                 . ')';
 
-            $factura = $this->facturas->crearFacturaReciboSocio($datosFactura);
+            $factura = $this->facturas->crearFacturaAutomatica($datosFactura);
 
             if ($factura) {
-                $datosEntrada['invoice_id']   = $factura->id;
-                $datosEntrada['entrytype_id'] = $this->tipoEntrada->buscarIdPorTipoEntrada('Ingreso')->id;
-                $datosEntrada['descripcion']  = $factura->concepto;
-                $datosEntrada['importe']      = $factura->importe;
+                $datosEntrada['invoice_id']    = $factura->id;
+                $datosEntrada['entrytype_id']  = $this->tipoEntrada->buscarIdPorTipoEntrada('Ingreso')->id;
+                $datosEntrada['descripcion']   = $factura->concepto;
+                $datosEntrada['importe']       = $factura->importe;
+                $datosEntrada['domiciliacion'] = $recibo->domiciliacion;
 
                 $entrada = $this->entradas->crearEntradaReciboSocio($datosEntrada);
 

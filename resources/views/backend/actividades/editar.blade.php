@@ -31,4 +31,9 @@
       'field_id' => 'fechaactividad'
     ])
     @endcomponent
+
+    @component('backend.components.ckeditor', [
+        'field_id' => 'descripcion'
+    ])
+    @endcomponent
 @endsection

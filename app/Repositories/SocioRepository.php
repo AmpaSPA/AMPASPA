@@ -9,6 +9,7 @@ namespace App\Repositories;
 
 use App\Doctype;
 use App\Membertype;
+use App\Notifications\PagoCuotaSocio;
 use App\Paymenttype;
 use App\Profile;
 use App\Repositories\CursoRepository;
@@ -25,16 +26,22 @@ class SocioRepository
 {
     protected $cursos;
     protected $profile;
+    protected $tiposnotificacion;
+    protected $periodo;
 
     /**
      * __construct
      */
     public function __construct(
         CursoRepository $cursos,
-        ProfileRepository $profile
+        ProfileRepository $profile,
+        TiposnotificacionRepository $tiposnotificacion,
+        PeriodoRepository $periodo
     ) {
         $this->cursos  = $cursos;
         $this->profile = $profile;
+        $this->tiposnotificacion = $tiposnotificacion;
+        $this->periodo = $periodo;
     }
 
     /**
@@ -42,7 +49,7 @@ class SocioRepository
      */
     public function totalsocios(): int
     {
-        return User::where('corrientepago', true)->count();
+        return User::whereCorrientepago(true)->count();
     }
 
     /**
@@ -162,6 +169,11 @@ class SocioRepository
         $data->numdoc         = $request->numdoc;
         $data->membertype_id  = $request->membertype_id;
         $data->paymenttype_id = $request->paymenttype_id;
+
+        if ($data->paymenttype->tipopago === 'Domiciliación a mi cuenta') {
+            $data->reciboimportado = true;
+        }
+
         $data->save();
 
         // Se crea el registro del perfil del usuario
@@ -245,6 +257,11 @@ class SocioRepository
         $data->email     = $item->email;
         $data->telefono  = substr($item->telefono, 0, 9);
         $data->numdoc    = $item->numdoc;
+
+        if ($data->paymenttype->tipopago === 'Domiciliación a mi cuenta') {
+            $data->reciboimportado = true;
+        }
+
         $data->save();
 
         // Se asigna al usuario el rol "Socio"
@@ -661,7 +678,9 @@ class SocioRepository
     }
 
     /**
-     * updateMasivo
+     * updateMasivoSituacionPago
+     *
+     * @return void
      */
     public function updateMasivoSituacionPago()
     {
@@ -672,9 +691,31 @@ class SocioRepository
                     $aviso->forceDelete();
                 }
             }
-            $socio->corrientepago   = false;
-            $socio->reciboimportado = false;
-            $socio->activo          = false;
+
+            $socio->corrientepago = false;
+
+            if ($socio->paymenttype->tipopago !== 'Domiciliación a mi cuenta') {
+                $socio->reciboimportado = false;
+                if ($socio->paymenttype->tipopago === 'Transferencia a la cuenta de la AMPA' ||
+                    $socio->paymenttype->tipopago === 'Ingreso en la cuenta de la AMPA') {
+                    $socio->notify(new PagoCuotaSocio($this->periodo->buscarPeriodoActivo()));
+
+                    $icononotificacion = 'fa-euro';
+                    $tiponotificacion  = 'App\Notifications\PagoCuotaSocio';
+                    $textonotificacion = 'Pago cuota de socio';
+
+                    $this->tiposnotificacion->crearTipoNotificacion(
+                        $icononotificacion,
+                        $tiponotificacion,
+                        $textonotificacion
+                    );
+                }
+            } else {
+                $socio->reciboimportado = true;
+            }
+
+            $socio->activo = false;
+
             $socio->save();
         }
     }

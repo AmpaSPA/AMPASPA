@@ -34,6 +34,7 @@ return [
     'cabname' => 'Nombre',
     'cabdate' => 'Fecha',
     'cabtype' => 'Tipo',
+    'cabgrant' => 'Subvención',
     'cabdescription' => 'Descripción',
     'cabactions' => 'Acciones',
     'activity' => 'Actividad:',

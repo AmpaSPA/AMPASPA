@@ -22,6 +22,7 @@ class Receipt extends Model
         'fichero',
         'ruta',
         'importe',
+        'domiciliacion',
         'estado'
     ];
 

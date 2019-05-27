@@ -15,6 +15,7 @@ return [
     'lbmeetingdate' => 'Fecha de la reunion:',
     'entermeetingdate' => 'Introduce la fecha de la reunión',
     'lbmeetingtime' => 'Hora de la reunión:',
+    'lbmeetingendtime' => 'Hora de fin de la reunión:',
     'entermeetingtime' => 'Introduce la hora de la reunión',
     'lbnote' => 'Nota:',
     'enternote' => 'Introduce una nota breve',

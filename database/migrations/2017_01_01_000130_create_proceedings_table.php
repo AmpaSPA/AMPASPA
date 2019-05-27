@@ -17,11 +17,12 @@ class CreateProceedingsTable extends Migration
             'proceedings',
             function (Blueprint $table) {
                 $table->increments('id');
-                $table->date('fecha_acta');
+                $table->date('fecha_acta')->nullable();
                 $table->integer('period_id')->unsigned();
                 $table->integer('meeting_id')->unsigned();
-                $table->string('autoria');
-                $table->string('documento');
+                $table->string('autoria')->nullable();
+                $table->string('documento')->nullable();
+                $table->boolean('estado')->default(false);
                 $table->timestamps();
 
                 $table->foreign('period_id')

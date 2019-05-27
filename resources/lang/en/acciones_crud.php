@@ -98,8 +98,10 @@ return [
     'agreements'              => 'Agreements',
     'makeproceeding'          => 'Make proceeding',
     'viewproceeding'          => 'View proceeding',
+    'uploadsignedproceeding'  => 'Upload signed proceeding',
     'updateagreement'         => 'Update agreement',
     'proceedinggenerated'     => 'The proceeding has been successfully generated.',
+    'pendingproceedings'      => 'Pending proceedings',
     'close'                   => 'Close',
     'open'                    => 'Open',
     'addedperiod'             => 'The course :periodo has been succesfully added. Now you must open it.',
@@ -110,5 +112,8 @@ return [
     'importedinvoice'         => 'The invoice :factura has been successfully imported.',
     'deletedinvoiceentry'     => 'The invoice :factura and its corresponding entry have been successfully deleted.',
     'deletedinvoice'          => 'The invoice :factura has been successfully deleted',
-    'updateinvoice'           => 'The invoice of :factura has been successfully updated.'
+    'updateinvoice'           => 'The invoice of :factura has been successfully updated.',
+    'validatebank'            => 'Validate bank',
+    'addeddebit'              => 'Debit of :socio has been successfully added.',
+    'invoice'                 => 'Invoice'
 ];

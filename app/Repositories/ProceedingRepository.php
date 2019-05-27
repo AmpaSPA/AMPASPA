@@ -2,8 +2,8 @@
 
 namespace App\Repositories;
 
-use Carbon\Carbon;
 use App\Proceeding;
+use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
 
 class ProceedingRepository
@@ -18,17 +18,49 @@ class ProceedingRepository
     {
         $this->periodos = $periodos;
     }
+
     /**
      * actas
+     *
+     * @return void
      */
     public function actas()
     {
         return Proceeding::all();
     }
 
+    /**
+     * buscarActaPorReunion
+     *
+     * @param  mixed $id_reunion
+     *
+     * @return void
+     */
     public function buscarActaPorReunion($id_reunion)
     {
         return Proceeding::whereMeetingId($id_reunion)->first();
+    }
+
+    /**
+     * buscarActaPorId
+     *
+     * @param  mixed $id
+     *
+     * @return void
+     */
+    public function buscarActaPorId($id)
+    {
+        return Proceeding::find($id);
+    }
+
+    /**
+     * buscarActasSinFirmar
+     *
+     * @return int
+     */
+    public function buscarActasSinFirmar()
+    {
+        return Proceeding::whereEstado(false)->get();
     }
 
     /**
@@ -40,17 +72,29 @@ class ProceedingRepository
     }
 
     /**
+     * totalActasSinFirmar
+     *
+     * @return int
+     */
+    public function totalActasSinFirmar(): int
+    {
+        return Proceeding::whereEstado(false)->where('documento', '<>', null)->count();
+    }
+
+    /**
      * crearRegistroActa
      */
     public function crearRegistroActa($id_reunion)
     {
         $id_periodo = $this->periodos->buscarPeriodoActivo()->id;
-        $data = new Proceeding();
-        $data->meeting_id = $id_reunion;
-        $data->period_id = $id_periodo;
-        $data->save();
+        $acta       = Proceeding::firstOrCreate(
+            [
+                'meeting_id' => $id_reunion,
+                'period_id'  => $id_periodo,
+            ]
+        );
 
-        return $data;
+        return $acta;
     }
 
     /**
@@ -61,7 +105,7 @@ class ProceedingRepository
         $acta = $this->buscarActaPorReunion($reunion_id);
 
         $acta->fecha_acta = Carbon::now()->format('Y-m-d');
-        $acta->autoria = Auth::user()->nombre.' '.Auth::user()->apellidos;
+        $acta->autoria    = Auth::user()->nombre . ' ' . Auth::user()->apellidos;
 
         return $acta->save();
     }
@@ -71,8 +115,19 @@ class ProceedingRepository
      */
     public function registrarActaPdf($reunion_id, $pdf)
     {
-        $acta = $this->buscarActaPorReunion($reunion_id);
+        $acta            = $this->buscarActaPorReunion($reunion_id);
         $acta->documento = $pdf;
+
+        return $acta->save();
+    }
+
+    /**
+     * firmarActa
+     */
+    public function firmarActa($id)
+    {
+        $acta         = $this->buscarActaPorId($id);
+        $acta->estado = true;
 
         return $acta->save();
     }

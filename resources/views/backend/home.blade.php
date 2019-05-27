@@ -34,10 +34,17 @@
         <!-- PENEL RECIBOS -->
         <div class="col-md-2">
             <div id="panel_recibos" class="panel panel-default">
-                <div class="panel-heading"><img id="imgpanelrecibos" class="img-responsive center-block" src="assets/images/imgpanelrecibos.png" alt="RECIBOS">
-                </div>
-                <div class="panel-footer text-center">{{ trans('message.receiptspanel') }}
-                </div>
+                @if ($recibos > 0)
+                    <div class="panel-heading"><a href="{{ route('recibos.list') }}"><img id="imgpanelrecibos" class="img-responsive center-block" src="assets/images/imgpanelrecibos.png" alt="RECIBOS"></a>
+                    </div>
+                    <div class="panel-footer text-center"><a href="{{ route('recibos.list') }}">{{ trans('message.receiptspanel') }}</a><span class="texto-badge badge">{{ $recibos }}</span>
+                    </div>
+                @else
+                    <div class="panel-heading"><img id="imgpanelrecibos" class="img-responsive center-block" src="assets/images/imgpanelrecibos.png" alt="RECIBOS">
+                    </div>
+                    <div class="panel-footer text-center">{{ trans('message.receiptspanel') }}
+                    </div>
+                @endif
             </div>
         </div>
 

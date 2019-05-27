@@ -50,10 +50,14 @@ class FacturasController extends Controller
             ->addColumn(
                 'importada',
                 function ($invoice) {
-                    if ($invoice->importada) {
-                        return 'Si';
+                    if ($invoice->entry->domiciliacion) {
+                        return 'n/a';
                     } else {
-                        return 'No';
+                        if ($invoice->importada) {
+                            return 'Si';
+                        } else {
+                            return 'No';
+                        }
                     }
                 }
             )
@@ -65,14 +69,17 @@ class FacturasController extends Controller
                     $btnEliminar = null;
 
                     if ($invoice->importada) {
-                        $btnVer = '<i class="text-success fa fa-eye"></i>'
-                        . '<a target="_blank" href="'
-                        . route('facturas.ver', $invoice->id)
-                        . '">'
-                        . '<span class="text-success texto-accion">'
-                        . trans('acciones_crud.view')
-                        . '</span>'
-                        . '</a>';
+                        if (!$invoice->entry->domiciliacion) {
+                            $btnVer = '<i class="text-success fa fa-eye"></i>'
+                            . '<a target="_blank" href="'
+                            . route('facturas.ver', $invoice->id)
+                            . '">'
+                            . '<span class="text-success texto-accion">'
+                            . trans('acciones_crud.view')
+                            . '</span>'
+                            . '</a>';
+                        }
+
                         $btnEliminar = '<i class="text-danger fa fa-trash"></i>'
                         . '<a href="'
                         . route('facturas.borrar', $invoice->id)

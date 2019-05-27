@@ -15,6 +15,7 @@
   <link rel="stylesheet" href="{{ asset('assets/css/datepicker/bootstrap-datepicker3.css') }}">
   <link rel="stylesheet" href="{{ asset('assets/css/datepicker/bootstrap-datepicker3.standalone.css') }}">
   <link rel="stylesheet" href="{{ asset('assets/css/timepicker/bootstrap-timepicker.css') }}">
+  @yield('css')
 
   @stack('styles')
 

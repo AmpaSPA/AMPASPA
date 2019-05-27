@@ -18,7 +18,8 @@ class Entry extends Model
         'periodo',
         'entrytype_id',
         'descripcion',
-        'importe'
+        'importe',
+        'domiciliacion'
     ];
 
     /**

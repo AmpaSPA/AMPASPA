@@ -38,11 +38,12 @@ class AvisosRepository
         $aviso = Warning::firstOrCreate([
             'codigo' => strtoupper($codigo),
             'user_id' => $user_id,
-            'fecha' => $fecha,
         ], [
             'fecha' => $fecha,
+            'codigo' => strtoupper($codigo),
             'aviso' => $aviso,
             'solucion' => $solucion,
+            'user_id' => $user_id
         ]);
 
         return;

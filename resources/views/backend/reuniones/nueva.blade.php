@@ -12,6 +12,8 @@
 @endcomponent
 
 @section('content')
+    <h6 class="textoazul"><strong>(*) {{ trans('message.newmeetingtext') }}</strong></h6>
+    <br>
     {!! Form::open(['class' => 'form-horizontal', 'role' => 'form', 'method' => 'POST', 'url' => route('reuniones.nueva'), 'novalidate' => 'novalidate']) !!}
     @include('backend.includes.campos_form_reunion')
     <div class="form-group">
@@ -30,6 +32,11 @@
 
     @component('backend.components.timepicker', [
         'time_id' => 'time'
+    ])
+    @endcomponent
+
+    @component('backend.components.ckeditor', [
+        'field_id' => 'nota'
     ])
     @endcomponent
 @endsection

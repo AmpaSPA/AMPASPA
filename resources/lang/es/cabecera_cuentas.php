@@ -18,5 +18,6 @@ return [
     'invoicecode'               => 'Nº factura',
     'amount'                    => 'Importe',
     'actions'                   => 'Acciones',
-    'balance'                   => 'Saldo'
+    'balance'                   => 'Saldo',
+    'debit'                     => 'Domiciliación'
 ];

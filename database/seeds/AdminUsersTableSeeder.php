@@ -35,7 +35,8 @@ class AdminUsersTableSeeder extends Seeder
             'doctype_id' => 2,
             'numdoc' => '11111111A',
             'membertype_id' => 8,
-            'paymenttype_id' => 1,
+            'paymenttype_id' => 4,
+            'reciboimportado' => true,
             'created_at' => Carbon::now()->format('Y-m-d H:i:s'),
             'updated_at' => Carbon::now()->format('Y-m-d H:i:s'),
         ]);
@@ -64,6 +65,7 @@ class AdminUsersTableSeeder extends Seeder
             'user_id' => 1,
             'periodo' => $periodo,
             'importe' => 25,
+            'domiciliacion' => true,
             'created_at' => Carbon::now()->format('Y-m-d H:i:s'),
             'updated_at' => Carbon::now()->format('Y-m-d H:i:s'),
         ));

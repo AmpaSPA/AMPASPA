@@ -54,7 +54,11 @@
             <div class="row text-center">
                 <div class="col-md-10 col-md-offset-1">
                     <h4>{{ trans('message.documentsof') }} {{ Auth::user()->nombre }} {{ Auth::user()->apellidos }}</h4>
-                    <a id="btverultimorecibo" type="button" class="btn btn-sm btn-primary" target="_blank" href="{{ route('socios.recibo', $profile->user_id) }}"><i class="fa fa-list-alt"></i>{{ trans('message.lastreceipt') }}</a>
+
+                    @if (Auth::user()->paymenttype->tipopago != 'Domiciliación a mi cuenta')
+                        <a id="btverultimorecibo" type="button" class="btn btn-sm btn-primary" target="_blank" href="{{ route('socios.recibo', $profile->user_id) }}"><i class="fa fa-list-alt"></i>{{ trans('message.lastreceipt') }}</a>
+                    @endif
+
                     <a id="btverfirmaprofile" type="button" class="btn btn-sm btn-primary" target="_blank" href="{{ route('socios.firma', $profile->user_id) }}"><i class="fa fa-check"></i>{{ trans('message.signature') }}</a>
                 </div>
             </div>
@@ -63,7 +67,11 @@
                 <div class="row text-center">
                     <div class="col-md-10 col-md-offset-1">
                         <h4>{{ trans('message.documentsof') }} {{ Auth::user()->nombre }} {{ Auth::user()->apellidos }}</h4>
-                        <a id="btverultimorecibo" type="button" class="btn btn-sm btn-primary" target="_blank" href="{{ route('socios.recibo', $profile->user_id) }}"><i class="fa fa-list-alt"></i>{{ trans('message.lastreceipt') }}</a>
+
+                        @if (Auth::user()->paymenttype->tipopago != 'Domiciliación a mi cuenta')
+                            <a id="btverultimorecibo" type="button" class="btn btn-sm btn-primary" target="_blank" href="{{ route('socios.recibo', $profile->user_id) }}"><i class="fa fa-list-alt"></i>{{ trans('message.lastreceipt') }}</a>
+                        @endif
+
                         <h4>{{ trans('message.pendingimportsignature', ['socio' => Auth::user()->nombre]) }}:</h4>
                         <a type="button" class="btn btn-link" href="{{ route('socios.gestionardocprofile', Auth::user()->id) }}"><i class="text-danger fa fa-file-pdf-o"></i>{{ trans('message.importyoursignature') }}</a>
                     </div>
@@ -71,13 +79,16 @@
             @else
                 <div class="row text-center">
                     <div class="col-md-10 col-md-offset-1">
-                        <h4>{{ Auth::user()->nombre }} {{ Auth::user()->apellidos }} {{ trans('message.verifyingsignature') }}</h4>
+                        <h4>{{ Auth::user()->nombre }}, {{ trans('message.verifyingsignature') }}</h4>
                     </div>
                 </div>
                 <div class="row text-center">
                     <div class="col-md-10 col-md-offset-1">
                         <h4>{{ trans('message.documentsof') }} {{ Auth::user()->nombre }} {{ Auth::user()->apellidos }}</h4>
-                        <a id="btverultimorecibo" type="button" class="btn btn-sm btn-primary" target="_blank" href="{{ route('socios.recibo', $profile->user_id) }}"><i class="fa fa-list-alt"></i>{{ trans('message.lastreceipt') }}</a>
+
+                        @if (Auth::user()->paymenttype->tipopago != 'Domiciliación a mi cuenta')
+                            <a id="btverultimorecibo" type="button" class="btn btn-sm btn-primary" target="_blank" href="{{ route('socios.recibo', $profile->user_id) }}"><i class="fa fa-list-alt"></i>{{ trans('message.lastreceipt') }}</a>
+                        @endif
                     </div>
                 </div>
             @endif
@@ -86,7 +97,7 @@
         @if (Auth::user()->reciboimportado)
             <div class="row text-center">
                 <div class="col-md-10 col-md-offset-1">
-                    <h4>{{ Auth::user()->nombre }} {{ Auth::user()->apellidos }} {{ trans('message.verifyingreceipt') }}</h4>
+                    <h4>{{ Auth::user()->nombre }}, {{ trans('message.verifyingreceipt') }}</h4>
                 </div>
             </div>
             @if (Auth::user()->firmacorrecta)
@@ -107,39 +118,50 @@
                 @else
                     <div class="row text-center">
                         <div class="col-md-10 col-md-offset-1">
-                            <h4>{{ Auth::user()->nombre }} {{ Auth::user()->apellidos }} {{ trans('message.verifyingsignature') }}</h4>
+                            <h4>{{ Auth::user()->nombre }}, {{ trans('message.verifyingsignature') }}</h4>
                         </div>
                     </div>
                 @endif
             @endif
         @else
             @if (!Auth::user()->reciboimportado)
-                <div class="row text-center">
-                    <div class="col-md-10 col-md-offset-1">
-                        <h4>{{ trans('message.nocurrentpaymenttext', ['socio' => Auth::user()->nombre]) }}:</h4>
-                        <a type="button" class="btn btn-link" href="{{ route('socios.gestionarrecprofile', Auth::user()->id) }}"><i class="text-danger fa fa-file-pdf-o"></i>{{ trans('message.importyourreceipt') }}</a>
+                @if ($profile->user->paymenttype->tipopago !== 'Domiciliación a mi cuenta')
+                    <div class="row text-center">
+                        <div class="col-md-10 col-md-offset-1">
+                            <h4>{{ trans('message.nocurrentpaymenttext', ['socio' => Auth::user()->nombre]) }}:</h4>
+                            <a type="button" class="btn btn-link" href="{{ route('socios.gestionarrecprofile', Auth::user()->id) }}"><i class="text-danger fa fa-file-pdf-o"></i>{{ trans('message.importyourreceipt') }}</a>
+                        </div>
                     </div>
-                </div>
+                @endif
             @else
                 <div class="row text-center">
                     <div class="col-md-10 col-md-offset-1">
-                        <h4>{{ Auth::user()->nombre }} {{ Auth::user()->apellidos }} {{ trans('message.verifyingreceipt') }}</h4>
+                        <h4>{{ Auth::user()->nombre }}, {{ trans('message.verifyingreceipt') }}</h4>
                     </div>
                 </div>
             @endif
             @if (!Auth::user()->firmaimportada)
                 <div class="row text-center">
                     <div class="col-md-10 col-md-offset-1">
-                        <h4>{{ trans('message.nocurrentsignaturetext') }}:</h4>
+                        <h4>{{ trans('message.nocurrentsignaturetext', ['socio' => Auth::user()->nombre]) }}:</h4>
                         <a type="button" class="btn btn-link" href="{{ route('socios.gestionardocprofile', Auth::user()->id) }}"><i class="text-danger fa fa-file-pdf-o"></i>{{ trans('message.importyoursignature') }}</a>
                     </div>
                 </div>
             @else
-                <div class="row text-center">
-                    <div class="col-md-10 col-md-offset-1">
-                        <h4>{{ Auth::user()->nombre }} {{ Auth::user()->apellidos }} {{ trans('message.verifyingsignature') }}</h4>
+                @if(!Auth::user()->firmacorrecta)
+                    <div class="row text-center">
+                        <div class="col-md-10 col-md-offset-1">
+                            <h4>{{ Auth::user()->nombre }}, {{ trans('message.verifyingsignature') }}</h4>
+                        </div>
                     </div>
-                </div>
+                @else
+                    <div class="row text-center">
+                        <div class="col-md-10 col-md-offset-1">
+                            <h4>{{ trans('message.documentsof') }} {{ Auth::user()->nombre }} {{ Auth::user()->apellidos }}</h4>
+                            <a id="btverfirmaprofile" type="button" class="btn btn-sm btn-primary" target="_blank" href="{{ route('socios.firma', $profile->user_id) }}"><i class="fa fa-check"></i>{{ trans('message.signature') }}</a>
+                        </div>
+                    </div>
+                @endif
             @endif
         @endif
     @endif

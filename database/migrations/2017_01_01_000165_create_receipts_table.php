@@ -20,6 +20,7 @@ class CreateReceiptsTable extends Migration
             $table->string('fichero')->nullable()->default(null);
             $table->longText('ruta')->nullable()->default(null);
             $table->integer('importe')->nullable()->default(0);
+            $table->boolean('domiciliacion')->nullable()->default(false);
             $table->boolean('estado')->default(false);
             $table->timestamps();
 

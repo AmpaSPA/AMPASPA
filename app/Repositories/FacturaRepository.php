@@ -40,9 +40,9 @@ class FacturaRepository
     /**
      * facturasPorPeriodoyDocumento
      */
-    public function facturasPorPeriodoyDocumento($periodo, $factura)
+    public function facturasPorPeriodoyConcepto($periodo, $concepto)
     {
-        return Invoice::wherePeriodoAndFactura($periodo, $factura)->first();
+        return Invoice::wherePeriodoAndConcepto($periodo, $concepto)->first();
     }
 
     /**
@@ -135,11 +135,11 @@ class FacturaRepository
     }
 
     /**
-     * crearFacturaReciboSocio
+     * crearFacturaAutomatica
      */
-    public function crearFacturaReciboSocio($datosRecibo)
+    public function crearFacturaAutomatica($datosRecibo)
     {
-        if (!$this->facturasPorPeriodoyDocumento($datosRecibo['periodo'], $datosRecibo['factura'])) {
+        if (!$this->facturasPorPeriodoyConcepto($datosRecibo['periodo'], $datosRecibo['concepto'])) {
             $codigo = substr($datosRecibo['periodo'], 0, 4) . substr($datosRecibo['periodo'], 5, 4);
 
             $data               = new Invoice();

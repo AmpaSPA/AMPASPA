@@ -20,6 +20,7 @@ class CreateEntriesTable extends Migration
             $table->integer('entrytype_id')->unsigned();
             $table->text('descripcion');
             $table->decimal('importe');
+            $table->boolean('domiciliacion')->nullable()->default(false);
             $table->timestamps();
 
             $table->foreign('invoice_id')

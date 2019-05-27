@@ -19,4 +19,9 @@
     {!! Form::open(['class' => 'form-horizontal', 'role' => 'form', 'method' => 'GET', 'novalidate' => 'novalidate']) !!}
         @include('backend.includes.campos_form_reunion')
     {!! Form::close() !!}
+
+    @component('backend.components.ckeditor', [
+        'field_id' => 'nota'
+    ])
+    @endcomponent
 @endsection

@@ -18,5 +18,6 @@ return [
     'invoicecode'               => 'Invoice code',
     'amount'                    => 'Amount',
     'actions'                   => 'Actions',
-    'balance'                   => 'Balance'
+    'balance'                   => 'Balance',
+    'debit'                     => 'Debit'
 ];
